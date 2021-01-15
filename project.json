@@ -15,6 +15,7 @@
         "src/resource.js",
         "src/app.js",
         "src/help.js",
-        "src/history.js"
+        "src/history.js",
+        "src/RoundRect.js"
     ]
 }
