@@ -79,6 +79,7 @@ var GamePanelLayer = cc.Layer.extend({
     enabledCoin: [false, false, false, false, false, false, false],
     coinImages: [],
     coin_width: null,
+    coinDropListener: null,
     panelOne_width: null,
     panelOne_height: null,
     panelTwo_width: null,
@@ -88,6 +89,7 @@ var GamePanelLayer = cc.Layer.extend({
     panelThreeDealedCoins: [],
     cancelBtn: null,
     confirmBtn: null,
+    enabledCoinDrop: true,
     coinDealCheckDlg: null,
     coinDealCheckDlg_overLay: null,
     dealCancelDlg: null,
@@ -155,25 +157,22 @@ var GamePanelLayer = cc.Layer.extend({
         
         
 
-        // this.panelOneArea = ccui.Widget.create()
-        // var panelOneArea_width = size.width / 2 - 1
-        // var panelOneArea_height = size.width / 2 + 10
-        // this.panelOneArea.setContentSize(panelOneArea_width, panelOneArea_height)
-        // this.panelOneArea.setPosition(cc.p(panelOneArea_width / 2, size.height - panelOneArea_height / 2 - header_height - bank_height - btnWrapSprite_height))
-        // this.panelOneArea.setTouchEnabled(true)
-        // this.panelOneArea.setEnabled(true)
-        // this.panelOneArea.addTouchEventListener(this.dropInPanelOneArea, this)
-        // this.addChild(this.panelOneArea)
+        
 
         this.panelOne_width = size.width / 2 - 1
-        this.panelOne_height = size.width / 2 + 10
-        var panelOne = cc.LayerColor.create(cc.color(25, 74, 148), this.panelOne_width, this.panelOne_height)
-        panelOne.attr({
-            x:  0,
-            y: size.height - header_height - bank_height - size.width / 2 - 10 - 5
-        })
-        this.addChild(panelOne)
+        this.panelOne_height = size.width / 2 + 15
+        // var panelOne = cc.LayerColor.create(cc.color(25, 74, 148), this.panelOne_width, this.panelOne_height)
+        // panelOne.attr({
+        //     x:  0,
+        //     y: size.height - header_height - bank_height - size.width / 2 - 10 - 5
+        // })
+        // this.addChild(panelOne)
 
+
+        var panelOneArea = new cc.DrawNode()
+        panelOneArea.drawRect(cc.p(0, size.height - header_height - bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.addChild(panelOneArea)
+        
         var panelOneLabel = cc.LabelTTF.create("闲1", "Arial", 40)
         panelOneLabel.attr({
             x: size.width / 4,
@@ -182,26 +181,19 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.addChild(panelOneLabel)
 
-
-        // var panelTwoArea = ccui.Widget.create()
-        // var panelTwoArea_height = size.width / 2 + 10
-        // var panelTwoArea_width = size.width / 2
-        // panelTwoArea.setContentSize(panelTwoArea_width, panelTwoArea_height)
-        // panelTwoArea.setPosition(cc.p(size.width / 2 + panelTwoArea_width / 2, size.height - panelTwoArea_height / 2 - header_height - bank_height - btnWrapSprite_height))
-        // panelTwoArea.setTouchEnabled(true)
-        // panelTwoArea.setEnabled(true)
-        // panelTwoArea.addTouchEventListener(this.dropInPanelTwoArea, this)
-        // this.addChild(panelTwoArea)
-
         
         this.panelTwo_width = size.width / 2
         this.panelTwo_height = size.width / 2 + 10
-        var panelTwo = cc.LayerColor.create(cc.color(25, 74, 148), this.panelTwo_width, this.panelTwo_height)
-        panelTwo.attr({
-            x: size.width / 2,
-            y: size.height - header_height - bank_height - size.width / 2 - 10 - 5 
-        })
-        this.addChild(panelTwo)
+        // var panelTwo = cc.LayerColor.create(cc.color(25, 74, 148), this.panelTwo_width, this.panelTwo_height)
+        // panelTwo.attr({
+        //     x: size.width / 2,
+        //     y: size.height - header_height - bank_height - size.width / 2 - 10 - 5 
+        // })
+        // this.addChild(panelTwo)
+
+        var panelTwoArea = new cc.DrawNode()
+        panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - header_height - bank_height - this.panelOne_height), cc.p(size.width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.addChild(panelTwoArea)
         
         var panelTwoLabel = cc.LabelTTF.create("闲2", "Arial", 40)
         panelTwoLabel.attr({
@@ -222,12 +214,17 @@ var GamePanelLayer = cc.Layer.extend({
         // panelThreeArea.addTouchEventListener(this.dropInPanelThreeArea, this)
         // this.addChild(panelThreeArea)
 
-        var panelThree = cc.LayerColor.create(cc.color(25, 74, 148), size.width, size.height - header_height - bank_height - btnWrapSprite_height - size.width / 2 - 10 - 5)
-        panelThree.attr({
-            x: 0,
-            y: coinWrapSprite_height
-        })
-        this.addChild(panelThree)
+        // var panelThree = cc.LayerColor.create(cc.color(25, 74, 148), size.width, size.height - header_height - bank_height - btnWrapSprite_height - size.width / 2 - 10 - 5)
+        // panelThree.attr({
+        //     x: 0,
+        //     y: coinWrapSprite_height
+        // })
+        // this.addChild(panelThree)
+
+        var panelThreeArea = new cc.DrawNode()
+        panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - header_height - bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
+        this.addChild(panelThreeArea)
+
         var panelThreeLabel = cc.LabelTTF.create("闲3", "Arial", 40)
         panelThreeLabel.attr({
             x: size.width / 2,
@@ -235,6 +232,8 @@ var GamePanelLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 102, 203)
         })
         this.addChild(panelThreeLabel)
+
+        
 
         
         btnWrapSprite.attr({
@@ -418,10 +417,12 @@ var GamePanelLayer = cc.Layer.extend({
         }
 
         // add touch listener for checking dealed coins out
-        var touchPositionListener = cc.EventListener.create({
+        this.coinDropListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: (touch, event) => {
+                console.log("helllll")
+                if (!this.enabledCoinDrop) return
                 var target = event.getCurrentTarget()
                 var touch_x = touch.getLocation().x
                 var touch_y = touch.getLocation().y
@@ -477,7 +478,8 @@ var GamePanelLayer = cc.Layer.extend({
             }
         })
 
-        cc.eventManager.addListener(touchPositionListener, this)
+        cc.eventManager.addListener(this.coinDropListener, panelOneArea)
+        
     },
 
     findTrue: function (ele) {
@@ -694,6 +696,8 @@ var GamePanelLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("show coinDealCheckDlg")
+                this.enabledCoinDrop = false
+                // coincheckdlg
                 var paddingX = 20
                 var paddingY = 20
                 var panelOneSum = 0
@@ -956,6 +960,7 @@ var GamePanelLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("showCheckDlg")
+                this.enabledCoinDrop = false
                 var paddingX = 20
                 var paddingY = 20
                 var checkDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
@@ -995,11 +1000,13 @@ var GamePanelLayer = cc.Layer.extend({
                 this.removeChild(this.checkDlg_overLay)
                 this.removeChild(this.coinDealCheckDlg)
                 this.removeChild(this.coinDealCheckDlg_overLay)
+                this.enabledCoinDrop = true
         }
     },
     showDealCancelDlg: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                this.enabledCoinDrop = false
                 var paddingX = 20
                 var paddingY = 20
                 var dealCancelDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
@@ -1051,6 +1058,7 @@ var GamePanelLayer = cc.Layer.extend({
     closeCancelDlg: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                this.enabledCoinDrop = true
                 this.removeChild(this.dealCancelDlg)
                 this.removeChild(this.dealCancelDlg_overLay)
 
@@ -1059,6 +1067,10 @@ var GamePanelLayer = cc.Layer.extend({
     }
 
 })
+
+
+
+
 
 
 var GameScene = cc.Scene.extend({
@@ -1070,6 +1082,9 @@ var GameScene = cc.Scene.extend({
         this.addChild(headerLayer)
         var gamePanelLayer = new GamePanelLayer()
         this.addChild(gamePanelLayer)
+        
+        // var dealCancelDlg = new DealCancelDlg()
+        // this.addChild(dealCancelDlg)
     }
 })
 
