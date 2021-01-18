@@ -96,22 +96,33 @@ var HelpLayer = cc.Layer.extend({
         this.addChild(this.traditionPlayNav)
 
         // HowPlay content
-        this.howPlayScroll = ccui.ScrollView.create()
+        this.howPlayScroll = new ccui.ScrollView()
         var howPlayScroll_height = size.height - header_height - paddingY / 2 - banner_height - paddingY / 2 - nav_height - paddingY * 2 - footer_height - paddingY - paddingY
+        var howPlayScroll_inner_height = howPlayScroll_height + 200
+        this.howPlayScroll.attr({
+            innerHeight: howPlayScroll_inner_height,
+            innerWidth: size.width - paddingX
+        })
         this.howPlayScroll.setDirection(ccui.ScrollView.DIR_VERTICAL)
         this.howPlayScroll.setTouchEnabled(true)
         this.howPlayScroll.setBounceEnabled(true)
-        // this.howPlayScroll.setBackGroundImage(res.blackjack_jpg)
         this.howPlayScroll.setContentSize(cc.size(size.width - paddingX, howPlayScroll_height))
         this.howPlayScroll.setPosition(cc.p(paddingX / 2, paddingY + footer_height + paddingY))
         this.addChild(this.howPlayScroll, 1, 1)
+        console.log(this.howPlayScroll.isBounceEnabled())
+        console.log(this.howPlayScroll.isInertiaScrollEnabled())
+        console.log(this.howPlayScroll.getScrollBarColor())
+        console.log(this.howPlayScroll.isScrollBarEnabled())
+        console.log(this.howPlayScroll.getInnerContainerSize())
+
+
 
         var firstParaHeading = cc.LabelTTF.create("1.游戏规则说明：", "arial", 16)
         firstParaHeading.attr({
             fillStyle: cc.color(0, 0, 0),
         })
         var firstParaHeading_height = firstParaHeading.getContentSize().height
-        firstParaHeading.setPosition(cc.p(firstParaHeading.getContentSize().width / 2, howPlayScroll_height - firstParaHeading_height / 2))
+        firstParaHeading.setPosition(cc.p(firstParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - firstParaHeading_height / 2))
         this.howPlayScroll.addChild(firstParaHeading)
 
         var firstParaContent = cc.LabelTTF.create("必发牛牛由东京1.5分彩官方开奖结果演变而成的一款公平公正的游戏，公正之处为牛牛牌面根据东京1.5分彩的官方开奖结果组成，任何人任何机构都无法干涉，真正杜绝一切作假行为。全天开奖和东京1.5分彩同步， 开奖时间(北京时间)为8:00至7:00（次日），每天960期，90秒一期。", "arial", 13)
@@ -122,7 +133,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT
         })
         var firstParaContent_height = firstParaContent.getContentSize().height
-        firstParaContent.setPosition(cc.p((size.width - paddingX) / 2, howPlayScroll_height - firstParaContent_height / 2 - firstParaHeading_height - paddingY))
+        firstParaContent.setPosition(cc.p((size.width - paddingX) / 2, howPlayScroll_inner_height - firstParaContent_height / 2 - firstParaHeading_height - paddingY))
         this.howPlayScroll.addChild(firstParaContent)
 
         var secondParaHeading = cc.LabelTTF.create("2.牌面：")
@@ -133,7 +144,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT
         })
         var secondParaHeading_height = secondParaHeading.getContentSize().height
-        secondParaHeading.setPosition(cc.p(secondParaHeading.getContentSize().width / 2, howPlayScroll_height - secondParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY))
+        secondParaHeading.setPosition(cc.p(secondParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - secondParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY))
         this.howPlayScroll.addChild(secondParaHeading)
 
         var secondParaContent = cc.LabelTTF.create("全部牌面根据东京1.5分彩的20个开奖结果号码的尾数成。")
@@ -144,7 +155,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT
         })
         var secondParaContent_height = secondParaContent.getContentSize().height
-        secondParaContent.setPosition(cc.p(secondParaContent.getContentSize().width / 2, howPlayScroll_height - secondParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY))
+        secondParaContent.setPosition(cc.p(secondParaContent.getContentSize().width / 2, howPlayScroll_inner_height - secondParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY))
         this.howPlayScroll.addChild(secondParaContent)
 
         var thirdParaHeading = cc.LabelTTF.create("3.发牌：")
@@ -155,7 +166,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT
         })
         var thirdParaHeading_height = thirdParaHeading.getContentSize().height
-        thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY))
+        thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY))
         this.howPlayScroll.addChild(thirdParaHeading)
 
         var thirdParaContent = cc.LabelTTF.create("每一期东京1.5分彩开奖前10秒停止投注，根据开奖号码的尾数组成4组牌面，从左到右依次为闲1-闲2-闲3-庄。")
@@ -166,7 +177,7 @@ var HelpLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 0, 0)
         })
         var thirdParaContent_height = thirdParaContent.getContentSize().height
-        thirdParaContent.setPosition(cc.p(thirdParaContent.getContentSize().width / 2, howPlayScroll_height - thirdParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY))
+        thirdParaContent.setPosition(cc.p(thirdParaContent.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY))
         this.howPlayScroll.addChild(thirdParaContent)
 
         var fourthParaHeading = cc.LabelTTF.create("4.输赢：")
@@ -177,7 +188,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT
         })
         var fourthParaHeading_height = fourthParaHeading.getContentSize().height
-        fourthParaHeading.setPosition(cc.p(fourthParaHeading.getContentSize().width / 2, howPlayScroll_height - fourthParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY))
+        fourthParaHeading.setPosition(cc.p(fourthParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY))
         this.howPlayScroll.addChild(fourthParaHeading)
 
         var fourthParaContent = cc.LabelTTF.create("例东京1.5分彩开奖结果为（01,03,06,17,24,27,29,30,32,37,38,43,47,52,57,62,63,65,68,78），则闲1牌面1、3 、6、7、4（无牛）， 闲2牌面 7、9、0、2、7（无牛）  闲3牌面 8 、3、 7、2、7（无牛），庄家牌面 2 、3、 5、8、8（牛六），投注闲1、闲2、闲3均为输。")
@@ -188,7 +199,7 @@ var HelpLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 0, 0)
         })
         var fourthParaContent_height = fourthParaContent.getContentSize().height
-        fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY))
+        fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY))
         this.howPlayScroll.addChild(fourthParaContent)
 
         var siteUrl = cc.LabelTTF.create("东京1.5分彩官方网址: http://tokyokeno.jp/")
@@ -198,12 +209,17 @@ var HelpLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 0, 0)
         })
         var siteUrl_height = siteUrl.getContentSize().height
-        siteUrl.setPosition(cc.p(siteUrl.getContentSize().width / 2, howPlayScroll_height - siteUrl_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY - fourthParaContent_height - paddingY * 2))
+        siteUrl.setPosition(cc.p(siteUrl.getContentSize().width / 2, howPlayScroll_inner_height - siteUrl_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY - fourthParaContent_height - paddingY * 2))
         this.howPlayScroll.addChild(siteUrl)
 
         // traditional play
         this.traditionPlayScroll = ccui.ScrollView.create()
         var traditionPlayScroll_height = size.height - header_height - paddingY / 2 - banner_height - paddingY / 2 - nav_height - paddingY * 2 - footer_height - paddingY - paddingY
+        var traditionPlayScroll_inner_height = traditionPlayScroll_height + 200
+        this.traditionPlayScroll.attr({
+            innerHeight: traditionPlayScroll_inner_height,
+            innerWidth: size.width - paddingX
+        })
         this.traditionPlayScroll.setDirection(ccui.ScrollView.DIR_VERTICAL)
         this.traditionPlayScroll.setTouchEnabled(true)
         this.traditionPlayScroll.setBounceEnabled(true)
@@ -216,7 +232,7 @@ var HelpLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 0, 0),
         })
         var oneParaHeading_height = oneParaHeading.getContentSize().height
-        oneParaHeading.setPosition(cc.p(oneParaHeading.getContentSize().width / 2, traditionPlayScroll_height - oneParaHeading_height / 2))
+        oneParaHeading.setPosition(cc.p(oneParaHeading.getContentSize().width / 2, traditionPlayScroll_inner_height - oneParaHeading_height / 2))
         this.traditionPlayScroll.addChild(oneParaHeading)
 
         var oneParaContent = cc.Sprite.create(res.table_img_png)
@@ -225,7 +241,7 @@ var HelpLayer = cc.Layer.extend({
             scaleX: (size.width - paddingX) / 375,
             scaleY: (size.width - paddingX) / 375
         })
-        oneParaContent.setPosition(cc.p((size.width - paddingX) / 2, traditionPlayScroll_height - oneParaContent_height / 2 - oneParaHeading_height - paddingY))
+        oneParaContent.setPosition(cc.p((size.width - paddingX) / 2, traditionPlayScroll_inner_height - oneParaContent_height / 2 - oneParaHeading_height - paddingY))
         this.traditionPlayScroll.addChild(oneParaContent)
 
         var twoParaHeading = cc.LabelTTF.create("2.大小比较：", "arial", 16)
@@ -233,7 +249,7 @@ var HelpLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 0, 0)
         })
         var twoParaHeading_height = twoParaHeading.getContentSize().height
-        twoParaHeading.setPosition(cc.p(twoParaHeading.getContentSize().width / 2, traditionPlayScroll_height - twoParaHeading_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY))
+        twoParaHeading.setPosition(cc.p(twoParaHeading.getContentSize().width / 2, traditionPlayScroll_inner_height - twoParaHeading_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY))
         this.traditionPlayScroll.addChild(twoParaHeading)
 
         var twoParaContent_1 = cc.LabelTTF.create("牛牛 > 牛九 > 牛八 > 牛七 > 牛六 > 牛五 > 牛四 > 牛三 > 牛二 > 牛一 > 无牛", "arial", 13)
@@ -243,7 +259,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT,
         })
         var twoParaContent_1_height = twoParaContent_1.getContentSize().height
-        twoParaContent_1.setPosition(cc.p(twoParaContent_1.getContentSize().width / 2, traditionPlayScroll_height - twoParaContent_1_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY))
+        twoParaContent_1.setPosition(cc.p(twoParaContent_1.getContentSize().width / 2, traditionPlayScroll_inner_height - twoParaContent_1_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY))
         this.traditionPlayScroll.addChild(twoParaContent_1)
 
         var twoParaContent_2 = cc.LabelTTF.create("扑克牌依次大小为 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2 > 1 > 0", "arial", 13)
@@ -253,7 +269,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT,
         })
         var twoParaContent_2_height = twoParaContent_2.getContentSize().height
-        twoParaContent_2.setPosition(cc.p(twoParaContent_2.getContentSize().width / 2, traditionPlayScroll_height - twoParaContent_2_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY - twoParaContent_1_height - paddingY))
+        twoParaContent_2.setPosition(cc.p(twoParaContent_2.getContentSize().width / 2, traditionPlayScroll_inner_height - twoParaContent_2_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY - twoParaContent_1_height - paddingY))
         this.traditionPlayScroll.addChild(twoParaContent_2)
 
         var twoParaContent_3 = cc.LabelTTF.create("注：当庄家与闲家点数相等时（包含有牛无牛牌面），取其中最大的一张牌比较大小，牌大的赢。如果此牌大小一样，取第二大的一张牌进行比较，依次类推，取第三大、第四大、第五大的牌进行比较，没有和局。", "arial", 13)
@@ -263,7 +279,7 @@ var HelpLayer = cc.Layer.extend({
             textAlign: cc.TEXT_ALIGNMENT_LEFT,
         })
         var twoParaContent_3_height = twoParaContent_3.getContentSize().height
-        twoParaContent_3.setPosition(cc.p(twoParaContent_3.getContentSize().width / 2, traditionPlayScroll_height - twoParaContent_3_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY - twoParaContent_1_height - paddingY - twoParaContent_2_height - paddingY))
+        twoParaContent_3.setPosition(cc.p(twoParaContent_3.getContentSize().width / 2, traditionPlayScroll_inner_height - twoParaContent_3_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY - twoParaContent_1_height - paddingY - twoParaContent_2_height - paddingY))
         this.traditionPlayScroll.addChild(twoParaContent_3)
 
 

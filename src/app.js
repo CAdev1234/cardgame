@@ -107,13 +107,14 @@ var GamePanelLayer = cc.Layer.extend({
         var paddingY = 20
 
         // game bgsound play
-        var bg_sound = cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
+        cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
         cc.audioEngine.setMusicVolume(0.5)
 
         // Bank Part
         var coinWrapSprite = cc.Sprite.create(res.coin_wrap_png)
-        // coinWrapSprite_height = size.width / coinWrapSprite_height.getContentSize().width * coinWrapSprite.getContentSize().height
         coinWrapSprite_height =  (size.width - 56) / 1125 * 300 * 0.5
+        var betAmountBg_height = 50
+        
         var bankBgSprite = cc.Sprite.create(res.banner_png)
         var bankBg_height = size.width / bankBgSprite.getContentSize().width * bankBgSprite.getContentSize().height
         bankBgSprite.attr({
@@ -134,11 +135,11 @@ var GamePanelLayer = cc.Layer.extend({
             scaleY: bankLabelSprite_width / bankLabelSprite.getContentSize().width
         })
         this.addChild(bankLabelSprite)
-        var bankLabel = cc.LabelTTF.create("庄家", "Arial", 15)
+        var bankLabel = cc.LabelTTF.create("庄家", "Arial", 13)
         bankLabel.attr({
             x: size.width / 2,
             y: size.height + bankLabel.getContentSize().height / 2 - header_height - bankLabelSprite_height,
-            fillStyle: cc.color(255, 255, 255)
+            fillStyle: cc.color(255, 255, 255),
         })
         this.addChild(bankLabel)
         bank_height = bankBg_height
@@ -161,18 +162,9 @@ var GamePanelLayer = cc.Layer.extend({
         var btnWrapSprite = cc.Sprite.create(res.btn_wrap_png)
         var btnWrapSprite_height = size.width / btnWrapSprite.getContentSize().width * btnWrapSprite.getContentSize().height
         
-        
-
-        
-
         this.panelOne_width = size.width / 2 - 1
-        this.panelOne_height = size.width / 2 + 15
-        // var panelOne = cc.LayerColor.create(cc.color(25, 74, 148), this.panelOne_width, this.panelOne_height)
-        // panelOne.attr({
-        //     x:  0,
-        //     y: size.height - header_height - bank_height - size.width / 2 - 10 - 5
-        // })
-        // this.addChild(panelOne)
+        // this.panelOne_height = size.width / 2 + 15
+        this.panelOne_height = (size.height - header_height - bank_height - coinWrapSprite_height - betAmountBg_height) / 2
 
 
         var panelOneArea = new cc.DrawNode()
@@ -189,13 +181,7 @@ var GamePanelLayer = cc.Layer.extend({
 
         
         this.panelTwo_width = size.width / 2
-        this.panelTwo_height = size.width / 2 + 10
-        // var panelTwo = cc.LayerColor.create(cc.color(25, 74, 148), this.panelTwo_width, this.panelTwo_height)
-        // panelTwo.attr({
-        //     x: size.width / 2,
-        //     y: size.height - header_height - bank_height - size.width / 2 - 10 - 5 
-        // })
-        // this.addChild(panelTwo)
+        this.panelTwo_height = size.width / 2 + 15
 
         var panelTwoArea = new cc.DrawNode()
         panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - header_height - bank_height - this.panelOne_height), cc.p(size.width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
@@ -210,23 +196,6 @@ var GamePanelLayer = cc.Layer.extend({
         this.addChild(panelTwoLabel)
 
 
-        // var panelThreeArea = ccui.Widget.create()
-        // var panelThreeArea_height = size.height - header_height - bank_height - btnWrapSprite_height - size.width / 2 - 10 - 5
-        // var panelThreeArea_width = size.width
-        // panelThreeArea.setContentSize(panelThreeArea_width, panelThreeArea_height)
-        // panelThreeArea.setPosition(cc.p(panelThreeArea_width / 2, coinWrapSprite_height + panelThreeArea_height / 2))
-        // panelThreeArea.setTouchEnabled(true)
-        // panelThreeArea.setEnabled(true)
-        // panelThreeArea.addTouchEventListener(this.dropInPanelThreeArea, this)
-        // this.addChild(panelThreeArea)
-
-        // var panelThree = cc.LayerColor.create(cc.color(25, 74, 148), size.width, size.height - header_height - bank_height - btnWrapSprite_height - size.width / 2 - 10 - 5)
-        // panelThree.attr({
-        //     x: 0,
-        //     y: coinWrapSprite_height
-        // })
-        // this.addChild(panelThree)
-
         var panelThreeArea = new cc.DrawNode()
         panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - header_height - bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
         this.addChild(panelThreeArea)
@@ -238,9 +207,6 @@ var GamePanelLayer = cc.Layer.extend({
             fillStyle: cc.color(0, 102, 203)
         })
         this.addChild(panelThreeLabel)
-
-        
-
         
         btnWrapSprite.attr({
             x: size.width / 2,
@@ -261,26 +227,33 @@ var GamePanelLayer = cc.Layer.extend({
             titleText: "返回桌面",
         })
         goHomeBtn.setTitleColor(cc.color(255, 255, 255))
+        goHomeBtn.setTitleFontSize(13)
         goHomeBtn.addTouchEventListener(this.gotoHome, this)
         this.addChild(goHomeBtn)
 
-        var infoText = cc.LabelTTF.create("距封盘时间 00:09")
+        var infoText = cc.LabelTTF.create("距封盘时间 00:40", "Arial", 13)
         infoText.attr({
             x: size.width / 2,
             y: size.height - header_height - bank_height + 5,
             fillStyle: cc.color(205, 160, 58),
-            fontSize: 15
         })
         this.addChild(infoText)
+        
+        var initial_second = 40
+        var countCloseSecond = setInterval(() => {
+            if (initial_second == 0) {
+                clearInterval(countCloseSecond)
+                return
+            }
+            initial_second = initial_second - 1 
+            if (initial_second < 10) {
+                infoText.setString("距封盘时间 00:0" + initial_second)
+            }else {
+                infoText.setString("距封盘时间 00:" + initial_second)
+            }
+            
+        }, 1000);
 
-        // var helpBtnSprite = cc.Sprite.create(res.help_btn_png)
-        // var helpBtnSprite_height = 35
-        // helpBtnSprite.attr({
-        //     x: size.width - 40,
-        //     y: size.height - header_height - bank_height + 5,
-        //     scaleX: helpBtnSprite_height / helpBtnSprite.getContentSize().height,
-        //     scaleY: helpBtnSprite_height / helpBtnSprite.getContentSize().height
-        // })
         var helpBtn = ccui.Button.create(res.help_btn_png)
         var helpBtn_height = 30
         helpBtn.attr({
@@ -306,12 +279,9 @@ var GamePanelLayer = cc.Layer.extend({
         this.addChild(this.soundOnBtn)
 
         // footer
-        var betAmountBg_height = 50
         var betAmountBg = cc.LayerColor.create(cc.color(0, 0, 0, 150), size.width, betAmountBg_height)
         betAmountBg.setPosition(cc.p(0, coinWrapSprite_height + betAmountBg_height / 2))
         this.addChild(betAmountBg)
-
-        
 
         var betAmountTotalSprite = cc.Sprite.create(res.bet_amount_total_png)
         var betAmountTotalSprite_width = 20
@@ -359,7 +329,7 @@ var GamePanelLayer = cc.Layer.extend({
 
         
         // cancel button
-        this.cancelBtn = new ccui.Button(res.red_btn_png)
+        this.cancelBtn = new ccui.Button(res.red_btn_png, res.red_btn_png, res.disabled_red_btn_png)
         var cancelBtn_width = 60
         this.cancelBtn.attr({
             x: size.width - cancelBtn_width / 2 - paddingX / 2,
@@ -372,7 +342,7 @@ var GamePanelLayer = cc.Layer.extend({
         this.addChild(this.cancelBtn)
 
         // confirm button
-        this.confirmBtn = new ccui.Button(res.green_btn_png)
+        this.confirmBtn = new ccui.Button(res.green_btn_png, res.green_btn_png, res.disabled_green_btn_png)
         var confirmBtn_width = 60
         this.confirmBtn.attr({
             x: size.width - confirmBtn_width / 2 - cancelBtn_width - paddingX / 2 - paddingX / 2,
@@ -399,7 +369,7 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.addChild(coinWrapSprite)
         this.coin_width = (size.width - 10 * 8) / 7
-        this.coinImages = [res.coin_sprite_custom_png, res.coin_sprite_50_png, res.coin_sprite_100_png, res.coin_sprite_500_png, res.coin_sprite_1000_png, res.coin_sprite_5000_png, res.coin_sprite_10000_png]
+        this.coinImages = [res.coin_sprite_10_png, res.coin_sprite_50_png, res.coin_sprite_100_png, res.coin_sprite_500_png, res.coin_sprite_1000_png, res.coin_sprite_5000_png, res.coin_sprite_10000_png]
         for (let index = 0; index < this.coinImages.length; index++) {
             this.coins[index] = ccui.Button.create(this.coinImages[index])
             this.coins[index].attr({
@@ -420,20 +390,20 @@ var GamePanelLayer = cc.Layer.extend({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: false,
             onTouchBegan: (touch, event) => {
-                console.log("helllll")
+                console.log("coindroplistener called")
                 if (!this.enabledCoinDrop) return
                 var target = event.getCurrentTarget()
                 var touch_x = touch.getLocation().x
                 var touch_y = touch.getLocation().y
 
                 if (touch_y > size.height - header_height - bank_height - paddingY || 
-                    touch_y < betAmountTotalSprite_height + coinWrapSprite_height + 60) {
+                    touch_y < betAmountBg_height + coinWrapSprite_height + 30) {
                         return
                 }
 
                 if (touch_x > size.width / 2 - paddingX && 
                     touch_x < size.width / 2 + paddingX && 
-                    touch_y > size.height - header_height - bank_height - size.width / 2) {
+                    touch_y > size.height - header_height - bank_height - this.panelOne_height) {
                     return
                 }
 
@@ -447,14 +417,12 @@ var GamePanelLayer = cc.Layer.extend({
                     var coinItem = cc.Sprite.create(this.coinImages[this.enabledCoin.findIndex(this.findTrue)])
                     var coinVal = this.coinImages[this.enabledCoin.findIndex(this.findTrue)].replace("res/niuniu/coin-sprite-", "")
                     coinVal = Number(coinVal.replace(".png", ""))
-                    console.log(coinVal)
                     coinItem.attr({
                         x: touch_x,
                         y: touch_y,
                         scaleX: 25 / coinItem.getContentSize().width,
                         scaleY: 25 / coinItem.getContentSize().width
                     })
-
                     // add coin values to panel value array
                     if (touch_x > 0 && touch_x < size.width / 2 - paddingX && 
                         touch_y < size.height - header_height - bank_height - paddingY && 
@@ -463,7 +431,7 @@ var GamePanelLayer = cc.Layer.extend({
                     }
                     if (touch_x > size.width / 2 && touch_x < size.width &&
                         touch_y < size.height - header_height - bank_height - paddingY &&
-                        touch_y > size.height - header_height - bank_height - this.panelTwo_height + paddingY) {
+                        touch_y > size.height - header_height - bank_height - this.panelOne_height + paddingY) {
                             this.panelTwoDealedCoins.push(coinVal)
                     }
                     if (touch_y < size.height - header_height - bank_height - this.panelOne_height - paddingY &&
@@ -530,7 +498,7 @@ var GamePanelLayer = cc.Layer.extend({
                 }
 
                 await this.sleep(1000)
-                console.log("hello")
+
                 var firstDealResultCards = []
                 for (let index = 0; index < 5; index++) {
                     var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
@@ -641,6 +609,7 @@ var GamePanelLayer = cc.Layer.extend({
         var size = cc.winSize
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                console.log("choosecoin called")
                 var choose_coin_audio = cc.audioEngine.playEffect(res.choose_coin_wav)
                 for (let index = 0; index < this.coins.length; index++) {
                     this.coins[index].attr({
@@ -706,14 +675,14 @@ var GamePanelLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("show coinDealCheckDlg")
                 this.enabledCoinDrop = false
-                // coincheckdlg
+                // coinDealCheckDlg
                 var paddingX = 20
                 var paddingY = 20
                 var panelOneSum = 0
                 var panelTwoSum = 0
                 var panelThreeSum = 0
                 this.coinDealCheckDlg_overLay = new cc.DrawNode()
-                this.coinDealCheckDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100))
+                this.coinDealCheckDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
                 this.addChild(this.coinDealCheckDlg_overLay, this.overLay_zOrder)
                 this.coinDealCheckDlg_zOrder = this.overLay_zOrder + 1
                 var coinDealCheckDlg_height = 270
@@ -975,7 +944,7 @@ var GamePanelLayer = cc.Layer.extend({
                 var paddingY = 20
                 var checkDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
                 this.checkDlg_overLay = new cc.DrawNode()
-                this.checkDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100))
+                this.checkDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
                 this.addChild(this.checkDlg_overLay, checkDlg_zOrder)
                 var checkDlg_height = 120
                 this.checkDlg = new RoundRect(cc.winSize.width - paddingX * 3, checkDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
@@ -1027,7 +996,7 @@ var GamePanelLayer = cc.Layer.extend({
                 var dealCancelDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
                 var dealCancelDlg_height = 120
                 this.dealCancelDlg_overLay = new cc.DrawNode()
-                this.dealCancelDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100))
+                this.dealCancelDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
                 this.addChild(this.dealCancelDlg_overLay, dealCancelDlg_zOrder)
                 this.dealCancelDlg = new RoundRect(cc.winSize.width - paddingX * 3, dealCancelDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
                 this.dealCancelDlg.setPosition(cc.p(paddingX * 3 / 2, cc.winSize.height / 2 - dealCancelDlg_height / 2))
