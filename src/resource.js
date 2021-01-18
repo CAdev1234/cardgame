@@ -7,6 +7,7 @@ var res = {
     bet_amount_total_png: "res/niuniu/bet-amount-total.png",
     blackjack_jpg: "res/niuniu/blackjack.jpg",
     btn_wrap_png: "res/niuniu/btn-wrap.png",
+    home_btn_png: "res/niuniu/home-btn.png",
     cancel_icon_png: "res/niuniu/cancel-icon.png",
     clock_png: "res/niuniu/clock.png",
     coin_sprite_50_png: "res/niuniu/coin-sprite-50.png",

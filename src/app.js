@@ -73,14 +73,19 @@ var GamePanelLayer = cc.Layer.extend({
     dealedCoins_tag: 1,
     overLay_zOrder: 10,
     coinDealCheckDlg_zOrder: null,
+
     soundOnBtn: null,
     enableSoundOn: true,
+
     coins: [],
     enabledCoin: [false, false, false, false, false, false, false],
     coinImages: [],
     coin_width: null,
+    
     coinDropListener: null,
+
     infoText: null,
+
     panelOne_width: null,
     panelOne_height: null,
     panelOneArea: null,
@@ -101,9 +106,12 @@ var GamePanelLayer = cc.Layer.extend({
     panelThreeValRoundRect: null,
     panelThreeValRoundRect_Label: null,
 
+    betAmountTokenVal: null,
     cancelBtn: null,
     confirmBtn: null,
+
     enabledCoinDrop: true,
+    
     coinDealCheckDlg: null,
     coinDealCheckDlg_overLay: null,
     coinDealCheckDlgYesBtn: null,
@@ -152,7 +160,7 @@ var GamePanelLayer = cc.Layer.extend({
         var bankLabel = cc.LabelTTF.create("庄家", "Arial", 13)
         bankLabel.attr({
             x: size.width / 2,
-            y: size.height + bankLabel.getContentSize().height / 2 - header_height - bankLabelSprite_height,
+            y: size.height + bankLabel.getContentSize().height / 2 - header_height - bankLabelSprite_height + 3,
             fillStyle: cc.color(255, 255, 255),
         })
         this.addChild(bankLabel)
@@ -230,18 +238,20 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.addChild(btnWrapSprite)
 
-        var goHomeBtn = new ccui.Button()
-        goHomeBtn.loadTextures()
+        var goHomeBtn = new ccui.Button(res.home_btn_png)
+        // goHomeBtn.loadTextures()
         goHomeBtn.x = size.width / 6
         goHomeBtn.y = size.height - header_height - bank_height + 5
         
         goHomeBtn.attr({
             x: size.width / 6,
             y: size.height - header_height - bank_height + 5,
-            titleText: "返回桌面",
+            scaleX: 60 / goHomeBtn.getContentSize().width,
+            scaleY: 60 / goHomeBtn.getContentSize().width
+            // titleText: "返回桌面",
         })
-        goHomeBtn.setTitleColor(cc.color(255, 255, 255))
-        goHomeBtn.setTitleFontSize(13)
+        // goHomeBtn.setTitleColor(cc.color(255, 255, 255))
+        // goHomeBtn.setTitleFontSize(13)
         goHomeBtn.addTouchEventListener(this.gotoHome, this)
         this.addChild(goHomeBtn)
 
@@ -315,16 +325,16 @@ var GamePanelLayer = cc.Layer.extend({
             scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
         })
         this.addChild(betAmountTokenSprite)
-        var betAmountTokenVal = cc.LabelTTF.create("200.0", "Arial", 15)
-        betAmountTokenVal.attr({
-            x: betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
+        this.betAmountTokenVal = cc.LabelTTF.create("0.0", "Arial", 15)
+        this.betAmountTokenVal.attr({
+            x: this.betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
             y: betAmountTotalSprite_height / 2 + coinWrapSprite_height + 40,
             fillStyle: cc.color(255, 255, 255)
         })
-        this.addChild(betAmountTokenVal)
-        var betAmountToken_RoundRect = new RoundRect(betAmountTokenSprite_width + paddingX / 2 + betAmountTokenVal.getContentSize().width + paddingX / 2, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, coinWrapSprite_height + 40)
-        this.addChild(betAmountToken_RoundRect)
+        this.addChild(this.betAmountTokenVal)
+        this.betAmountToken_RoundRect = new RoundRect(betAmountTokenSprite_width + paddingX / 2 + this.betAmountTokenVal.getContentSize().width + paddingX / 2, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
+        this.betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, coinWrapSprite_height + 40)
+        this.addChild(this.betAmountToken_RoundRect)
 
         
         // cancel button
@@ -338,7 +348,6 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.cancelBtn.addTouchEventListener(this.removeDealedCoins, this)
         this.cancelBtn.setEnabled(false)
-        this.addChild(this.cancelBtn)
 
         // confirm button
         this.confirmBtn = new ccui.Button(res.green_btn_png, res.green_btn_png, res.disabled_green_btn_png)
@@ -351,8 +360,18 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.confirmBtn.addTouchEventListener(this.showCoinDealCheckDlg, this)
         this.confirmBtn.setEnabled(false)
+
+        // cancel and confirm button background
+        var cancelConfirmBg_height = betAmountBg_height
+        var cancelConfirmBg_width = paddingX / 2 + confirmBtn_width + paddingX / 2 + cancelBtn_width + paddingX / 2 + 40
+        var cancelConfirmBg = new RoundRect(cancelConfirmBg_width, cancelConfirmBg_height, cc.color(0, 0, 0, 150), 0, null, 25, RectType.TOP)
+        cancelConfirmBg.setPosition(size.width - cancelConfirmBg_width + 40, coinWrapSprite_height + betAmountBg_height / 2)
+        this.addChild(cancelConfirmBg)
+
+        this.addChild(this.cancelBtn)
         this.addChild(this.confirmBtn)
 
+        
         // cancel and confirm buttons are disabled when length of dealedCoins is 0
         if (this.panelOneDealedCoins.length === 0 && this.panelTwoDealedCoins.length === 0 && this.panelThreeDealedCoins.length === 0) {
             this.cancelBtn.setEnabled(false)
@@ -482,6 +501,9 @@ var GamePanelLayer = cc.Layer.extend({
                     this.addChild(coinItem, 0, this.dealedCoins_tag)
                     this.cancelBtn.setEnabled(true)
                     this.confirmBtn.setEnabled(true)
+
+                    this.betAmountTokenVal.setString(this.sumCoins(this.panelOneDealedCoins) + this.sumCoins(this.panelTwoDealedCoins) + this.sumCoins(this.panelThreeDealedCoins))
+                    
                 }
 
             }
@@ -770,20 +792,20 @@ var GamePanelLayer = cc.Layer.extend({
                 this.coinDealCheckDlg.setPosition(cc.p(paddingX * 3 / 2, coinDealCheckDlg_y))
                 this.addChild(this.coinDealCheckDlg, this.coinDealCheckDlg_zOrder)
                 
-                var betAmountTokenSprite = cc.Sprite.create(res.bet_amount_token_png)
-                var betAmountTokenSprite_height = 20
-                var betAmountTokenSprite_width = betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height * betAmountTokenSprite.getContentSize().height
+                var betAmountTokenSprite1 = cc.Sprite.create(res.bet_amount_token_png)
+                var betAmountTokenSprite1_height = 20
+                var betAmountTokenSprite1_width = betAmountTokenSprite1_height / betAmountTokenSprite1.getContentSize().height * betAmountTokenSprite1.getContentSize().height
                 var betOrderConfirmLabel = new cc.LabelTTF("确认下注单", "Arial", 16)
-                betAmountTokenSprite.attr({
-                    scaleX: betAmountTokenSprite_width / betAmountTokenSprite.getContentSize().width,
-                    scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
+                betAmountTokenSprite1.attr({
+                    scaleX: betAmountTokenSprite1_width / betAmountTokenSprite1.getContentSize().width,
+                    scaleY: betAmountTokenSprite1_height / betAmountTokenSprite1.getContentSize().height
                 })
                 betOrderConfirmLabel.attr({
                     fillStyle: cc.color(255, 255, 255)
                 })
-                betAmountTokenSprite.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2,  coinDealCheckDlg_height - betAmountTokenSprite_height / 2 - paddingY + 2))
-                betOrderConfirmLabel.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2 + paddingX / 2 + betOrderConfirmLabel.getContentSize().width / 2 + paddingX / 2, coinDealCheckDlg_height - betAmountTokenSprite_height / 2 - paddingY + 2))
-                this.coinDealCheckDlg.addChild(betAmountTokenSprite, this.coinDealCheckDlg_zOrder)
+                betAmountTokenSprite1.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite1_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2,  coinDealCheckDlg_height - betAmountTokenSprite1_height / 2 - paddingY + 2))
+                betOrderConfirmLabel.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite1_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2 + paddingX / 2 + betOrderConfirmLabel.getContentSize().width / 2 + paddingX / 2, coinDealCheckDlg_height - betAmountTokenSprite1_height / 2 - paddingY + 2))
+                this.coinDealCheckDlg.addChild(betAmountTokenSprite1, this.coinDealCheckDlg_zOrder)
                 this.coinDealCheckDlg.addChild(betOrderConfirmLabel, this.coinDealCheckDlg_zOrder)
 
                 var closeBtn_width = 20
