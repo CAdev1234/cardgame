@@ -80,13 +80,27 @@ var GamePanelLayer = cc.Layer.extend({
     coinImages: [],
     coin_width: null,
     coinDropListener: null,
+    infoText: null,
     panelOne_width: null,
     panelOne_height: null,
+    panelOneArea: null,
     panelTwo_width: null,
     panelTwo_height: null,
+    panelTwoArea: null,
+    panelThreeArea: null,
+
     panelOneDealedCoins: [],
+    panelOneValRoundRect: null,
+    panelOneValRoundRect_Label: null,
+
     panelTwoDealedCoins: [],
+    panelTwoValRoundRect: null,
+    panelTwoValRoundRect_Label: null,
+
     panelThreeDealedCoins: [],
+    panelThreeValRoundRect: null,
+    panelThreeValRoundRect_Label: null,
+
     cancelBtn: null,
     confirmBtn: null,
     enabledCoinDrop: true,
@@ -167,9 +181,9 @@ var GamePanelLayer = cc.Layer.extend({
         this.panelOne_height = (size.height - header_height - bank_height - coinWrapSprite_height - betAmountBg_height) / 2
 
 
-        var panelOneArea = new cc.DrawNode()
-        panelOneArea.drawRect(cc.p(0, size.height - header_height - bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
-        this.addChild(panelOneArea)
+        this.panelOneArea = new cc.DrawNode()
+        this.panelOneArea.drawRect(cc.p(0, size.height - header_height - bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.addChild(this.panelOneArea)
         
         var panelOneLabel = cc.LabelTTF.create("闲1", "Arial", 40)
         panelOneLabel.attr({
@@ -177,15 +191,15 @@ var GamePanelLayer = cc.Layer.extend({
             y: size.height - header_height - bank_height - btnWrapSprite_height,
             fillStyle: cc.color(0, 102, 203)
         })
-        this.addChild(panelOneLabel)
+        this.panelOneArea.addChild(panelOneLabel)
 
         
         this.panelTwo_width = size.width / 2
         this.panelTwo_height = size.width / 2 + 15
 
-        var panelTwoArea = new cc.DrawNode()
-        panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - header_height - bank_height - this.panelOne_height), cc.p(size.width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
-        this.addChild(panelTwoArea)
+        this.panelTwoArea = new cc.DrawNode()
+        this.panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - header_height - bank_height - this.panelOne_height), cc.p(size.width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.addChild(this.panelTwoArea)
         
         var panelTwoLabel = cc.LabelTTF.create("闲2", "Arial", 40)
         panelTwoLabel.attr({
@@ -196,9 +210,9 @@ var GamePanelLayer = cc.Layer.extend({
         this.addChild(panelTwoLabel)
 
 
-        var panelThreeArea = new cc.DrawNode()
-        panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - header_height - bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
-        this.addChild(panelThreeArea)
+        this.panelThreeArea = new cc.DrawNode()
+        this.panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - header_height - bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
+        this.addChild(this.panelThreeArea)
 
         var panelThreeLabel = cc.LabelTTF.create("闲3", "Arial", 40)
         panelThreeLabel.attr({
@@ -231,29 +245,14 @@ var GamePanelLayer = cc.Layer.extend({
         goHomeBtn.addTouchEventListener(this.gotoHome, this)
         this.addChild(goHomeBtn)
 
-        var infoText = cc.LabelTTF.create("距封盘时间 00:40", "Arial", 13)
-        infoText.attr({
+        this.infoText = cc.LabelTTF.create("距封盘时间 00:40", "Arial", 13)
+        this.infoText.attr({
             x: size.width / 2,
             y: size.height - header_height - bank_height + 5,
             fillStyle: cc.color(205, 160, 58),
         })
-        this.addChild(infoText)
+        this.addChild(this.infoText)
         
-        var initial_second = 40
-        var countCloseSecond = setInterval(() => {
-            if (initial_second == 0) {
-                clearInterval(countCloseSecond)
-                return
-            }
-            initial_second = initial_second - 1 
-            if (initial_second < 10) {
-                infoText.setString("距封盘时间 00:0" + initial_second)
-            }else {
-                infoText.setString("距封盘时间 00:" + initial_second)
-            }
-            
-        }, 1000);
-
         var helpBtn = ccui.Button.create(res.help_btn_png)
         var helpBtn_height = 30
         helpBtn.attr({
@@ -427,16 +426,58 @@ var GamePanelLayer = cc.Layer.extend({
                     if (touch_x > 0 && touch_x < size.width / 2 - paddingX && 
                         touch_y < size.height - header_height - bank_height - paddingY && 
                         touch_y > size.height - header_height - bank_height - this.panelOne_height + paddingY) {
+                            if (this.panelOneDealedCoins.length == 0) {
+                                this.panelOneValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panelOneValRoundRect_Label.attr({
+                                    fillStyle: cc.color(255, 255, 255),
+                                })
+                                this.panelOneValRoundRect = new RoundRect(this.panelOneValRoundRect_Label.getContentSize().width + paddingX, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panelOneValRoundRect_Label.setPosition(cc.p(this.panelOneValRoundRect.getContentSize().width / 2, this.panelOneValRoundRect_Label.getContentSize().height / 2))
+                                this.panelOneValRoundRect.setPosition(cc.p(size.width / 4 - this.panelOneValRoundRect.getContentSize().width / 2, size.height - header_height - bank_height - this.panelOne_height + paddingY / 4))
+                                this.panelOneArea.addChild(this.panelOneValRoundRect) 
+                                this.panelOneValRoundRect.addChild(this.panelOneValRoundRect_Label)
+                                
+                            }
                             this.panelOneDealedCoins.push(coinVal)
+                            this.panelOneValRoundRect_Label.setString(this.sumCoins(this.panelOneDealedCoins))
+                            this.panelOneValRoundRect.setContentSize(cc.size(this.panelOneValRoundRect_Label.getContentSize().width + paddingX, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     if (touch_x > size.width / 2 && touch_x < size.width &&
                         touch_y < size.height - header_height - bank_height - paddingY &&
                         touch_y > size.height - header_height - bank_height - this.panelOne_height + paddingY) {
+                            if (this.panelTwoDealedCoins.length == 0) {
+                                this.panelTwoValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panelTwoValRoundRect_Label.attr({
+                                    fillStyle: cc.color(255, 255, 255),
+                                })
+                                this.panelTwoValRoundRect = new RoundRect(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panelTwoValRoundRect_Label.setPosition(cc.p(this.panelTwoValRoundRect.getContentSize().width / 2, this.panelTwoValRoundRect_Label.getContentSize().height / 2))
+                                this.panelTwoValRoundRect.setPosition(cc.p(size.width / 4 * 3 - this.panelTwoValRoundRect.getContentSize().width / 2, size.height - header_height - bank_height - this.panelOne_height + paddingY / 4))
+                                this.panelTwoArea.addChild(this.panelTwoValRoundRect) 
+                                this.panelTwoValRoundRect.addChild(this.panelTwoValRoundRect_Label)
+                                
+                            }
                             this.panelTwoDealedCoins.push(coinVal)
+                            this.panelTwoValRoundRect_Label.setString(this.sumCoins(this.panelTwoDealedCoins))
+                            this.panelTwoValRoundRect.setContentSize(cc.size(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     if (touch_y < size.height - header_height - bank_height - this.panelOne_height - paddingY &&
                         touch_y > betAmountTotalSprite_height + coinWrapSprite_height + 60) {
+                            if (this.panelThreeDealedCoins.length == 0) {
+                                this.panelThreeValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panelThreeValRoundRect_Label.attr({
+                                    fillStyle: cc.color(255, 255, 255),
+                                })
+                                this.panelThreeValRoundRect = new RoundRect(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panelThreeValRoundRect_Label.setPosition(cc.p(this.panelThreeValRoundRect.getContentSize().width / 2, this.panelThreeValRoundRect_Label.getContentSize().height / 2))
+                                this.panelThreeValRoundRect.setPosition(cc.p(size.width / 2 - this.panelThreeValRoundRect.getContentSize().width / 2, coinWrapSprite_height + betAmountBg_height + this.panelThreeValRoundRect.getContentSize().height + paddingY / 2))
+                                this.panelThreeArea.addChild(this.panelThreeValRoundRect) 
+                                this.panelThreeValRoundRect.addChild(this.panelThreeValRoundRect_Label)
+                                
+                            }
                             this.panelThreeDealedCoins.push(coinVal)
+                            this.panelThreeValRoundRect_Label.setString(this.sumCoins(this.panelThreeDealedCoins))
+                            this.panelThreeValRoundRect.setContentSize(cc.size(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     this.addChild(coinItem, 0, this.dealedCoins_tag)
                     this.cancelBtn.setEnabled(true)
@@ -446,8 +487,10 @@ var GamePanelLayer = cc.Layer.extend({
             }
         })
 
-        cc.eventManager.addListener(this.coinDropListener, panelOneArea)
+        cc.eventManager.addListener(this.coinDropListener, this.panelOneArea)
         
+        // closeinterval function called for counting seconds
+        this.closeInterval()
     },
 
     findTrue: function (ele) {
@@ -458,6 +501,147 @@ var GamePanelLayer = cc.Layer.extend({
         return new Promise(
             resolve => setTimeout(resolve, milliseconds)
         )
+    },
+
+    sumCoins: function (arrayVal) {
+        var sum = 0
+        for (let index = 0; index < arrayVal.length; index++) {
+            sum = sum + arrayVal[index]
+        }
+        return sum
+    },
+
+    closeInterval: function () {
+        var close_second = 20
+        var countCloseSecond = setInterval(() => {
+            if (close_second == 0) {
+                clearInterval(countCloseSecond)
+                this.drawInterval()
+                return
+            }
+            close_second = close_second - 1 
+            if (close_second < 10) {
+                this.infoText.setString("距封盘时间 00:0" + close_second)
+            }else {
+                this.infoText.setString("距封盘时间 00:" + close_second)
+            }
+            
+        }, 1000);
+    },
+
+    drawInterval: function () {
+        var draw_second = 10
+        var countDrawSecond = setInterval(() => {
+            if (draw_second == 0) {
+                clearInterval(countDrawSecond)
+                this.infoText.setString("开奖中")
+                setTimeout(() => {
+                    this.displayCard()    
+                }, 5000);
+                return
+            }
+            draw_second = draw_second - 1
+            if (draw_second < 10) this.infoText.setString("距开奖时间 00:0" + draw_second) 
+            else this.infoText.setString("距开奖时间 00:" + draw_second)
+        }, 1000);
+    },
+
+    displayCard: async function () {
+        var paddingX = 20
+        var size = cc.winSize
+        
+        var cardType = ["C", "D", "H", "S"]
+        var cardWidth = 50
+        var cardGroup_width = cardWidth + paddingX * 1.5 * 4
+        var bankResultCards = []
+        for (let index = 0; index < 5; index++) {
+            var cardNum = Math.floor(Math.random() * 13 + 1)
+            var cardImageName = "res/niuniu/cards/card" + cardNum + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+            bankResultCards[index] = cc.Sprite.create(cardImageName)
+            bankResultCards[index].attr({
+                x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
+                y: size.height - cardWidth / bankResultCards[index].getContentSize().width * bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4,
+                scaleX: cardWidth / bankResultCards[index].getContentSize().width,
+                scaleY: cardWidth / bankResultCards[index].getContentSize().width
+            })
+            this.addChild(bankResultCards[index])
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / bankResultCards[index].getContentSize().width * bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4));
+            moveToAction.setSpeed(40)
+            moveToAction.setAmplitudeRate(10)
+            var actionSequence = new cc.Sequence(moveToAction)
+            bankResultCards[index].runAction(actionSequence)
+        }
+
+        await this.sleep(1000)
+
+        var firstDealResultCards = []
+        for (let index = 0; index < 5; index++) {
+            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+            firstDealResultCards[index] = cc.Sprite.create(cardImageName)
+            firstDealResultCards[index].attr({
+                x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
+                y: size.height - cardWidth / firstDealResultCards[index].getContentSize().width * firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
+                scaleX: cardWidth / firstDealResultCards[index].getContentSize().width,
+                scaleY: cardWidth / firstDealResultCards[index].getContentSize().width
+            })
+            this.addChild(firstDealResultCards[index])
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / firstDealResultCards[index].getContentSize().width * firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
+            moveToAction.setSpeed(40)
+            moveToAction.setAmplitudeRate(10)
+            var actionSequence = new cc.Sequence(moveToAction)
+            firstDealResultCards[index].runAction(actionSequence)
+        }
+        
+        await this.sleep(1000)
+        var secondDealResultCards = []
+        for (let index = 0; index < 5; index++) {
+            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+            secondDealResultCards[index] = cc.Sprite.create(cardImageName)
+            secondDealResultCards[index].attr({
+                x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
+                y: size.height - cardWidth / secondDealResultCards[index].getContentSize().width * secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
+                scaleX: cardWidth / secondDealResultCards[index].getContentSize().width,
+                scaleY: cardWidth / secondDealResultCards[index].getContentSize().width
+            })
+            this.addChild(secondDealResultCards[index])
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / secondDealResultCards[index].getContentSize().width * secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
+            moveToAction.setSpeed(40)
+            moveToAction.setAmplitudeRate(10)
+            var actionSequence = new cc.Sequence(moveToAction)
+            secondDealResultCards[index].runAction(actionSequence)
+        }
+
+        await this.sleep(1000)
+        var thirdDealResultCards = []
+        for (let index = 0; index < 5; index++) {
+            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+            thirdDealResultCards[index] = cc.Sprite.create(cardImageName)
+            thirdDealResultCards[index].attr({
+                x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
+                y: size.height - cardWidth / thirdDealResultCards[index].getContentSize().width * thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4,
+                scaleX: cardWidth / thirdDealResultCards[index].getContentSize().width,
+                scaleY: cardWidth / thirdDealResultCards[index].getContentSize().width
+            })
+            this.addChild(thirdDealResultCards[index])
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / thirdDealResultCards[index].getContentSize().width * thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4));
+            moveToAction.setSpeed(40)
+            moveToAction.setAmplitudeRate(10)
+            var actionSequence = new cc.Sequence(moveToAction)
+            thirdDealResultCards[index].runAction(actionSequence)
+        }
+        await this.sleep(2000)
+        for (let index = 0; index < bankResultCards.length; index++) {
+            this.removeChild(bankResultCards[index])
+        }
+        for (let index = 0; index < firstDealResultCards.length; index++) {
+            this.removeChild(firstDealResultCards[index])
+        }
+        for (let index = 0; index < secondDealResultCards.length; index++) {
+            this.removeChild(secondDealResultCards[index])
+        }
+        for (let index = 0; index < thirdDealResultCards.length; index++) {
+            this.removeChild(thirdDealResultCards[index])
+        }
     },
 
     showHistory: async function (sender, type) {
@@ -472,101 +656,7 @@ var GamePanelLayer = cc.Layer.extend({
     gotoHome: async function (sender, type) { 
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                var paddingX = 20
-                var size = cc.winSize
-                
-                var cardType = ["C", "D", "H", "S"]
-                var cardWidth = 50
-                var cardGroup_width = cardWidth + paddingX * 1.5 * 4
-                var bankResultCards = []
-                for (let index = 0; index < 5; index++) {
-                    var cardNum = Math.floor(Math.random() * 13 + 1)
-                    var cardImageName = "res/niuniu/cards/card" + cardNum + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-                    bankResultCards[index] = cc.Sprite.create(cardImageName)
-                    bankResultCards[index].attr({
-                        x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
-                        y: size.height - cardWidth / bankResultCards[index].getContentSize().width * bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4,
-                        scaleX: cardWidth / bankResultCards[index].getContentSize().width,
-                        scaleY: cardWidth / bankResultCards[index].getContentSize().width
-                    })
-                    this.addChild(bankResultCards[index])
-                    var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / bankResultCards[index].getContentSize().width * bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4));
-                    moveToAction.setSpeed(40)
-                    moveToAction.setAmplitudeRate(10)
-                    var actionSequence = new cc.Sequence(moveToAction)
-                    bankResultCards[index].runAction(actionSequence)
-                }
-
-                await this.sleep(1000)
-
-                var firstDealResultCards = []
-                for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-                    firstDealResultCards[index] = cc.Sprite.create(cardImageName)
-                    firstDealResultCards[index].attr({
-                        x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
-                        y: size.height - cardWidth / firstDealResultCards[index].getContentSize().width * firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
-                        scaleX: cardWidth / firstDealResultCards[index].getContentSize().width,
-                        scaleY: cardWidth / firstDealResultCards[index].getContentSize().width
-                    })
-                    this.addChild(firstDealResultCards[index])
-                    var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / firstDealResultCards[index].getContentSize().width * firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
-                    moveToAction.setSpeed(40)
-                    moveToAction.setAmplitudeRate(10)
-                    var actionSequence = new cc.Sequence(moveToAction)
-                    firstDealResultCards[index].runAction(actionSequence)
-                }
-                
-                await this.sleep(1000)
-                var secondDealResultCards = []
-                for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-                    secondDealResultCards[index] = cc.Sprite.create(cardImageName)
-                    secondDealResultCards[index].attr({
-                        x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
-                        y: size.height - cardWidth / secondDealResultCards[index].getContentSize().width * secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
-                        scaleX: cardWidth / secondDealResultCards[index].getContentSize().width,
-                        scaleY: cardWidth / secondDealResultCards[index].getContentSize().width
-                    })
-                    this.addChild(secondDealResultCards[index])
-                    var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / secondDealResultCards[index].getContentSize().width * secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
-                    moveToAction.setSpeed(40)
-                    moveToAction.setAmplitudeRate(10)
-                    var actionSequence = new cc.Sequence(moveToAction)
-                    secondDealResultCards[index].runAction(actionSequence)
-                }
-
-                await this.sleep(1000)
-                var thirdDealResultCards = []
-                for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-                    thirdDealResultCards[index] = cc.Sprite.create(cardImageName)
-                    thirdDealResultCards[index].attr({
-                        x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
-                        y: size.height - cardWidth / thirdDealResultCards[index].getContentSize().width * thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4,
-                        scaleX: cardWidth / thirdDealResultCards[index].getContentSize().width,
-                        scaleY: cardWidth / thirdDealResultCards[index].getContentSize().width
-                    })
-                    this.addChild(thirdDealResultCards[index])
-                    var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / thirdDealResultCards[index].getContentSize().width * thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4));
-                    moveToAction.setSpeed(40)
-                    moveToAction.setAmplitudeRate(10)
-                    var actionSequence = new cc.Sequence(moveToAction)
-                    thirdDealResultCards[index].runAction(actionSequence)
-                }
-                await this.sleep(2000)
-                for (let index = 0; index < bankResultCards.length; index++) {
-                    this.removeChild(bankResultCards[index])
-                }
-                for (let index = 0; index < firstDealResultCards.length; index++) {
-                    this.removeChild(firstDealResultCards[index])
-                }
-                for (let index = 0; index < secondDealResultCards.length; index++) {
-                    this.removeChild(secondDealResultCards[index])
-                }
-                for (let index = 0; index < thirdDealResultCards.length; index++) {
-                    this.removeChild(thirdDealResultCards[index])
-                }
+                break
         }
      },
 
@@ -635,26 +725,6 @@ var GamePanelLayer = cc.Layer.extend({
         }
     },
 
-    // dropInPanelOneArea: function (sender, type) { 
-    //     switch (type) {
-    //         case ccui.Widget.TOUCH_ENDED:
-                
-    //             break
-    //     }
-    // },
-
-    // dropInPanelTwoArea: function (sender, type) {
-    //     switch (type) {
-    //         case ccui.Widget.TOUCH_ENDED:
-    //     }
-    // },
-
-    // dropInPanelThreeArea: function (sender, type) {
-    //     switch (type) {
-    //         case ccui.Widget.TOUCH_ENDED:
-    //     }
-    // },
-
     removeDealedCoins: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
@@ -665,6 +735,12 @@ var GamePanelLayer = cc.Layer.extend({
                 this.panelOneDealedCoins = []
                 this.panelTwoDealedCoins = []
                 this.panelThreeDealedCoins = []
+                this.panelOneArea.removeChild(this.panelOneValRoundRect)
+                this.panelOneArea.removeChild(this.panelOneValRoundRect_Label)
+                this.panelTwoArea.removeChild(this.panelTwoValRoundRect)
+                this.panelTwoArea.removeChild(this.panelTwoValRoundRect_Label)
+                this.panelThreeArea.removeChild(this.panelThreeValRoundRect)
+                this.panelThreeArea.removeChild(this.panelThreeValRoundRect_Label)
                 this.confirmBtn.setEnabled(false)
                 this.cancelBtn.setEnabled(false)
         }
@@ -675,6 +751,8 @@ var GamePanelLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("show coinDealCheckDlg")
                 this.enabledCoinDrop = false
+                this.cancelBtn.setTouchEnabled(false)
+                this.confirmBtn.setTouchEnabled(false)
                 // coinDealCheckDlg
                 var paddingX = 20
                 var paddingY = 20
@@ -773,10 +851,7 @@ var GamePanelLayer = cc.Layer.extend({
                     var field3RoundRect = new RoundRect(field3RoundRect_width, field3RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
                     field3RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4Label.getContentSize().width - paddingX * 2 - field3RoundRect_width, coinDealCheckDlg_height - field3RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4))
                     this.coinDealCheckDlg.addChild(field3RoundRect, this.coinDealCheckDlg_zOrder)
-                    
-                    for (let index = 0; index < this.panelOneDealedCoins.length; index++) {
-                        panelOneSum = panelOneSum + this.panelOneDealedCoins[index]
-                    }
+                    panelOneSum = this.sumCoins(this.panelOneDealedCoins)
                     var field3Val = new cc.LabelTTF(panelOneSum, "Arial", 15)
                     field3Val.attr({
                         fillStyle: cc.color(255, 255, 255),
@@ -813,10 +888,7 @@ var GamePanelLayer = cc.Layer.extend({
                     var field3RoundRect = new RoundRect(field3RoundRect_width, field3RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
                     field3RoundRect.setPosition(cc.p(coinDealCheckDlg_width- paddingX / 2 - field4Label.getContentSize().width - paddingX * 2 - field3RoundRect_width, coinDealCheckDlg_height - field3RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - checkRadioSprite_width * dealedPanelNum - paddingY / 4 * dealedPanelNum))
                     this.coinDealCheckDlg.addChild(field3RoundRect, this.coinDealCheckDlg_zOrder)
-                    
-                    for (let index = 0; index < this.panelTwoDealedCoins.length; index++) {
-                        panelTwoSum = panelTwoSum + this.panelTwoDealedCoins[index]
-                    }
+                    panelTwoSum = this.sumCoins(this.panelTwoDealedCoins)
                     var field3Val = new cc.LabelTTF(panelTwoSum, "Arial", 15)
                     field3Val.attr({
                         fillStyle: cc.color(255, 255, 255),
@@ -853,10 +925,7 @@ var GamePanelLayer = cc.Layer.extend({
                     var field3RoundRect = new RoundRect(field3RoundRect_width, field3RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
                     field3RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4Label.getContentSize().width - paddingX * 2 - field3RoundRect_width, coinDealCheckDlg_height - field3RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - checkRadioSprite_width * dealedPanelNum - paddingY / 4 * dealedPanelNum))
                     this.coinDealCheckDlg.addChild(field3RoundRect, this.coinDealCheckDlg_zOrder)
-                    
-                    for (let index = 0; index < this.panelThreeDealedCoins.length; index++) {
-                        panelThreeSum = panelThreeSum + this.panelThreeDealedCoins[index]
-                    }
+                    panelThreeSum = this.sumCoins(this.panelThreeDealedCoins)
                     var field3Val = new cc.LabelTTF(panelThreeSum, "Arial", 15)
                     field3Val.attr({
                         fillStyle: cc.color(255, 255, 255),
@@ -984,6 +1053,9 @@ var GamePanelLayer = cc.Layer.extend({
                 this.removeChild(this.checkDlg_overLay)
                 this.removeChild(this.coinDealCheckDlg)
                 this.removeChild(this.coinDealCheckDlg_overLay)
+                
+                this.cancelBtn.setTouchEnabled(true)
+                this.confirmBtn.setTouchEnabled(true)
                 this.enabledCoinDrop = true
         }
     },
@@ -1045,10 +1117,15 @@ var GamePanelLayer = cc.Layer.extend({
                 this.removeChild(this.dealCancelDlg)
                 this.removeChild(this.dealCancelDlg_overLay)
 
-                this.coinDealCheckDlgYesBtn.setEnabled(true)
                 this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
-                this.coinDealCheckDlgNoBtn.setEnabled(true)
                 this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
+                
+                this.removeChild(this.coinDealCheckDlg)
+                this.removeChild(this.coinDealCheckDlg_overLay)
+
+                this.cancelBtn.setTouchEnabled(true)
+                this.confirmBtn.setTouchEnabled(true)
+                this.enabledCoinDrop = true
         }
     },
     closeCancelDlg: function (sender, type) {
