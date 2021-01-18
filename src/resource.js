@@ -1,27 +1,3 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
 var res = {
     HelloWorld_png : "res/HelloWorld.png",
     back_btn_png: "res/niuniu/back-btn.png",
@@ -43,9 +19,8 @@ var res = {
     coin_wrap_png: "res/niuniu/coin-wrap.png",
     confirm_icon_png: "res/niuniu/confirm-icon.png",
     help_btn_png: "res/niuniu/help-btn.png",
-    help_png: "res/niuniu/help.png",
-    sound_off_png: "res/niuniu/sound-off.png",
-    sound_on_png: "res/niuniu/sound-on.png",
+    sound_on_btn_png: "res/niuniu/sound-on-btn.png",
+    sound_off_btn_png: "res/niuniu/sound-off-btn.png",
     table_img_png: "res/niuniu/table_img.png",
     serial1_png: "res/niuniu/serial1.png",
     serial2_png: "res/niuniu/serial2.png",
@@ -65,6 +40,8 @@ var res = {
     check_radio_png: "res/niuniu/check-radio.png",
     dlg_no_btn_png: "res/niuniu/dlg-no-btn.png",
     dlg_yes_btn_png: "res/niuniu/dlg-yes-btn.png",
+    card_sheet_png: "res/niuniu/cards/cardSheet.png",
+    card_sheet_plist: "res/niuniu/cards/cardSheet.plist",
     card1c: "res/niuniu/cards/card1C.png",
     card1d: "res/niuniu/cards/card1D.png",
     card1h: "res/niuniu/cards/card1H.png",
@@ -101,10 +78,26 @@ var res = {
     card9d: "res/niuniu/cards/card9D.png",
     card9h: "res/niuniu/cards/card9H.png",
     card9s: "res/niuniu/cards/card9S.png",
-    card10c: "res/niuniu/cards/card0C.png",
-    card10d: "res/niuniu/cards/card0D.png",
-    card10h: "res/niuniu/cards/card0H.png",
-    card10s: "res/niuniu/cards/card0S.png",
+    card10c: "res/niuniu/cards/card10C.png",
+    card10d: "res/niuniu/cards/card10D.png",
+    card10h: "res/niuniu/cards/card10H.png",
+    card10s: "res/niuniu/cards/card10S.png",
+    card11c: "res/niuniu/cards/card11C.png",
+    card11d: "res/niuniu/cards/card11D.png",
+    card11h: "res/niuniu/cards/card11H.png",
+    card11s: "res/niuniu/cards/card11S.png",
+    card12c: "res/niuniu/cards/card12C.png",
+    card12d: "res/niuniu/cards/card12D.png",
+    card12h: "res/niuniu/cards/card12H.png",
+    card12s: "res/niuniu/cards/card12S.png",
+    card13c: "res/niuniu/cards/card13C.png",
+    card13d: "res/niuniu/cards/card13D.png",
+    card13h: "res/niuniu/cards/card13H.png",
+    card13s: "res/niuniu/cards/card13S.png",
+
+    gameBgSound_mp3: "res/niuniu/sounds/bg-sound.mp3",
+    choose_coin_wav: "res/niuniu/sounds/choose-coin.wav",
+    coin_drop_wav: "res/niuniu/sounds/coin-drop.wav"
 };
 
 var g_resources = [];

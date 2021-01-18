@@ -92,6 +92,8 @@ var GamePanelLayer = cc.Layer.extend({
     enabledCoinDrop: true,
     coinDealCheckDlg: null,
     coinDealCheckDlg_overLay: null,
+    coinDealCheckDlgYesBtn: null,
+    coinDealCheckDlgNoBtn: null,
     dealCancelDlg: null,
     dealCancelDlg_overLay: null,
     checkDlg: null,
@@ -103,6 +105,10 @@ var GamePanelLayer = cc.Layer.extend({
         var size = cc.winSize
         var paddingX = 20
         var paddingY = 20
+
+        // game bgsound play
+        var bg_sound = cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
+        cc.audioEngine.setMusicVolume(0.5)
 
         // Bank Part
         var coinWrapSprite = cc.Sprite.create(res.coin_wrap_png)
@@ -255,6 +261,7 @@ var GamePanelLayer = cc.Layer.extend({
             titleText: "返回桌面",
         })
         goHomeBtn.setTitleColor(cc.color(255, 255, 255))
+        goHomeBtn.addTouchEventListener(this.gotoHome, this)
         this.addChild(goHomeBtn)
 
         var infoText = cc.LabelTTF.create("距封盘时间 00:09")
@@ -266,46 +273,36 @@ var GamePanelLayer = cc.Layer.extend({
         })
         this.addChild(infoText)
 
-        var helpBtnSprite = cc.Sprite.create(res.help_btn_png)
-        var helpBtnSprite_height = 35
-        helpBtnSprite.attr({
-            x: size.width - 40,
-            y: size.height - header_height - bank_height + 5,
-            scaleX: helpBtnSprite_height / helpBtnSprite.getContentSize().height,
-            scaleY: helpBtnSprite_height / helpBtnSprite.getContentSize().height
-        })
-        var helpBtn = ccui.Button.create(res.help_png)
+        // var helpBtnSprite = cc.Sprite.create(res.help_btn_png)
+        // var helpBtnSprite_height = 35
+        // helpBtnSprite.attr({
+        //     x: size.width - 40,
+        //     y: size.height - header_height - bank_height + 5,
+        //     scaleX: helpBtnSprite_height / helpBtnSprite.getContentSize().height,
+        //     scaleY: helpBtnSprite_height / helpBtnSprite.getContentSize().height
+        // })
+        var helpBtn = ccui.Button.create(res.help_btn_png)
         var helpBtn_height = 30
         helpBtn.attr({
             x: size.width - 40,
-            y: size.height - header_height - bank_height + 8,
-            scaleX: helpBtn_height / helpBtnSprite.getContentSize().height,
-            scaleY: helpBtn_height / helpBtnSprite.getContentSize().height
+            y: size.height - header_height - bank_height + 5,
+            scaleX: helpBtn_height / helpBtn.getContentSize().height,
+            scaleY: helpBtn_height / helpBtn.getContentSize().height
         })
         helpBtn.addTouchEventListener(this.showHelp, this)
-        this.addChild(helpBtnSprite)
         this.addChild(helpBtn)
 
-        var soundBtnSprite = cc.Sprite.create(res.help_btn_png)
-        var soundBtnSprite_height = 35
-        soundBtnSprite.attr({
-            x: size.width - 80,
-            y: size.height - header_height - bank_height + 5,
-            scaleX: soundBtnSprite_height / soundBtnSprite.getContentSize().width,
-            scaleY: soundBtnSprite_height / soundBtnSprite.getContentSize().width
-        })
-        this.soundOnBtn = ccui.Button.create(res.sound_on_png)
+        this.soundOnBtn = ccui.Button.create(res.sound_on_btn_png)
         var soundOnBtn_height = 30
-        this.soundOnBtn.loadTextures(res.sound_on_png, res.sound_off_png)
+        this.soundOnBtn.loadTextures(res.sound_on_btn_png, res.sound_on_btn_png)
         this.soundOnBtn.attr({
             x: size.width - 80,
-            y: size.height - header_height - bank_height + 8,
+            y: size.height - header_height - bank_height + 5,
             scaleX: soundOnBtn_height / this.soundOnBtn.getContentSize().width,
             scaleY: soundOnBtn_height / this.soundOnBtn.getContentSize().width
         })
         this.soundOnBtn.setPressedActionEnabled(true)
-        this.soundOnBtn.addTouchEventListener(this.enableSoundOn, this)
-        this.addChild(soundBtnSprite)
+        this.soundOnBtn.addTouchEventListener(this.enableSoundOnMethod, this)
         this.addChild(this.soundOnBtn)
 
         // footer
@@ -371,6 +368,7 @@ var GamePanelLayer = cc.Layer.extend({
             scaleY: cancelBtn_width / this.cancelBtn.getContentSize().width
         })
         this.cancelBtn.addTouchEventListener(this.removeDealedCoins, this)
+        this.cancelBtn.setEnabled(false)
         this.addChild(this.cancelBtn)
 
         // confirm button
@@ -383,6 +381,7 @@ var GamePanelLayer = cc.Layer.extend({
             scaleY: confirmBtn_width / this.confirmBtn.getContentSize().width
         })
         this.confirmBtn.addTouchEventListener(this.showCoinDealCheckDlg, this)
+        this.confirmBtn.setEnabled(false)
         this.addChild(this.confirmBtn)
 
         // cancel and confirm buttons are disabled when length of dealedCoins is 0
@@ -419,7 +418,7 @@ var GamePanelLayer = cc.Layer.extend({
         // add touch listener for checking dealed coins out
         this.coinDropListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
+            swallowTouches: false,
             onTouchBegan: (touch, event) => {
                 console.log("helllll")
                 if (!this.enabledCoinDrop) return
@@ -444,6 +443,7 @@ var GamePanelLayer = cc.Layer.extend({
                 }
                 
                 if (this.enabledCoin.findIndex(this.findTrue) !== -1) {
+                    cc.audioEngine.playEffect(res.coin_drop_wav)
                     var coinItem = cc.Sprite.create(this.coinImages[this.enabledCoin.findIndex(this.findTrue)])
                     var coinVal = this.coinImages[this.enabledCoin.findIndex(this.findTrue)].replace("res/niuniu/coin-sprite-", "")
                     coinVal = Number(coinVal.replace(".png", ""))
@@ -495,10 +495,15 @@ var GamePanelLayer = cc.Layer.extend({
     showHistory: async function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                // var historyScene = new HistoryScene()
-                // cc.director.pushScene(new cc.TransitionFade(1.0, historyScene))
-                // return
+                var historyScene = new HistoryScene()
+                cc.director.pushScene(new cc.TransitionFade(1.0, historyScene))
+                break
+        }
+    },
 
+    gotoHome: async function (sender, type) { 
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
                 var paddingX = 20
                 var size = cc.winSize
                 
@@ -507,7 +512,8 @@ var GamePanelLayer = cc.Layer.extend({
                 var cardGroup_width = cardWidth + paddingX * 1.5 * 4
                 var bankResultCards = []
                 for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 10) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+                    var cardNum = Math.floor(Math.random() * 13 + 1)
+                    var cardImageName = "res/niuniu/cards/card" + cardNum + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
                     bankResultCards[index] = cc.Sprite.create(cardImageName)
                     bankResultCards[index].attr({
                         x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
@@ -527,7 +533,7 @@ var GamePanelLayer = cc.Layer.extend({
                 console.log("hello")
                 var firstDealResultCards = []
                 for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 10) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
                     firstDealResultCards[index] = cc.Sprite.create(cardImageName)
                     firstDealResultCards[index].attr({
                         x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
@@ -546,7 +552,7 @@ var GamePanelLayer = cc.Layer.extend({
                 await this.sleep(1000)
                 var secondDealResultCards = []
                 for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 10) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
                     secondDealResultCards[index] = cc.Sprite.create(cardImageName)
                     secondDealResultCards[index].attr({
                         x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
@@ -565,7 +571,7 @@ var GamePanelLayer = cc.Layer.extend({
                 await this.sleep(1000)
                 var thirdDealResultCards = []
                 for (let index = 0; index < 5; index++) {
-                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 10) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
+                    var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
                     thirdDealResultCards[index] = cc.Sprite.create(cardImageName)
                     thirdDealResultCards[index].attr({
                         x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
@@ -593,21 +599,23 @@ var GamePanelLayer = cc.Layer.extend({
                 for (let index = 0; index < thirdDealResultCards.length; index++) {
                     this.removeChild(thirdDealResultCards[index])
                 }
-                
-                break
         }
-    },
+     },
 
-    enableSoundOn: function (sender, type) {
+    enableSoundOnMethod: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 if (this.enableSoundOn) {
-                    this.soundOnBtn.loadTextureNormal(res.sound_off_png)
+                    this.soundOnBtn.loadTextureNormal(res.sound_off_btn_png)
                     this.enableSoundOn = !this.enableSoundOn
+                    cc.audioEngine.setEffectsVolume(0)
+                    cc.audioEngine.setMusicVolume(0)
                     return
                 }else {
-                    this.soundOnBtn.loadTextureNormal(res.sound_on_png)
+                    this.soundOnBtn.loadTextureNormal(res.sound_on_btn_png)
                     this.enableSoundOn = !this.enableSoundOn
+                    cc.audioEngine.setMusicVolume(1)
+                    cc.audioEngine.setEffectsVolume(1)
                     return 
                 }
                 break
@@ -633,6 +641,7 @@ var GamePanelLayer = cc.Layer.extend({
         var size = cc.winSize
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                var choose_coin_audio = cc.audioEngine.playEffect(res.choose_coin_wav)
                 for (let index = 0; index < this.coins.length; index++) {
                     this.coins[index].attr({
                         scaleX: this.coin_width / this.coins[index].getNormalTextureSize().width,
@@ -935,24 +944,24 @@ var GamePanelLayer = cc.Layer.extend({
                 dlgBtnBg.setPosition(cc.p(0, 0))
                 this.coinDealCheckDlg.addChild(dlgBtnBg, this.coinDealCheckDlg_zOrder)
 
-                var dlgYesBtn = new ccui.Button(res.dlg_yes_btn_png)
-                var dlgYesBtn_width = 70
-                dlgYesBtn.attr({
-                    scaleX: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
-                    scaleY: dlgYesBtn_width / dlgYesBtn.getContentSize().width
+                this.coinDealCheckDlgYesBtn = new ccui.Button(res.dlg_yes_btn_png, res.dlg_yes_btn_png, res.dlg_yes_btn_png)
+                var coinDealCheckDlgYesBtn_width = 70
+                this.coinDealCheckDlgYesBtn.attr({
+                    scaleX: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width,
+                    scaleY: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width
                 })
-                var dlgNoBtn = new ccui.Button(res.dlg_no_btn_png)
-                var dlgNoBtn_width = 70
-                dlgNoBtn.attr({
-                    scaleX: dlgNoBtn_width / dlgNoBtn.getContentSize().width,
-                    scaleY: dlgNoBtn_width / dlgNoBtn.getContentSize().width
+                this.coinDealCheckDlgNoBtn = new ccui.Button(res.dlg_no_btn_png, res.dlg_no_btn_png, res.dlg_no_btn_png)
+                var coinDealCheckDlgNoBtn_width = 70
+                this.coinDealCheckDlgNoBtn.attr({
+                    scaleX: coinDealCheckDlgNoBtn_width / this.coinDealCheckDlgNoBtn.getContentSize().width,
+                    scaleY: coinDealCheckDlgNoBtn_width / this.coinDealCheckDlgNoBtn.getContentSize().width
                 })
-                dlgYesBtn.setPosition(cc.p(dlgYesBtn_width / 2 + coinDealCheckDlg_width / 2 - dlgYesBtn_width - paddingX / 2 , dlgYesBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - dlgYesBtn.getContentSize().height / 2))
-                dlgNoBtn.setPosition(cc.p(dlgNoBtn_width / 2 + coinDealCheckDlg_width / 2 + paddingX / 2, dlgYesBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - dlgYesBtn.getContentSize().height / 2))
-                dlgYesBtn.addTouchEventListener(this.showCheckDlg, this)
-                dlgNoBtn.addTouchEventListener(this.showDealCancelDlg, this)
-                this.coinDealCheckDlg.addChild(dlgYesBtn, this.coinDealCheckDlg_zOrder)
-                this.coinDealCheckDlg.addChild(dlgNoBtn, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlgYesBtn.setPosition(cc.p(coinDealCheckDlgYesBtn_width / 2 + coinDealCheckDlg_width / 2 - coinDealCheckDlgYesBtn_width - paddingX / 2 , this.coinDealCheckDlgYesBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - this.coinDealCheckDlgYesBtn.getContentSize().height / 2))
+                this.coinDealCheckDlgNoBtn.setPosition(cc.p(coinDealCheckDlgNoBtn_width / 2 + coinDealCheckDlg_width / 2 + paddingX / 2, this.coinDealCheckDlgNoBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - this.coinDealCheckDlgNoBtn.getContentSize().height / 2))
+                this.coinDealCheckDlgYesBtn.addTouchEventListener(this.showCheckDlg, this)
+                this.coinDealCheckDlgNoBtn.addTouchEventListener(this.showDealCancelDlg, this)
+                this.coinDealCheckDlg.addChild(this.coinDealCheckDlgYesBtn, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(this.coinDealCheckDlgNoBtn, this.coinDealCheckDlg_zOrder)
         }
     },
 
@@ -961,6 +970,7 @@ var GamePanelLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("showCheckDlg")
                 this.enabledCoinDrop = false
+
                 var paddingX = 20
                 var paddingY = 20
                 var checkDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
@@ -989,6 +999,11 @@ var GamePanelLayer = cc.Layer.extend({
                 })
                 dlgYesBtn.addTouchEventListener(this.closeCheckDlg, this)
                 this.checkDlg.addChild(dlgYesBtn)
+
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
 
         }
     },
@@ -1045,6 +1060,13 @@ var GamePanelLayer = cc.Layer.extend({
                 dlgNoBtn.addTouchEventListener(this.closeCancelDlg, this)
                 this.dealCancelDlg.addChild(dlgYesBtn, this.coinDealCheckDlg_zOrder)
                 this.dealCancelDlg.addChild(dlgNoBtn, this.coinDealCheckDlg_zOrder)
+
+                // disable coinDealCheckDlg
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(false)
+
         }
     },
 
@@ -1053,6 +1075,11 @@ var GamePanelLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 this.removeChild(this.dealCancelDlg)
                 this.removeChild(this.dealCancelDlg_overLay)
+
+                this.coinDealCheckDlgYesBtn.setEnabled(true)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
         }
     },
     closeCancelDlg: function (sender, type) {
@@ -1061,15 +1088,15 @@ var GamePanelLayer = cc.Layer.extend({
                 this.enabledCoinDrop = true
                 this.removeChild(this.dealCancelDlg)
                 this.removeChild(this.dealCancelDlg_overLay)
-
+                this.coinDealCheckDlgYesBtn.setEnabled(true)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
         }
         
     }
 
 })
-
-
-
 
 
 
@@ -1082,6 +1109,7 @@ var GameScene = cc.Scene.extend({
         this.addChild(headerLayer)
         var gamePanelLayer = new GamePanelLayer()
         this.addChild(gamePanelLayer)
+        
         
         // var dealCancelDlg = new DealCancelDlg()
         // this.addChild(dealCancelDlg)
