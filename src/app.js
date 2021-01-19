@@ -132,11 +132,15 @@ var GamePanelLayer = cc.Layer.extend({
         cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
         cc.audioEngine.setMusicVolume(0.5)
 
-        // Bank Part
+        var btnWrapSprite = cc.Sprite.create(res.btn_wrap_png)
+        var btnWrapSprite_height = size.width / btnWrapSprite.getContentSize().width * btnWrapSprite.getContentSize().height
+        
+        // footer height
         var coinWrapSprite = cc.Sprite.create(res.coin_wrap_png)
         coinWrapSprite_height =  (size.width - 56) / 1125 * 300 * 0.5
         var betAmountBg_height = 50
         
+        // Bank Part
         var bankBgSprite = cc.Sprite.create(res.banner_png)
         var bankBg_height = size.width / bankBgSprite.getContentSize().width * bankBgSprite.getContentSize().height
         bankBgSprite.attr({
@@ -146,6 +150,9 @@ var GamePanelLayer = cc.Layer.extend({
             scaleY: size.width / bankBgSprite.getContentSize().width
         })
         this.addChild(bankBgSprite)
+        var bankBgSprite_overlay = new cc.LayerColor(cc.color(0, 0, 0, 80), size.width, bankBg_height)
+        bankBgSprite_overlay.setPosition(cc.p(0, size.height - bankBg_height - header_height))
+        this.addChild(bankBgSprite_overlay)
 
         var bankLabelSprite = cc.Sprite.create(res.bank_title_png)
         var bankLabelSprite_width = 100
@@ -166,24 +173,18 @@ var GamePanelLayer = cc.Layer.extend({
         this.addChild(bankLabel)
         bank_height = bankBg_height
 
-        var historyBtn = ccui.Button.create(res.clock_png)
+        var historyBtn = ccui.Button.create(res.history_btn_png)
         var historyBtn_width = 26
         historyBtn.attr({
-            x: size.width - historyBtn_width,
-            y: size.height - header_height - bank_height / 4,
-            scaleX: historyBtn_width / 32,
-            scaleY: historyBtn_width / 32
+            scaleX: historyBtn_width / historyBtn.getContentSize().width,
+            scaleY: historyBtn_width / historyBtn.getContentSize().width
         })
+        historyBtn.setPosition(cc.p(size.width - historyBtn_width / 2, size.height - header_height - bank_height / 2 + 10))
+        historyBtn.setZoomScale(0.05)
         historyBtn.addTouchEventListener(this.showHistory, this)
         this.addChild(historyBtn)
 
-
-        
-
         // GamePanel
-        var btnWrapSprite = cc.Sprite.create(res.btn_wrap_png)
-        var btnWrapSprite_height = size.width / btnWrapSprite.getContentSize().width * btnWrapSprite.getContentSize().height
-        
         this.panelOne_width = size.width / 2 - 1
         // this.panelOne_height = size.width / 2 + 15
         this.panelOne_height = (size.height - header_height - bank_height - coinWrapSprite_height - betAmountBg_height) / 2

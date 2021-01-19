@@ -36,6 +36,7 @@ var res = {
     history_active_btn: "res/niuniu/history_active_btn.png",
     history_nonactive_btn: "res/niuniu/history_nonactive_btn.png",
     history_blue_circle: "res/niuniu/history_blue_circle.png",
+    history_btn_png: "res/niuniu/history-btn.png",
     green_btn_png: "res/niuniu/green-btn.png",
     disabled_red_btn_png: "res/niuniu/disabled-red-btn.png",
     red_btn_png: "res/niuniu/red-btn.png",
