@@ -31,7 +31,6 @@ var HelpLayer = cc.Layer.extend({
             titleFontSize: 25
         })
         goGameBtn.setTitleColor(cc.color(0, 0, 0))
-        goGameBtn.setTitleFontName("fangsong")
         goGameBtn.addTouchEventListener(this.gotoGame, this)
         this.addChild(goGameBtn)
         var headerTitle = cc.LabelTTF.create("必发牛牛", "Arial")
@@ -48,7 +47,7 @@ var HelpLayer = cc.Layer.extend({
         var footerBg = cc.LayerColor.create(cc.color(82, 82, 82), size.width, footer_height)
         footerBg.attr({
             x: 0,
-            y: paddingY
+            y: 0
         })
         this.addChild(footerBg)
         // banner
@@ -64,14 +63,10 @@ var HelpLayer = cc.Layer.extend({
 
         // nav bar
         var nav_height = 40
-        this.navBar = cc.LayerColor.create(cc.color(0, 0, 0), size.width - paddingX, nav_height)
-        this.navBar.attr({
-            x: paddingX / 2,
-            y: size.height - nav_height - header_height - paddingY / 2 - banner_height - paddingY / 2
-        })
+        this.navBar = new cc.DrawNode()
+        this.navBar.drawRect(cc.p(paddingX / 2, size.height - nav_height - header_height - paddingY / 2 - banner_height - paddingY / 2), cc.p(size.width - paddingX / 2, size.height - header_height - paddingY / 2 - banner_height - paddingY / 2), cc.color(0, 0, 0), 2, cc.color(229, 170, 63))
         this.addChild(this.navBar)
-
-        this.howPlayNav = ccui.Button.create()
+        this.howPlayNav = new ccui.Button()
         var howPlayNav_height = 15
         this.howPlayNav.attr({
             x: (size.width - paddingX) / 4,
@@ -79,11 +74,11 @@ var HelpLayer = cc.Layer.extend({
             titleText: "玩法说明",
             titleFontSize: howPlayNav_height
         })
-        this.howPlayNav.setTitleColor(cc.color(247, 184, 68))
+        this.howPlayNav.setColor(cc.color(247, 184, 68))
         this.howPlayNav.addTouchEventListener(this.showHowPlay, this)
         this.addChild(this.howPlayNav)
 
-        this.traditionPlayNav = ccui.Button.create()
+        this.traditionPlayNav = new ccui.Button()
         var traditionPlayNav_height = 15
         this.traditionPlayNav.attr({
             x: (size.width - paddingX) / 4  * 3,
@@ -320,8 +315,8 @@ var HelpLayer = cc.Layer.extend({
                 if (this.getChildByTag(1)) {
                     return
                 }
-                this.howPlayNav.setTitleColor(cc.color(247, 184, 68))
-                this.traditionPlayNav.setTitleColor(cc.color(255, 255, 255))
+                this.howPlayNav.setColor(cc.color(247, 184, 68))
+                this.traditionPlayNav.setColor(cc.color(255, 255, 255))
                 this.removeChild(this.traditionPlayScroll)
                 this.addChild(this.howPlayScroll)
                 break
@@ -334,8 +329,8 @@ var HelpLayer = cc.Layer.extend({
                 if (this.getChildByTag(2)) {
                     return
                 }
-                this.howPlayNav.setTitleColor(cc.color(255, 255, 255))
-                this.traditionPlayNav.setTitleColor(cc.color(247, 184, 68))
+                this.howPlayNav.setColor(cc.color(255, 255, 255))
+                this.traditionPlayNav.setColor(cc.color(247, 184, 68))
                 this.removeChild(this.howPlayScroll)
                 this.addChild(this.traditionPlayScroll)
                 break

@@ -57,27 +57,28 @@ var HistoryLayer = cc.Layer.extend({
         this.addChild(headerTitle)
 
         // Button Layer
-        var history1_btn = ccui.Button.create(res.history_active_btn)
-        var history1_btn_width = 100
-        history1_btn.loadTextureNormal(res.history_active_btn)
-        history1_btn.setTitleColor(cc.color(255, 255, 255)) 
-        history1_btn.setTitleText("开奖历史")
-        history1_btn.setTitleFontSize(17)
-        var history1_btn_height = history1_btn.getNormalTextureSize().height
-        history1_btn.setPosition(cc.p(size.width / 4, size.height - history1_btn_height / 2 - header_height - paddingY * 2))
-        history1_btn.addTouchEventListener(this.showFirstHistory, this)
-        this.addChild(history1_btn)
+        this.history1_btn = new ccui.Button(res.history1_active_btn)
+        var history1_btn_width = (size.width - paddingX * 4) / 2
+        var history1_btn_height = history1_btn_width / this.history1_btn.getContentSize().width * this.history1_btn.getContentSize().height 
+        this.history1_btn.attr({
+            scaleX: history1_btn_width / this.history1_btn.getContentSize().width,
+            scaleY: history1_btn_width / this.history1_btn.getContentSize().width
+        })
+        this.history1_btn.setPosition(cc.p(size.width / 4, size.height - history1_btn_height / 2 - header_height - paddingY * 2))
+        this.history1_btn.addTouchEventListener(this.showFirstHistory, this)
+        this.addChild(this.history1_btn)
 
         
-        var history2_btn = ccui.Button.create(res.history_active_btn)
-        history2_btn.loadTextureNormal(res.history_nonactive_btn)
-        history2_btn.setTitleColor(cc.color(255, 255, 255)) 
-        history2_btn.setTitleText("投注历史")
-        history2_btn.setTitleFontSize(17)
-        var history2_btn_height = history2_btn.getNormalTextureSize().height
-        history2_btn.setPosition(cc.p(size.width / 4 * 3, size.height - history2_btn_height / 2 - header_height - paddingY * 2))
-        history2_btn.addTouchEventListener(this.showSecondHistory, this)
-        this.addChild(history2_btn)
+        this.history2_btn = new ccui.Button(res.history2_nonactive_btn)
+        var history2_btn_width = history1_btn_width
+        this.history2_btn.attr({
+            scaleX: history2_btn_width / this.history2_btn.getContentSize().width,
+            scaleY: history2_btn_width / this.history2_btn.getContentSize().width
+        })
+        var history2_btn_height = history2_btn_width / this.history2_btn.getContentSize().width * this.history2_btn.getContentSize().height
+        this.history2_btn.setPosition(cc.p(size.width / 4 * 3, size.height - history2_btn_height / 2 - header_height - paddingY * 2))
+        this.history2_btn.addTouchEventListener(this.showSecondHistory, this)
+        this.addChild(this.history2_btn)
 
 
         // first history content
@@ -406,6 +407,9 @@ var HistoryLayer = cc.Layer.extend({
                 this.addChild(this.resultLabel)
                 this.addChild(this.hrLine)
                 this.addChild(this.history1Content)
+
+                this.history1_btn.loadTextureNormal(res.history1_active_btn)
+                this.history2_btn.loadTextureNormal(res.history2_nonactive_btn)
                 break
         }
     },
@@ -423,6 +427,9 @@ var HistoryLayer = cc.Layer.extend({
                 this.addChild(this.resultLabel2)
                 this.addChild(this.hrLine2)
                 this.addChild(this.history2Content)
+                
+                this.history1_btn.loadTextureNormal(res.history1_nonactive_btn)
+                this.history2_btn.loadTextureNormal(res.history2_active_btn)
                 break
         }
     },
