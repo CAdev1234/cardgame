@@ -15,9 +15,6 @@ var HistoryLayer = cc.Layer.extend({
     hrLine2: null,
     history2Content: null,
 
-
-
-
     ctor: function () {
         this._super()
         var size = cc.winSize
@@ -383,7 +380,7 @@ var HistoryLayer = cc.Layer.extend({
     gotoGame: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                var gameScene = new GameScene()
+                var gameScene = new NiuNiuGameScene()
                 cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, gameScene))
                 break

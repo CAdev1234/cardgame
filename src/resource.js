@@ -113,8 +113,31 @@ var res = {
     coin_drop_wav: "res/niuniu/sounds/coin-drop.wav"
 };
 
+var baccarat_res = {
+    
+};
+
+var home_res = {
+    baccarat_png: "res/home/baccarat.png",
+    bg_png: "res/home/bg.png",
+    bottom_png: "res/home/bottom.png",
+    golden_flower_png: "res/home/golden-flower.png",
+    logo_png: "res/home/logo.png",
+    niuniu_png: "res/home/niuniu.png",
+    san_gong_png: "res/home/san-gong.png",
+    sic_bo_png: "res/home/sic-bo.png",
+    slogan_png: "res/home/slogan.png",
+    tiger_dragon_png: "res/home/tiger-dragon.png",
+    two_bars_png: "res/home/two-bars.png",
+    guangbo_png: "res/home/guangbo.png",
+    tryout_png: "res/home/tryout.png"
+};
+
 var g_resources = [];
 for (var i in res) {
     g_resources.push(res[i]);
+}
+for (var i in home_res) {
+    g_resources.push(home_res[i])
 }
 

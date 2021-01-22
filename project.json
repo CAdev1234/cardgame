@@ -13,9 +13,13 @@
 
     "jsList" : [
         "src/resource.js",
-        "src/app.js",
-        "src/help.js",
-        "src/history.js",
-        "src/module/RoundRect.js"
+        "src/module/RoundRect.js",
+        "src/home/app.js",
+        "src/niuniu/app.js",
+        "src/niuniu/help.js",
+        "src/niuniu/history.js",
+        "src/baccarat/app.js",
+        "src/baccarat/history.js",
+        "src/baccarat/help.js"
     ]
 }

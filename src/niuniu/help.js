@@ -104,11 +104,6 @@ var HelpLayer = cc.Layer.extend({
         this.howPlayScroll.setContentSize(cc.size(size.width - paddingX, howPlayScroll_height))
         this.howPlayScroll.setPosition(cc.p(paddingX / 2, paddingY + footer_height + paddingY))
         this.addChild(this.howPlayScroll, 1, 1)
-        console.log(this.howPlayScroll.isBounceEnabled())
-        console.log(this.howPlayScroll.isInertiaScrollEnabled())
-        console.log(this.howPlayScroll.getScrollBarColor())
-        console.log(this.howPlayScroll.isScrollBarEnabled())
-        console.log(this.howPlayScroll.getInnerContainerSize())
 
 
 
@@ -300,7 +295,7 @@ var HelpLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_MOVED:
                 break
             case ccui.Widget.TOUCH_ENDED:
-                var gameScene = new GameScene()
+                var gameScene = new NiuNiuGameScene()
                 cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, gameScene))
                 break

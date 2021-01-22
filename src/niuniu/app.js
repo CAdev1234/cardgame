@@ -1,8 +1,3 @@
-var header_height = 65
-var bank_height 
-var coinWrapSprite_height
-var betAmountBg_height
-
 var BgLayer = cc.Layer.extend({
     ctor: function () {
         this._super()
@@ -15,6 +10,9 @@ var BgLayer = cc.Layer.extend({
 
 
 var NiuNiuGameLayer = cc.Layer.extend({
+    header_height: 65,
+    bank_height: null,
+    betAmountBg_height: null,
 
     open_state: null,
     close_state: null,
@@ -107,10 +105,10 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var paddingY = 20
 
         // header
-        var headerBg = cc.LayerColor.create(cc.color(30, 101, 165), size.width, header_height)
+        var headerBg = cc.LayerColor.create(cc.color(30, 101, 165), size.width, this.header_height)
         headerBg.attr({
             x: 0,
-            y: size.height - header_height
+            y: size.height - this.header_height
         })
         this.addChild(headerBg);
         
@@ -126,7 +124,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var num_period_label = new cc.LabelTTF.create("期数");
         num_period_label.attr({
             x: size.width - 80,
-            y: size.height -  header_height / 2,
+            y: size.height -  this.header_height / 2,
             fillStyle: cc.color(233, 133, 62),
             fontSize: num_period_font_size
         })
@@ -134,7 +132,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var num_period_value = new cc.LabelTTF.create("530")
         num_period_value.attr({
             x: size.width - 40,
-            y: size.height - header_height / 2,
+            y: size.height - this.header_height / 2,
             fillStyle: cc.color(255, 255, 255),
             fontSize: num_period_font_size
         })
@@ -149,21 +147,21 @@ var NiuNiuGameLayer = cc.Layer.extend({
         
         // footer height
         var coinWrapSprite = cc.Sprite.create(res.coin_wrap_png)
-        coinWrapSprite_height =  (size.width - 56) / 1125 * 300 * 0.5
-        betAmountBg_height = 50
+        this.coinWrapSprite_height =  (size.width - 56) / 1125 * 300 * 0.5
+        this.betAmountBg_height = 50
         
         // Bank Part
         var bankBgSprite = cc.Sprite.create(res.banner_png)
         var bankBg_height = size.width / bankBgSprite.getContentSize().width * bankBgSprite.getContentSize().height
         bankBgSprite.attr({
             x: size.width / 2,
-            y: size.height - bankBg_height / 2 - header_height,
+            y: size.height - bankBg_height / 2 - this.header_height,
             scaleX: size.width / bankBgSprite.getContentSize().width,
             scaleY: size.width / bankBgSprite.getContentSize().width
         })
         this.addChild(bankBgSprite)
         var bankBgSprite_overlay = new cc.LayerColor(cc.color(0, 0, 0, 80), size.width, bankBg_height)
-        bankBgSprite_overlay.setPosition(cc.p(0, size.height - bankBg_height - header_height))
+        bankBgSprite_overlay.setPosition(cc.p(0, size.height - bankBg_height - this.header_height))
         this.addChild(bankBgSprite_overlay)
 
         var bankLabelSprite = cc.Sprite.create(res.bank_title_png)
@@ -171,7 +169,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var bankLabelSprite_height = bankLabelSprite_width / bankLabelSprite.getContentSize().width * bankLabelSprite.getContentSize().height
         bankLabelSprite.attr({
             x: size.width / 2,
-            y: size.height - header_height - bankLabelSprite_height / 2,
+            y: size.height - this.header_height - bankLabelSprite_height / 2,
             scaleX: bankLabelSprite_width / bankLabelSprite.getContentSize().width,
             scaleY: bankLabelSprite_width / bankLabelSprite.getContentSize().width
         })
@@ -179,11 +177,11 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var bankLabel = cc.LabelTTF.create("庄家", "Arial", 13)
         bankLabel.attr({
             x: size.width / 2,
-            y: size.height + bankLabel.getContentSize().height / 2 - header_height - bankLabelSprite_height + 3,
+            y: size.height + bankLabel.getContentSize().height / 2 - this.header_height - bankLabelSprite_height + 3,
             fillStyle: cc.color(255, 255, 255),
         })
         this.addChild(bankLabel)
-        bank_height = bankBg_height
+        this.bank_height = bankBg_height
 
         this.historyBtn = ccui.Button.create(res.history_btn_png)
         var historyBtn_width = 26
@@ -191,7 +189,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
             scaleX: historyBtn_width / this.historyBtn.getContentSize().width,
             scaleY: historyBtn_width / this.historyBtn.getContentSize().width
         })
-        this.historyBtn.setPosition(cc.p(size.width - historyBtn_width / 2, size.height - header_height - bank_height / 2 + 10))
+        this.historyBtn.setPosition(cc.p(size.width - historyBtn_width / 2, size.height - this.header_height - this.bank_height / 2 + 10))
         this.historyBtn.setZoomScale(0.05)
         this.historyBtn.addTouchEventListener(this.showHistory, this)
         this.addChild(this.historyBtn)
@@ -199,17 +197,17 @@ var NiuNiuGameLayer = cc.Layer.extend({
         // GamePanel
         this.panelOne_width = size.width / 2 - 1
         // this.panelOne_height = size.width / 2 + 15
-        this.panelOne_height = (size.height - header_height - bank_height - coinWrapSprite_height - betAmountBg_height) / 2
+        this.panelOne_height = (size.height - this.header_height - this.bank_height - this.coinWrapSprite_height - this.betAmountBg_height) / 2
 
 
         this.panelOneArea = new cc.DrawNode()
-        this.panelOneArea.drawRect(cc.p(0, size.height - header_height - bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.panelOneArea.drawRect(cc.p(0, size.height - this.header_height - this.bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - this.header_height - this.bank_height), cc.color(25, 74, 148), 0)
         this.addChild(this.panelOneArea)
         
         var panelOneLabel = cc.LabelTTF.create("闲1", "Arial", 40)
         panelOneLabel.attr({
             x: size.width / 4,
-            y: size.height - header_height - bank_height - btnWrapSprite_height,
+            y: size.height - this.header_height - this.bank_height - btnWrapSprite_height,
             fillStyle: cc.color(0, 102, 203)
         })
         this.panelOneArea.addChild(panelOneLabel)
@@ -219,33 +217,33 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.panelTwo_height = size.width / 2 + 15
 
         this.panelTwoArea = new cc.DrawNode()
-        this.panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - header_height - bank_height - this.panelOne_height), cc.p(size.width, size.height - header_height - bank_height), cc.color(25, 74, 148), 0)
+        this.panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - this.header_height - this.bank_height - this.panelOne_height), cc.p(size.width, size.height - this.header_height - this.bank_height), cc.color(25, 74, 148), 0)
         this.addChild(this.panelTwoArea)
         
         var panelTwoLabel = cc.LabelTTF.create("闲2", "Arial", 40)
         panelTwoLabel.attr({
             x: size.width / 4 * 3,
-            y: size.height - header_height - bank_height - btnWrapSprite_height,
+            y: size.height - this.header_height - this.bank_height - btnWrapSprite_height,
             fillStyle: cc.color(0, 102, 203)
         })
         this.addChild(panelTwoLabel)
 
 
         this.panelThreeArea = new cc.DrawNode()
-        this.panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - header_height - bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
+        this.panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - this.header_height - this.bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
         this.addChild(this.panelThreeArea)
 
         var panelThreeLabel = cc.LabelTTF.create("闲3", "Arial", 40)
         panelThreeLabel.attr({
             x: size.width / 2,
-            y: size.height - header_height - bank_height - btnWrapSprite_height - this.panelOne_height,
+            y: size.height - this.header_height - this.bank_height - btnWrapSprite_height - this.panelOne_height,
             fillStyle: cc.color(0, 102, 203)
         })
         this.addChild(panelThreeLabel)
         
         btnWrapSprite.attr({
             x: size.width / 2,
-            y: size.height - header_height - bank_height,
+            y: size.height - this.header_height - this.bank_height,
             scaleX: size.width / btnWrapSprite.getContentSize().width,
             scaleY: size.width / btnWrapSprite.getContentSize().width
         })
@@ -253,11 +251,11 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         this.goHomeBtn = new ccui.Button(res.home_btn_png, res.home_btn_png, res.home_btn_png)
         this.goHomeBtn.x = size.width / 6
-        this.goHomeBtn.y = size.height - header_height - bank_height + 5
+        this.goHomeBtn.y = size.height - this.header_height - this.bank_height + 5
         
         this.goHomeBtn.attr({
             x: size.width / 6,
-            y: size.height - header_height - bank_height + 5,
+            y: size.height - this.header_height - this.bank_height + 5,
             scaleX: 60 / this.goHomeBtn.getContentSize().width,
             scaleY: 60 / this.goHomeBtn.getContentSize().width,
             pressedActionEnabled: true
@@ -268,7 +266,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.infoText = cc.LabelTTF.create("距封盘时间 00:20", "Arial", 13)
         this.infoText.attr({
             x: size.width / 2,
-            y: size.height - header_height - bank_height + 5,
+            y: size.height - this.header_height - this.bank_height + 5,
             fillStyle: cc.color(205, 160, 58),
         })
         this.addChild(this.infoText)
@@ -277,7 +275,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var helpBtn_height = 30
         this.helpBtn.attr({
             x: size.width - 40,
-            y: size.height - header_height - bank_height + 5,
+            y: size.height - this.header_height - this.bank_height + 5,
             scaleX: helpBtn_height / this.helpBtn.getContentSize().height,
             scaleY: helpBtn_height / this.helpBtn.getContentSize().height,
             pressedActionEnabled: true
@@ -290,7 +288,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.soundOnBtn.loadTextures(res.sound_on_btn_png, res.sound_on_btn_png)
         this.soundOnBtn.attr({
             x: size.width - 80,
-            y: size.height - header_height - bank_height + 5,
+            y: size.height - this.header_height - this.bank_height + 5,
             scaleX: soundOnBtn_height / this.soundOnBtn.getContentSize().width,
             scaleY: soundOnBtn_height / this.soundOnBtn.getContentSize().width,
             pressedActionEnabled: true
@@ -300,8 +298,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.addChild(this.soundOnBtn)
 
         // footer
-        var betAmountBg = cc.LayerColor.create(cc.color(0, 0, 0, 150), size.width, betAmountBg_height)
-        betAmountBg.setPosition(cc.p(0, coinWrapSprite_height + betAmountBg_height / 2))
+        var betAmountBg = cc.LayerColor.create(cc.color(0, 0, 0, 150), size.width, this.betAmountBg_height)
+        betAmountBg.setPosition(cc.p(0, this.coinWrapSprite_height + this.betAmountBg_height / 2))
         this.addChild(betAmountBg)
 
         var betAmountTotalSprite = cc.Sprite.create(res.bet_amount_total_png)
@@ -309,7 +307,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var betAmountTotalSprite_height = betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width * betAmountTotalSprite.getContentSize().height
         betAmountTotalSprite.attr({
             x: betAmountTotalSprite_width / 2 + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + coinWrapSprite_height + 40,
+            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40,
             scaleX: betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width,
             scaleY: betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width
         })
@@ -318,13 +316,13 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var betAmountTotalVal = cc.LabelTTF.create("2000.0", "Arial", 15)
         betAmountTotalVal.attr({
             x: betAmountTotalVal.getContentSize().width / 2 + betAmountTotalSprite_width + paddingX / 2 + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + coinWrapSprite_height + 40,
+            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40,
             fillStyle: cc.color(255, 255, 255)
         })
         this.addChild(betAmountTotalVal)
 
         var betAmountTotal_RoundRect = new RoundRect(betAmountTotalSprite_width + betAmountTotalVal.getContentSize().width + paddingX, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        betAmountTotal_RoundRect.setPosition(paddingX / 4, coinWrapSprite_height + 40)
+        betAmountTotal_RoundRect.setPosition(paddingX / 4, this.coinWrapSprite_height + 40)
         this.addChild(betAmountTotal_RoundRect)
         
         var betAmountTokenSprite = cc.Sprite.create(res.bet_amount_token_png)
@@ -332,7 +330,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var betAmountTokenSprite_width = betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height * betAmountTokenSprite.getContentSize().height
         betAmountTokenSprite.attr({
             x: betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX,
-            y: betAmountTotalSprite_height / 2 + coinWrapSprite_height + 40 + 2,
+            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40 + 2,
             scaleX: betAmountTokenSprite_width / betAmountTokenSprite.getContentSize().width,
             scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
         })
@@ -340,12 +338,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.betAmountTokenVal = cc.LabelTTF.create("0.0", "Arial", 15)
         this.betAmountTokenVal.attr({
             x: this.betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + coinWrapSprite_height + 40,
+            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40,
             fillStyle: cc.color(255, 255, 255)
         })
         this.addChild(this.betAmountTokenVal)
         this.betAmountToken_RoundRect = new RoundRect(betAmountTokenSprite_width + paddingX / 2 + this.betAmountTokenVal.getContentSize().width + paddingX / 2, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        this.betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, coinWrapSprite_height + 40)
+        this.betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, this.coinWrapSprite_height + 40)
         this.addChild(this.betAmountToken_RoundRect)
 
         
@@ -354,7 +352,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var cancelBtn_width = 60
         this.cancelBtn.attr({
             x: size.width - cancelBtn_width / 2 - paddingX / 2,
-            y: cancelBtn_width / this.cancelBtn.getContentSize().width * this.cancelBtn.getContentSize().height / 2 + coinWrapSprite_height + 35,
+            y: cancelBtn_width / this.cancelBtn.getContentSize().width * this.cancelBtn.getContentSize().height / 2 + this.coinWrapSprite_height + 35,
             scaleX: cancelBtn_width / this.cancelBtn.getContentSize().width,
             scaleY: cancelBtn_width / this.cancelBtn.getContentSize().width
         })
@@ -366,7 +364,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var confirmBtn_width = 60
         this.confirmBtn.attr({
             x: size.width - confirmBtn_width / 2 - cancelBtn_width - paddingX / 2 - paddingX / 2,
-            y: confirmBtn_width / this.confirmBtn.getContentSize().width * this.confirmBtn.getContentSize().height / 2 + coinWrapSprite_height + 35,
+            y: confirmBtn_width / this.confirmBtn.getContentSize().width * this.confirmBtn.getContentSize().height / 2 + this.coinWrapSprite_height + 35,
             scaleX: confirmBtn_width / this.confirmBtn.getContentSize().width,
             scaleY: confirmBtn_width / this.confirmBtn.getContentSize().width
         })
@@ -374,10 +372,10 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.confirmBtn.setEnabled(false)
 
         // cancel and confirm button background
-        var cancelConfirmBg_height = betAmountBg_height
+        var cancelConfirmBg_height = this.betAmountBg_height
         var cancelConfirmBg_width = paddingX / 2 + confirmBtn_width + paddingX / 2 + cancelBtn_width + paddingX / 2 + 40
         var cancelConfirmBg = new RoundRect(cancelConfirmBg_width, cancelConfirmBg_height, cc.color(0, 0, 0, 150), 0, null, 25, RectType.TOP)
-        cancelConfirmBg.setPosition(size.width - cancelConfirmBg_width + 40, coinWrapSprite_height + betAmountBg_height / 2)
+        cancelConfirmBg.setPosition(size.width - cancelConfirmBg_width + 40, this.coinWrapSprite_height + this.betAmountBg_height / 2)
         this.addChild(cancelConfirmBg)
 
         this.addChild(this.cancelBtn)
@@ -393,7 +391,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         coinWrapSprite.attr({
             x: size.width / 2,
-            y: coinWrapSprite_height,
+            y: this.coinWrapSprite_height,
             scaleX: size.width / coinWrapSprite.getContentSize().width,
             scaleY: size.width / coinWrapSprite.getContentSize().width - 0.05
         })
@@ -426,19 +424,19 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 var touch_x = touch.getLocation().x
                 var touch_y = touch.getLocation().y
 
-                if (touch_y > size.height - header_height - bank_height - paddingY || 
-                    touch_y < betAmountBg_height + coinWrapSprite_height + 30) {
+                if (touch_y > size.height - this.header_height - this.bank_height - paddingY || 
+                    touch_y < this.betAmountBg_height + this.coinWrapSprite_height + 30) {
                         return
                 }
 
                 if (touch_x > size.width / 2 - paddingX && 
                     touch_x < size.width / 2 + paddingX && 
-                    touch_y > size.height - header_height - bank_height - this.panelOne_height) {
+                    touch_y > size.height - this.header_height - this.bank_height - this.panelOne_height) {
                     return
                 }
 
-                if (touch_y > size.height - header_height - bank_height - this.panelOne_height - paddingY && 
-                    touch_y < size.height - header_height - bank_height - this.panelOne_height + paddingY) {
+                if (touch_y > size.height - this.header_height - this.bank_height - this.panelOne_height - paddingY && 
+                    touch_y < size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY) {
                     return
                 }
                 
@@ -469,14 +467,14 @@ var NiuNiuGameLayer = cc.Layer.extend({
                     })
                     // add coin values to panel value array
                     if (touch_x > 0 && touch_x < size.width / 2 - paddingX && 
-                        touch_y < size.height - header_height - bank_height - paddingY && 
-                        touch_y > size.height - header_height - bank_height - this.panelOne_height + paddingY) {
+                        touch_y < size.height - this.header_height - this.bank_height - paddingY && 
+                        touch_y > size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY) {
                             if (this.panelOneDealedCoins.length == 0) {
                                 this.panelOneValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
                                 this.panelOneValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
                                 this.panelOneValRoundRect = new RoundRect(this.panelOneValRoundRect_Label.getContentSize().width + paddingX, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
                                 this.panelOneValRoundRect_Label.setPosition(cc.p(this.panelOneValRoundRect.getContentSize().width / 2, this.panelOneValRoundRect_Label.getContentSize().height / 2))
-                                this.panelOneValRoundRect.setPosition(cc.p(size.width / 4 - this.panelOneValRoundRect.getContentSize().width / 2, size.height - header_height - bank_height - this.panelOne_height + paddingY / 4))
+                                this.panelOneValRoundRect.setPosition(cc.p(size.width / 4 - this.panelOneValRoundRect.getContentSize().width / 2, size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY / 4))
                                 this.panelOneArea.addChild(this.panelOneValRoundRect) 
                                 this.panelOneValRoundRect.addChild(this.panelOneValRoundRect_Label)
                                 
@@ -486,8 +484,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             this.panelOneValRoundRect.setContentSize(cc.size(this.panelOneValRoundRect_Label.getContentSize().width + paddingX, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     if (touch_x > size.width / 2 && touch_x < size.width &&
-                        touch_y < size.height - header_height - bank_height - paddingY &&
-                        touch_y > size.height - header_height - bank_height - this.panelOne_height + paddingY) {
+                        touch_y < size.height - this.header_height - this.bank_height - paddingY &&
+                        touch_y > size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY) {
                             if (this.panelTwoDealedCoins.length == 0) {
                                 this.panelTwoValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
                                 this.panelTwoValRoundRect_Label.attr({
@@ -495,7 +493,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 })
                                 this.panelTwoValRoundRect = new RoundRect(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
                                 this.panelTwoValRoundRect_Label.setPosition(cc.p(this.panelTwoValRoundRect.getContentSize().width / 2, this.panelTwoValRoundRect_Label.getContentSize().height / 2))
-                                this.panelTwoValRoundRect.setPosition(cc.p(size.width / 4 * 3 - this.panelTwoValRoundRect.getContentSize().width / 2, size.height - header_height - bank_height - this.panelOne_height + paddingY / 4))
+                                this.panelTwoValRoundRect.setPosition(cc.p(size.width / 4 * 3 - this.panelTwoValRoundRect.getContentSize().width / 2, size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY / 4))
                                 this.panelTwoArea.addChild(this.panelTwoValRoundRect) 
                                 this.panelTwoValRoundRect.addChild(this.panelTwoValRoundRect_Label)
                                 
@@ -504,8 +502,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             this.panelTwoValRoundRect_Label.setString(this.sumCoins(this.panelTwoDealedCoins))
                             this.panelTwoValRoundRect.setContentSize(cc.size(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
-                    if (touch_y < size.height - header_height - bank_height - this.panelOne_height - paddingY &&
-                        touch_y > betAmountTotalSprite_height + coinWrapSprite_height + 60) {
+                    if (touch_y < size.height - this.header_height - this.bank_height - this.panelOne_height - paddingY &&
+                        touch_y > betAmountTotalSprite_height + this.coinWrapSprite_height + 60) {
                             if (this.panelThreeDealedCoins.length == 0) {
                                 this.panelThreeValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
                                 this.panelThreeValRoundRect_Label.attr({
@@ -513,7 +511,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 })
                                 this.panelThreeValRoundRect = new RoundRect(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
                                 this.panelThreeValRoundRect_Label.setPosition(cc.p(this.panelThreeValRoundRect.getContentSize().width / 2, this.panelThreeValRoundRect_Label.getContentSize().height / 2))
-                                this.panelThreeValRoundRect.setPosition(cc.p(size.width / 2 - this.panelThreeValRoundRect.getContentSize().width / 2, coinWrapSprite_height + betAmountBg_height + this.panelThreeValRoundRect.getContentSize().height + paddingY / 2))
+                                this.panelThreeValRoundRect.setPosition(cc.p(size.width / 2 - this.panelThreeValRoundRect.getContentSize().width / 2, this.coinWrapSprite_height + this.betAmountBg_height + this.panelThreeValRoundRect.getContentSize().height + paddingY / 2))
                                 this.panelThreeArea.addChild(this.panelThreeValRoundRect) 
                                 this.panelThreeValRoundRect.addChild(this.panelThreeValRoundRect_Label)
                                 
@@ -747,12 +745,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
             this.bankResultCards[index] = cc.Sprite.create(cardImageName)
             this.bankResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
-                y: size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4,
+                y: size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4,
                 scaleX: cardWidth / this.bankResultCards[index].getContentSize().width,
                 scaleY: cardWidth / this.bankResultCards[index].getContentSize().width
             })
             this.addChild(this.bankResultCards[index])
-            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - header_height - bank_height / 4));
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4));
             this.bankResultCards[index].runAction(moveToAction)
         }
 
@@ -764,12 +762,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
             this.firstDealResultCards[index] = cc.Sprite.create(cardImageName)
             this.firstDealResultCards[index].attr({
                 x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
-                y: size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
+                y: size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3,
                 scaleX: cardWidth / this.firstDealResultCards[index].getContentSize().width,
                 scaleY: cardWidth / this.firstDealResultCards[index].getContentSize().width
             })
             this.addChild(this.firstDealResultCards[index])
-            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3));
             moveToAction.setSpeed(40)
             moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
@@ -783,12 +781,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
             this.secondDealResultCards[index] = cc.Sprite.create(cardImageName)
             this.secondDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
-                y: size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3,
+                y: size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3,
                 scaleX: cardWidth / this.secondDealResultCards[index].getContentSize().width,
                 scaleY: cardWidth / this.secondDealResultCards[index].getContentSize().width
             })
             this.addChild(this.secondDealResultCards[index])
-            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height / 3));
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3));
             moveToAction.setSpeed(40)
             moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
@@ -802,12 +800,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
             this.thirdDealResultCards[index] = cc.Sprite.create(cardImageName)
             this.thirdDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
-                y: size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4,
+                y: size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height * 5 / 4,
                 scaleX: cardWidth / this.thirdDealResultCards[index].getContentSize().width,
                 scaleY: cardWidth / this.thirdDealResultCards[index].getContentSize().width
             })
             this.addChild(this.thirdDealResultCards[index])
-            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - header_height - bank_height - this.panelOne_height * 5 / 4));
+            var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height * 5 / 4));
             moveToAction.setSpeed(40)
             moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
@@ -845,7 +843,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoHome")
-                this.showBetFailDlg()
                 break
         }
      },
@@ -1177,7 +1174,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 this.coinDealCheckDlg.addChild(dlgBtnBg, this.coinDealCheckDlg_zOrder)
 
                 this.coinDealCheckDlgYesBtn = new ccui.Button(res.dlg_yes_btn_png, res.dlg_yes_btn_png, res.dlg_yes_btn_png)
-                var coinDealCheckDlgYesBtn_width = 70
+                var coinDealCheckDlgYesBtn_width = 70 
                 this.coinDealCheckDlgYesBtn.attr({
                     scaleX: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width,
                     scaleY: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width
@@ -1255,7 +1252,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
     showCheckSuccessDlg: function (sender, type) {
         console.log("showCheckFailDlg")
-        this.disableAllBtn()
 
         var paddingX = 20
         var paddingY = 20
@@ -1315,16 +1311,20 @@ var NiuNiuGameLayer = cc.Layer.extend({
     },
 
     closeCheckSuccessDlg: function () {
+        console.log("closechecksuccessdlg")
+        console.log(this.enabledCoinDrop)
         clearInterval(this.checkSuccessDlg_interval)
         this.removeChild(this.checkSuccessDlg)
         this.removeChild(this.checkSuccessDlg_overLay)
         this.removeChild(this.coinDealCheckDlg)
         this.removeChild(this.coinDealCheckDlg_overLay)
-        this.enableAllBtn()
-
+        
         this.panelOneValRoundRect_Label.setColor(cc.color(34, 162, 211))
         this.panelTwoValRoundRect_Label.setColor(cc.color(34, 162, 211))
         this.panelThreeValRoundRect_Label.setColor(cc.color(34, 162, 211))
+        setTimeout(() => {
+            this.enableAllBtn()    
+        }, 1000);
     },
     showDealCancelDlg: function (sender, type) {
         switch (type) {
@@ -1415,8 +1415,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var paddingY = 40
         this.disableAllBtn()
         this.betWinDlg_overlay = new cc.LayerGradient(cc.color(0, 0, 0, 100), cc.color(9, 145, 200))
-        this.betWinDlg_overlay.setContentSize(cc.size(size.width, size.height - header_height - coinWrapSprite_height - betAmountBg_height - paddingY / 2))
-        this.betWinDlg_overlay.setPosition(cc.p(0,coinWrapSprite_height + betAmountBg_height + paddingY / 2))
+        this.betWinDlg_overlay.setContentSize(cc.size(size.width, size.height - this.header_height - this.coinWrapSprite_height - this.betAmountBg_height - paddingY / 2))
+        this.betWinDlg_overlay.setPosition(cc.p(0,this.coinWrapSprite_height + this.betAmountBg_height + paddingY / 2))
         this.addChild(this.betWinDlg_overlay, 100)
 
         var betWinDlg_height = 300
@@ -1636,7 +1636,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
         }, 1000);
 
     },
-
     closeBetWinDlg: function(sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
@@ -1657,8 +1656,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var paddingY = 40
         this.disableAllBtn()
         this.betFailDlg_overlay = new cc.LayerGradient(cc.color(0, 0, 0, 100), cc.color(177, 64, 91))
-        this.betFailDlg_overlay.setContentSize(cc.size(size.width, size.height - header_height - coinWrapSprite_height - betAmountBg_height - paddingY / 2))
-        this.betFailDlg_overlay.setPosition(cc.p(0,coinWrapSprite_height + betAmountBg_height + paddingY / 2))
+        this.betFailDlg_overlay.setContentSize(cc.size(size.width, size.height - this.header_height - this.coinWrapSprite_height - this.betAmountBg_height - paddingY / 2))
+        this.betFailDlg_overlay.setPosition(cc.p(0,this.coinWrapSprite_height + this.betAmountBg_height + paddingY / 2))
         this.addChild(this.betFailDlg_overlay, 100)
 
         var betFailDlg_height = 300
@@ -1892,17 +1891,13 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
 })
 
-var GameScene = cc.Scene.extend({
+var NiuNiuGameScene = cc.Scene.extend({
     onEnter: function () {
         this._super()
         var bgLayer = new BgLayer()
         this.addChild(bgLayer)
         var gameLayer = new NiuNiuGameLayer()
         this.addChild(gameLayer)
-        
-        
-        // var dealCancelDlg = new DealCancelDlg()
-        // this.addChild(dealCancelDlg)
     }
 })
 
