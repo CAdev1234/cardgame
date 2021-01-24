@@ -1,3 +1,22 @@
+var home_res = {
+    baccarat_png: "res/home/baccarat.png",
+    bg_png: "res/home/bg.png",
+    bottom_png: "res/home/bottom.png",
+    golden_flower_png: "res/home/golden-flower.png",
+    logo_png: "res/home/logo.png",
+    niuniu_png: "res/home/niuniu.png",
+    san_gong_png: "res/home/san-gong.png",
+    sic_bo_png: "res/home/sic-bo.png",
+    slogan_png: "res/home/slogan.png",
+    tiger_dragon_png: "res/home/tiger-dragon.png",
+    two_bars_png: "res/home/two-bars.png",
+    guangbo_png: "res/home/guangbo.png",
+    tryout_png: "res/home/tryout.png",
+
+    game_item_mp3: "res/home/game-item.mp3",
+};
+
+// niuniu res
 var res = {
     HelloWorld_png : "res/HelloWorld.png",
     banner_png: "res/niuniu/banner.png",
@@ -53,58 +72,6 @@ var res = {
 
     card_sheet_png: "res/niuniu/cards/cardSheet.png",
     card_sheet_plist: "res/niuniu/cards/cardSheet.plist",
-    card1c: "res/niuniu/cards/card1C.png",
-    card1d: "res/niuniu/cards/card1D.png",
-    card1h: "res/niuniu/cards/card1H.png",
-    card1s: "res/niuniu/cards/card1S.png",
-    card2c: "res/niuniu/cards/card2C.png",
-    card2d: "res/niuniu/cards/card2D.png",
-    card2h: "res/niuniu/cards/card2H.png",
-    card2s: "res/niuniu/cards/card2S.png",
-    card3c: "res/niuniu/cards/card3C.png",
-    card3d: "res/niuniu/cards/card3D.png",
-    card3h: "res/niuniu/cards/card3H.png",
-    card3s: "res/niuniu/cards/card3S.png",
-    card4c: "res/niuniu/cards/card4C.png",
-    card4d: "res/niuniu/cards/card4D.png",
-    card4h: "res/niuniu/cards/card4H.png",
-    card4s: "res/niuniu/cards/card4S.png",
-    card5c: "res/niuniu/cards/card5C.png",
-    card5d: "res/niuniu/cards/card5D.png",
-    card5h: "res/niuniu/cards/card5H.png",
-    card5s: "res/niuniu/cards/card5S.png",
-    card6c: "res/niuniu/cards/card6C.png",
-    card6d: "res/niuniu/cards/card6D.png",
-    card6h: "res/niuniu/cards/card6H.png",
-    card6s: "res/niuniu/cards/card6S.png",
-    card7c: "res/niuniu/cards/card7C.png",
-    card7d: "res/niuniu/cards/card7D.png",
-    card7h: "res/niuniu/cards/card7H.png",
-    card7s: "res/niuniu/cards/card7S.png",
-    card8c: "res/niuniu/cards/card8C.png",
-    card8d: "res/niuniu/cards/card8D.png",
-    card8h: "res/niuniu/cards/card8H.png",
-    card8s: "res/niuniu/cards/card8S.png",
-    card9c: "res/niuniu/cards/card9C.png",
-    card9d: "res/niuniu/cards/card9D.png",
-    card9h: "res/niuniu/cards/card9H.png",
-    card9s: "res/niuniu/cards/card9S.png",
-    card10c: "res/niuniu/cards/card10C.png",
-    card10d: "res/niuniu/cards/card10D.png",
-    card10h: "res/niuniu/cards/card10H.png",
-    card10s: "res/niuniu/cards/card10S.png",
-    card11c: "res/niuniu/cards/card11C.png",
-    card11d: "res/niuniu/cards/card11D.png",
-    card11h: "res/niuniu/cards/card11H.png",
-    card11s: "res/niuniu/cards/card11S.png",
-    card12c: "res/niuniu/cards/card12C.png",
-    card12d: "res/niuniu/cards/card12D.png",
-    card12h: "res/niuniu/cards/card12H.png",
-    card12s: "res/niuniu/cards/card12S.png",
-    card13c: "res/niuniu/cards/card13C.png",
-    card13d: "res/niuniu/cards/card13D.png",
-    card13h: "res/niuniu/cards/card13H.png",
-    card13s: "res/niuniu/cards/card13S.png",
 
     star_png: "res/niuniu/star.png",
 
@@ -114,24 +81,12 @@ var res = {
 };
 
 var baccarat_res = {
-    
+    banner_png: "res/baccarat/banner.png",
+    card_back_png: "res/baccarat/card-back.png",
+    card_count_png: "res/baccarat/card-count.png"
 };
 
-var home_res = {
-    baccarat_png: "res/home/baccarat.png",
-    bg_png: "res/home/bg.png",
-    bottom_png: "res/home/bottom.png",
-    golden_flower_png: "res/home/golden-flower.png",
-    logo_png: "res/home/logo.png",
-    niuniu_png: "res/home/niuniu.png",
-    san_gong_png: "res/home/san-gong.png",
-    sic_bo_png: "res/home/sic-bo.png",
-    slogan_png: "res/home/slogan.png",
-    tiger_dragon_png: "res/home/tiger-dragon.png",
-    two_bars_png: "res/home/two-bars.png",
-    guangbo_png: "res/home/guangbo.png",
-    tryout_png: "res/home/tryout.png"
-};
+
 
 var g_resources = [];
 for (var i in res) {
@@ -139,5 +94,8 @@ for (var i in res) {
 }
 for (var i in home_res) {
     g_resources.push(home_res[i])
+}
+for (var i in baccarat_res) {
+    g_resources.push(baccarat_res[i])
 }
 

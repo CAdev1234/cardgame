@@ -14,12 +14,15 @@ var NiuNiuGameLayer = cc.Layer.extend({
     bank_height: null,
     betAmountBg_height: null,
 
-    open_state: null,
+    cards: [],
+    
     close_state: null,
+    dealedCoins_tag: 1,
+    open_state: null,
 
     serial_num: [],
 
-    dealedCoins_tag: 1,
+
     overLay_zOrder: 10,
     coinDealCheckDlg_zOrder: null,
 
@@ -103,6 +106,29 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var size = cc.winSize
         var paddingX = 20
         var paddingY = 20
+        
+        this.panelOneDealedCoins = []
+        this.panelTwoDealedCoins = []
+        this.panelThreeDealedCoins = []
+
+        this.enabledCoin.fill(false)
+
+        // store card image using batchNode
+        var paddingX = 20
+        var size = cc.winSize
+        var cardType = ["C", "D", "H", "S"]
+        var cardWidth = 50
+        var cardGroup_width = cardWidth + paddingX * 1.5 * 4
+        this.cards = []
+        var card_cache = cc.spriteFrameCache.addSpriteFrames(res.card_sheet_plist)
+        var card_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 13; index++) {
+            for (let indexi = 0; indexi < cardType.length; indexi++) {
+                var cardName = "card" + (index + 1).toString() + cardType[indexi] + ".png"
+                var card_frame = cc.spriteFrameCache.getSpriteFrame(cardName)
+                this.cards.push(card_frame)
+            }
+        }
 
         // header
         var headerBg = cc.LayerColor.create(cc.color(30, 101, 165), size.width, this.header_height)
@@ -142,7 +168,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
         cc.audioEngine.setMusicVolume(0.5)
 
-        var btnWrapSprite = cc.Sprite.create(res.btn_wrap_png)
+        var btnWrapSprite = new cc.Sprite(res.btn_wrap_png)
         var btnWrapSprite_height = size.width / btnWrapSprite.getContentSize().width * btnWrapSprite.getContentSize().height
         
         // footer height
@@ -250,9 +276,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.addChild(btnWrapSprite)
 
         this.goHomeBtn = new ccui.Button(res.home_btn_png, res.home_btn_png, res.home_btn_png)
-        this.goHomeBtn.x = size.width / 6
-        this.goHomeBtn.y = size.height - this.header_height - this.bank_height + 5
-        
         this.goHomeBtn.attr({
             x: size.width / 6,
             y: size.height - this.header_height - this.bank_height + 5,
@@ -335,7 +358,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
             scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
         })
         this.addChild(betAmountTokenSprite)
-        this.betAmountTokenVal = cc.LabelTTF.create("0.0", "Arial", 15)
+        this.betAmountTokenVal = new cc.LabelTTF("0.0", "Arial", 15)
         this.betAmountTokenVal.attr({
             x: this.betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
             y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40,
@@ -383,7 +406,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         
         // cancel and confirm buttons are disabled when length of dealedCoins is 0
-        if (this.panelOneDealedCoins.length === 0 && this.panelTwoDealedCoins.length === 0 && this.panelThreeDealedCoins.length === 0) {
+        if ((this.panelOneDealedCoins.length + this.panelTwoDealedCoins.length + this.panelThreeDealedCoins.length) === 0) {
             this.cancelBtn.setEnabled(false)
             this.confirmBtn.setEnabled(false)
         }
@@ -516,6 +539,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 this.panelThreeValRoundRect.addChild(this.panelThreeValRoundRect_Label)
                                 
                             }
+                            console.log("this.panelThreeDealedCoins=", this.panelThreeDealedCoins)
                             this.panelThreeDealedCoins.push(coinVal)
                             this.panelThreeValRoundRect_Label.setString(this.sumCoins(this.panelThreeDealedCoins))
                             this.panelThreeValRoundRect.setContentSize(cc.size(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4))
@@ -728,26 +752,15 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var cardType = ["C", "D", "H", "S"]
         var cardWidth = 50
         var cardGroup_width = cardWidth + paddingX * 1.5 * 4
-
-        // var cardFrameCache = new cc.spriteFrameCache.addSpriteFrames(res.card_sheet_plist)
-        // var cardBatch = new cc.SpriteBatchNode(res.card_sheet_png)
-        // this.addChild(cardBatch)
-
-
-        // for (let index = 0; index < 5; index++) {
-        //     var cardNum = Math.floor(Math.random() * 13 + 1)
-        //     var cardName = "card" + cardNum + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-        // }
         
         for (let index = 0; index < 5; index++) {
-            var cardNum = Math.floor(Math.random() * 13 + 1)
-            var cardImageName = "res/niuniu/cards/card" + cardNum + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-            this.bankResultCards[index] = cc.Sprite.create(cardImageName)
+            var cardNum = Math.floor(Math.random() * 52 + 1)
+            this.bankResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.bankResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4,
-                scaleX: cardWidth / this.bankResultCards[index].getContentSize().width,
-                scaleY: cardWidth / this.bankResultCards[index].getContentSize().width
+                scaleX: (cardWidth + 10) / this.bankResultCards[index].getContentSize().width,
+                scaleY: (cardWidth + 10) / this.bankResultCards[index].getContentSize().width
             })
             this.addChild(this.bankResultCards[index])
             var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4));
@@ -758,8 +771,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         
         for (let index = 0; index < 5; index++) {
-            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-            this.firstDealResultCards[index] = cc.Sprite.create(cardImageName)
+            var cardNum = Math.floor(Math.random() * 52 + 1)
+            this.firstDealResultCards[index] = cc.Sprite.create(this.cards[cardNum])
             this.firstDealResultCards[index].attr({
                 x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3,
@@ -777,8 +790,9 @@ var NiuNiuGameLayer = cc.Layer.extend({
         await this.sleep(1000)
         
         for (let index = 0; index < 5; index++) {
-            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-            this.secondDealResultCards[index] = cc.Sprite.create(cardImageName)
+            var cardNum = Math.floor(Math.random() * 52 + 1)
+            console.log("cardNum=", cardNum)
+            this.secondDealResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.secondDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3,
@@ -796,8 +810,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
         await this.sleep(1000)
 
         for (let index = 0; index < 5; index++) {
-            var cardImageName = "res/niuniu/cards/card" + Math.floor(Math.random() * 13 + 1) + cardType[Math.floor(Math.random() * cardType.length)] + ".png"
-            this.thirdDealResultCards[index] = cc.Sprite.create(cardImageName)
+            var cardNum = Math.floor(Math.random() * 52 + 1)
+            this.thirdDealResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.thirdDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height * 5 / 4,
@@ -843,6 +857,10 @@ var NiuNiuGameLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoHome")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
+                this.removeDealedCoins()
+                cc.audioEngine.end()
+                cc.director.pushScene(new cc.TransitionFade(1.0, new HomeScene()))
                 break
         }
      },
@@ -850,6 +868,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
     enableSoundOnMethod: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 if (this.enableSoundOn) {
                     this.soundOnBtn.loadTextureNormal(res.sound_off_btn_png)
                     this.enableSoundOn = !this.enableSoundOn
@@ -874,6 +893,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_MOVED:
                 break
             case ccui.Widget.TOUCH_ENDED:
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 var helpScene = new HelpScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, helpScene))
                 break

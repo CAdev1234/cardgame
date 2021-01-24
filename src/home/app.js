@@ -27,15 +27,17 @@ var HomeLayer = cc.Layer.extend({
         })
         this.addChild(logoSprite, 9)
 
-        var tryoutBtn = new ccui.Button(home_res.tryout_png)
-        var tryoutBtn_width = 80
-        tryoutBtn.attr({
-            scaleX: tryoutBtn_width / tryoutBtn.getContentSize().width,
-            scaleY: tryoutBtn_width / tryoutBtn.getContentSize().width,
-            x: size.width - tryoutBtn_width / 2 - paddingX / 2,
+        var homeTryoutBtn = new ccui.Button(home_res.tryout_png, home_res.tryout_png, home_res.tryout_png)
+        var homeTryoutBtn_width = 80
+        homeTryoutBtn.attr({
+            pressedActionEnabled: true,
+            scaleX: homeTryoutBtn_width / homeTryoutBtn.getContentSize().width,
+            scaleY: homeTryoutBtn_width / homeTryoutBtn.getContentSize().width,
+            x: size.width - homeTryoutBtn_width / 2 - paddingX / 2,
             y: size.height - logoSprite_height / 2
         })
-        this.addChild(tryoutBtn)
+        homeTryoutBtn.addTouchEventListener(this.homeTryout, this)
+        this.addChild(homeTryoutBtn, 9)
 
         // footer
         var footerSprite = new cc.Sprite(home_res.bottom_png)
@@ -112,7 +114,6 @@ var HomeLayer = cc.Layer.extend({
             x: size.width / 2,
             y: itemScroll_innerHeight - niuniuBtn_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY
         })
-        niuniuBtn.setZoomScale(0.05)
         niuniuBtn.addTouchEventListener(this.gotoNiuniu, this)
         itemScroll.addChild(niuniuBtn)
 
@@ -125,7 +126,6 @@ var HomeLayer = cc.Layer.extend({
             x: paddingX + gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY
         })
-        baccaratBtn.setZoomScale(0.05)
         baccaratBtn.addTouchEventListener(this.gotoBaccarat, this)
         itemScroll.addChild(baccaratBtn)
 
@@ -137,7 +137,6 @@ var HomeLayer = cc.Layer.extend({
             x: size.width - paddingX - gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY
         })
-        tigerDragonBtn.setZoomScale(0.05)
         tigerDragonBtn.addTouchEventListener(this.gotoTigerDragon, this)
         itemScroll.addChild(tigerDragonBtn)
 
@@ -149,7 +148,6 @@ var HomeLayer = cc.Layer.extend({
             x: paddingX + gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY - gameItem_height - paddingY / 2
         })
-        twoBarsBtn.setZoomScale(0.05)
         twoBarsBtn.addTouchEventListener(this.gotoTwoBars, this)
         itemScroll.addChild(twoBarsBtn)
         
@@ -161,7 +159,6 @@ var HomeLayer = cc.Layer.extend({
             x: size.width - paddingX - gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY - gameItem_height - paddingY / 2
         })
-        goldenFlowerBtn.setZoomScale(0.05)
         goldenFlowerBtn.addTouchEventListener(this.gotoGoldenFlower, this)
         itemScroll.addChild(goldenFlowerBtn)
 
@@ -173,7 +170,6 @@ var HomeLayer = cc.Layer.extend({
             x: paddingX + gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY - gameItem_height - paddingY / 2 - gameItem_height - paddingY / 2
         })
-        sanGongBtn.setZoomScale(0.05)
         sanGongBtn.addTouchEventListener(this.gotoSangong, this)
         itemScroll.addChild(sanGongBtn)
         
@@ -185,15 +181,25 @@ var HomeLayer = cc.Layer.extend({
             x: size.width - gameItem_width / 2 - paddingX,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY - gameItem_height - paddingY / 2 - gameItem_height - paddingY / 2
         })
-        sicBoBtn.setZoomScale(0.05)
         sicBoBtn.addTouchEventListener(this.gotoSicBo, this)
         itemScroll.addChild(sicBoBtn)
+    },
+
+    homeTryout: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("homeTryout")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
+                break
+        }
     },
 
     gotoNiuniu: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 console.log("gotoNiuniu")
+                cc.director.pushScene(new cc.TransitionFade(1.0, new NiuNiuGameScene()))
                 break
         }
     },
@@ -202,6 +208,8 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoBaccarat")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new BaccaratGameScene()))
                 break
         }
     },
@@ -210,6 +218,7 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoTigerDragon")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 break
         }
     },
@@ -218,6 +227,7 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoTwoBars")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 break
         }
     },
@@ -226,6 +236,7 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoGoldenFlower")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 break
         }
     },
@@ -234,6 +245,7 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoSangong")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 break
         }
     },
@@ -242,6 +254,7 @@ var HomeLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoSicBo")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
                 break
         }
     },
