@@ -114,8 +114,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.enabledCoin.fill(false)
 
         // store card image using batchNode
-        var paddingX = 20
-        var size = cc.winSize
         var cardType = ["C", "D", "H", "S"]
         var cardWidth = 50
         var cardGroup_width = cardWidth + paddingX * 1.5 * 4
@@ -749,12 +747,11 @@ var NiuNiuGameLayer = cc.Layer.extend({
     displayCard: async function () {
         var paddingX = 20
         var size = cc.winSize
-        var cardType = ["C", "D", "H", "S"]
-        var cardWidth = 50
+        var cardWidth = 40
         var cardGroup_width = cardWidth + paddingX * 1.5 * 4
         
         for (let index = 0; index < 5; index++) {
-            var cardNum = Math.floor(Math.random() * 52 + 1)
+            var cardNum = Math.floor(Math.random() * 52)
             this.bankResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.bankResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
@@ -771,7 +768,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         
         for (let index = 0; index < 5; index++) {
-            var cardNum = Math.floor(Math.random() * 52 + 1)
+            var cardNum = Math.floor(Math.random() * 52)
             this.firstDealResultCards[index] = cc.Sprite.create(this.cards[cardNum])
             this.firstDealResultCards[index].attr({
                 x: cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2,
@@ -1332,7 +1329,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
     closeCheckSuccessDlg: function () {
         console.log("closechecksuccessdlg")
-        console.log(this.enabledCoinDrop)
         clearInterval(this.checkSuccessDlg_interval)
         this.removeChild(this.checkSuccessDlg)
         this.removeChild(this.checkSuccessDlg_overLay)

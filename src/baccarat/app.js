@@ -10,8 +10,10 @@ var BgLayer = cc.Layer.extend({
 var BaccaratGameLayer = cc.Layer.extend({
     btnwrapSprite_zOrder: 1,
     header_height: null,
+
     serail_num_panel: null,
     serial_num: [],
+
     banner_height: null,
     historyBtn: null,
     goHomeBtn: null,
@@ -19,6 +21,12 @@ var BaccaratGameLayer = cc.Layer.extend({
     helpBtn: null,
     soundOnBtn: null,
     enableSoundOn: true,
+
+    cards: [],
+    card_width: 50,
+    cardBackSprite: [],
+    resultCards: [],
+
 
     gamePanel_height: null,
     panelArea1: null,
@@ -50,7 +58,12 @@ var BaccaratGameLayer = cc.Layer.extend({
     coinImages: [],
     coins: [],
     enabledCoin: [],
+
     enabledCoinDrop: true,
+
+    close_state: false,
+    open_state: true,
+
 
 
     ctor: function () {
@@ -67,6 +80,21 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.panel6_DealedCoins = []
         this.panel7_DealedCoins = []
         this.enabledCoin.fill(false)
+        
+
+        // store card image using batchNode
+        var cardType = ["C", "D", "H", "S"]
+        var cardWidth = 50
+        this.cards = []
+        var card_cache = cc.spriteFrameCache.addSpriteFrames(res.card_sheet_plist)
+        var card_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 13; index++) {
+            for (let indexi = 0; indexi < cardType.length; indexi++) {
+                var cardName = "card" + (index + 1).toString() + cardType[indexi] + ".png"
+                var card_frame = cc.spriteFrameCache.getSpriteFrame(cardName)
+                this.cards.push(card_frame)
+            }
+        }
 
         // header
         this.header_height = 40
@@ -143,49 +171,44 @@ var BaccaratGameLayer = cc.Layer.extend({
             y: size.height - this.header_height - paddingY
         })
         this.addChild(cardCountSprite)
-        var cardCountVal = new cc.LabelTTF("156/416", "Arial", 15)
+        var cardCountVal = new cc.LabelTTF("156/" + 8 * 52, "Arial", 15)
         cardCountVal.attr({
             fillStyle: cc.color(255, 255, 255),
             x: cardCountVal.getContentSize().width / 2 + paddingX / 4 + cardCountSprite_width,
             y: size.height - this.header_height - paddingY
         })
         this.addChild(cardCountVal)
-        console.log("bannerHeight = ", this.banner_height)
 
         // card back sprite
         setTimeout(async () => {
-            var cardBackSprite = []
             var card_width = 50
+            this.cardBackSprite = []
             var renderingTime = [0.12, 0.11, 0.1, 0.11, 0.12]
             for (let index = 0; index < 5; index++) {
-                cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
-                cardBackSprite[index].attr({
-                    scaleX: card_width / cardBackSprite[index].getContentSize().width,
-                    scaleY: card_width / cardBackSprite[index].getContentSize().width,
+                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                this.cardBackSprite[index].attr({
+                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
                     x: size.width / 2,
-                    y: size.height + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2
+                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
                 })
-                this.addChild(cardBackSprite[index])
-                var movetoAction = new cc.MoveTo(renderingTime[index], cc.p(size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index, size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2))
+                this.addChild(this.cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index], cc.p(size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index, size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2))
                 await this.sleep(100)
-                cardBackSprite[index].runAction(movetoAction)
-                await this.sleep(1000)
-                var flipYAction = new cc.FlipY3D(1000)
-                cardBackSprite[index].runAction(flipYAction)
-
+                this.cardBackSprite[index].runAction(movetoAction)
             }
             for (let index = 5; index < 10; index++) {
-                cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
-                cardBackSprite[index].attr({
-                    scaleX: card_width / cardBackSprite[index].getContentSize().width,
-                    scaleY: card_width / cardBackSprite[index].getContentSize().width,
+                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                this.cardBackSprite[index].attr({
+                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
                     x: size.width / 2,
-                    y: size.height + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2
+                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
                 })
-                this.addChild(cardBackSprite[index])
-                var movetoAction = new cc.MoveTo(renderingTime[index % 5], size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5), size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].height / 2)
+                this.addChild(this.cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index % 5], size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5), size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].height / 2)
                 await this.sleep(100)
-                cardBackSprite[index].runAction(movetoAction)
+                this.cardBackSprite[index].runAction(movetoAction)
             }
         }, 2000);
 
@@ -507,6 +530,20 @@ var BaccaratGameLayer = cc.Layer.extend({
                         return
                 }
                 if (this.enabledCoin.findIndex(this.findTrue) !== -1) {
+                    if (this.close_state) {
+                        var bet_closed_alert = new cc.Sprite(res.bet_closed_alert_png)
+                        var bet_closed_alert_width = size.width * 3 / 5
+                        bet_closed_alert.attr({
+                            scaleX: bet_closed_alert_width / bet_closed_alert.getContentSize().width,
+                            scaleY: bet_closed_alert_width / bet_closed_alert.getContentSize().width
+                        })
+                        bet_closed_alert.setPosition(cc.p(size.width / 2, size.height / 2))
+                        this.addChild(bet_closed_alert)
+                        setTimeout(() => {
+                            this.removeChild(bet_closed_alert)
+                        }, 2000);
+                        return
+                    }
                     cc.audioEngine.playEffect(res.coin_drop_wav)
                     var coinItem = new cc.Sprite(this.coinImages[this.enabledCoin.findIndex(this.findTrue)])
                     var coinVal = this.coinImages[this.enabledCoin.findIndex(this.findTrue)].replace("res/niuniu/coin-sprite-", "")
@@ -574,6 +611,9 @@ var BaccaratGameLayer = cc.Layer.extend({
 
         cc.eventManager.addListener(this.coinDropListener, this.panelArea1)
 
+        // betOpenInterval function called for counting seconds
+        this.betOpenInterval()
+
         
     },
 
@@ -593,6 +633,117 @@ var BaccaratGameLayer = cc.Layer.extend({
             sum = sum + arrayVal[index]
         }
         return sum
+    },
+
+    displaySerialPanel: function () {
+        var size = cc.winSize
+        var paddingX = 20
+        var paddingY = 20
+        var serial_num_height = 20
+        this.serial_num_panel = new cc.DrawNode()
+        this.serial_num_panel.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
+        this.addChild(this.serial_num_panel)
+        for (let index = 0; index < 10; index++) {
+            this.serial_num[index] = new cc.DrawNode()
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
+            
+            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
+            serial_num_label.attr({
+                fillStyle: cc.color(255, 255, 255)
+            })
+            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2))
+            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num_panel.addChild(this.serial_num[index])
+
+            
+            var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
+            this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
+        }
+    },
+
+    betOpenInterval: async function () {
+        var paddingX = 20
+        this.open_state = true
+        this.close_state = false
+        var bet_start_alert = new cc.Sprite(res.bet_start_alert_png)
+        var bet_start_alert_width = cc.winSize.width / 5 * 3
+        bet_start_alert.attr({
+            scaleX: bet_start_alert_width / bet_start_alert.getContentSize().width,
+            scaleY: bet_start_alert_width / bet_start_alert.getContentSize().width
+        })
+        bet_start_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2))
+        this.addChild(bet_start_alert)
+        setTimeout(() => {
+            this.removeChild(bet_start_alert)
+        }, 2000); 
+        await this.sleep(2000)
+        var close_second = 10
+        var countCloseSecond = setInterval(() => {
+            if (close_second == 0) {
+                clearInterval(countCloseSecond)
+                this.close_state = true
+                this.drawInterval()
+                return
+            }
+            close_second = close_second - 1 
+            if (close_second < 10) {
+                this.infoText.setString("距封盘时间 00:0" + close_second)
+                if (close_second == 3) {
+                    var bet_stop_alert = new cc.Sprite(res.bet_stop_alert_png)
+                    var bet_stop_alert_width = cc.winSize.width / 5 * 3
+                    bet_stop_alert.attr({
+                        scaleX: bet_stop_alert_width / bet_stop_alert.getContentSize().width,
+                        scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
+                    })
+                    bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2))
+                    this.addChild(bet_stop_alert)
+                    setTimeout(() => {
+                        this.removeChild(bet_stop_alert)
+                        this.open_state = false
+                    }, 2000);
+                }
+            }else {
+                this.infoText.setString("距封盘时间 00:" + close_second)
+            }
+            
+        }, 1000);
+    },
+
+    drawInterval: function () {
+        var draw_second = 10
+        this.cancelBtn.setEnabled(false)
+        this.confirmBtn.setEnabled(false)
+        var countDrawSecond = setInterval(() => {
+            if (draw_second == 0) {
+                clearInterval(countDrawSecond)
+                this.infoText.setString("开奖中")
+                setTimeout(async () => {
+                    this.serial_num_panel.removeAllChildren()
+                    await this.sleep(500)
+                    console.log("serial_num_panel format")
+                    this.displaySerialPanel()
+                }, 2000);
+                setTimeout(async () => {
+                    await this.displayCard()
+                    // if (this.panel1_DealedCoins.length + this.panel2_DealedCoins.length + this.panel3_DealedCoins.length + this.panel4_DealedCoins.length + this.panel5_DealedCoins.length + this.panel6_DealedCoins.length + this.panel7_DealedCoins.length !== 0) {
+                    //     if (Math.floor(Math.random() * 10) % 2 == 1) {
+                    //         this.showBetWinDlg()
+                    //     }else {
+                    //         this.showBetFailDlg()
+                    //     }
+                    // }
+                    await this.sleep(5000)
+                    await this.removeCards()
+                    await this.sleep(7000)
+                    await this.betOpenInterval()
+                }, 5000);
+                return
+            }
+            draw_second = draw_second - 1
+            if (draw_second < 10) this.infoText.setString("距开奖时间 00:0" + draw_second) 
+            else this.infoText.setString("距开奖时间 00:" + draw_second)
+        }, 1000);
     },
 
     displaySerialPanel: function () {
@@ -619,6 +770,51 @@ var BaccaratGameLayer = cc.Layer.extend({
             var moveByAction = new cc.MoveBy(1, cc.p(serial_num_height * index, 0))
             this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
         }
+    },
+
+    displayCard: async function () {  
+        console.log("displayCard")
+        var size = cc.winSize
+        var paddingX = 20
+        var paddingY = 20
+        this.resultCards = []
+        var card_width = 50
+        for (let index = 0; index < 5; index++) {
+            this.resultCards[index] = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
+            this.resultCards[index].attr({
+                flippedX: true,
+                scaleX: 0,
+                scaleY: card_width / this.resultCards[index].getContentSize().width,
+                x: size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index,
+                y: size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2
+            })
+            this.cardBackSprite[index].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[index].getContentSize().width))
+            await this.sleep(200)
+            this.addChild(this.resultCards[index])
+            this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), (card_width / this.resultCards[index].getContentSize().width)))
+            await this.sleep(200)
+        }
+        for (let index = 5; index < 10; index++) {
+            this.resultCards[index] = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
+            this.resultCards[index].attr({
+                flippedX: true,
+                scaleX: 0,
+                scaleY: card_width / this.resultCards[index].getContentSize().width,
+                x: size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5),
+                y: size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].height / 2
+            })
+            
+            this.cardBackSprite[index].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[index].getContentSize().width))
+            await this.sleep(200)
+            this.addChild(this.resultCards[index])
+            this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), (card_width / this.resultCards[index].getContentSize().width)))
+            await this.sleep(200)
+        }
+
+    },
+
+    removeCards: function () {
+        console.log("removecards method")
     },
 
     gotoHome: function (sender, type) {
