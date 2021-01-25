@@ -106,7 +106,7 @@ var BaccaratGameLayer = cc.Layer.extend({
         
         
 
-        // Bank Part
+        // banner Part
         var bannerSprite = new cc.Sprite(baccarat_res.banner_png)
         var bannerSprite_height = size.width / bannerSprite.getContentSize().width * bannerSprite.getContentSize().height
         bannerSprite.attr({
@@ -132,6 +132,62 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.historyBtn.setZoomScale(0.05)
         this.historyBtn.addTouchEventListener(this.showHistory, this)
         this.addChild(this.historyBtn)
+
+        // card count added
+        var cardCountSprite = new cc.Sprite(baccarat_res.card_count_png)
+        var cardCountSprite_width = 35
+        cardCountSprite.attr({
+            scaleX: cardCountSprite_width / cardCountSprite.getContentSize().width,
+            scaleY: cardCountSprite_width / cardCountSprite.getContentSize().height,
+            x: paddingX / 4 + cardCountSprite_width / 2,
+            y: size.height - this.header_height - paddingY
+        })
+        this.addChild(cardCountSprite)
+        var cardCountVal = new cc.LabelTTF("156/416", "Arial", 15)
+        cardCountVal.attr({
+            fillStyle: cc.color(255, 255, 255),
+            x: cardCountVal.getContentSize().width / 2 + paddingX / 4 + cardCountSprite_width,
+            y: size.height - this.header_height - paddingY
+        })
+        this.addChild(cardCountVal)
+        console.log("bannerHeight = ", this.banner_height)
+
+        // card back sprite
+        setTimeout(async () => {
+            var cardBackSprite = []
+            var card_width = 50
+            var renderingTime = [0.12, 0.11, 0.1, 0.11, 0.12]
+            for (let index = 0; index < 5; index++) {
+                cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                cardBackSprite[index].attr({
+                    scaleX: card_width / cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / cardBackSprite[index].getContentSize().width,
+                    x: size.width / 2,
+                    y: size.height + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2
+                })
+                this.addChild(cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index], cc.p(size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index, size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2))
+                await this.sleep(100)
+                cardBackSprite[index].runAction(movetoAction)
+                await this.sleep(1000)
+                var flipYAction = new cc.FlipY3D(1000)
+                cardBackSprite[index].runAction(flipYAction)
+
+            }
+            for (let index = 5; index < 10; index++) {
+                cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                cardBackSprite[index].attr({
+                    scaleX: card_width / cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / cardBackSprite[index].getContentSize().width,
+                    x: size.width / 2,
+                    y: size.height + card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].getContentSize().height / 2
+                })
+                this.addChild(cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index % 5], size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5), size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / cardBackSprite[index].getContentSize().width * cardBackSprite[index].height / 2)
+                await this.sleep(100)
+                cardBackSprite[index].runAction(movetoAction)
+            }
+        }, 2000);
 
         // btnwrap sprite
         var btnwrapSprite = new cc.Sprite(res.btn_wrap_png)
