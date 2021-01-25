@@ -179,39 +179,6 @@ var BaccaratGameLayer = cc.Layer.extend({
         })
         this.addChild(cardCountVal)
 
-        // card back sprite
-        setTimeout(async () => {
-            var card_width = 50
-            this.cardBackSprite = []
-            var renderingTime = [0.12, 0.11, 0.1, 0.11, 0.12]
-            for (let index = 0; index < 5; index++) {
-                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
-                this.cardBackSprite[index].attr({
-                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
-                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
-                    x: size.width / 2,
-                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
-                })
-                this.addChild(this.cardBackSprite[index])
-                var movetoAction = new cc.MoveTo(renderingTime[index], cc.p(size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index, size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2))
-                await this.sleep(100)
-                this.cardBackSprite[index].runAction(movetoAction)
-            }
-            for (let index = 5; index < 10; index++) {
-                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
-                this.cardBackSprite[index].attr({
-                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
-                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
-                    x: size.width / 2,
-                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
-                })
-                this.addChild(this.cardBackSprite[index])
-                var movetoAction = new cc.MoveTo(renderingTime[index % 5], size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5), size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].height / 2)
-                await this.sleep(100)
-                this.cardBackSprite[index].runAction(movetoAction)
-            }
-        }, 2000);
-
         // btnwrap sprite
         var btnwrapSprite = new cc.Sprite(res.btn_wrap_png)
         var btnwrapSprite_width = size.width
@@ -611,6 +578,7 @@ var BaccaratGameLayer = cc.Layer.extend({
 
         cc.eventManager.addListener(this.coinDropListener, this.panelArea1)
 
+        
         // betOpenInterval function called for counting seconds
         this.betOpenInterval()
 
@@ -666,6 +634,41 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         this.open_state = true
         this.close_state = false
+        // card back sprite
+        setTimeout(async () => {
+            var size = cc.winSize
+            var paddingY = 20
+            var paddingX = 20
+            var card_width = 50
+            this.cardBackSprite = []
+            var renderingTime = [0.12, 0.11, 0.1, 0.11, 0.12]
+            for (let index = 0; index < 5; index++) {
+                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                this.cardBackSprite[index].attr({
+                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
+                    x: size.width / 2,
+                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
+                })
+                this.addChild(this.cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index], cc.p(size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * index, size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2))
+                await this.sleep(100)
+                this.cardBackSprite[index].runAction(movetoAction)
+            }
+            for (let index = 5; index < 10; index++) {
+                this.cardBackSprite[index] = new cc.Sprite(baccarat_res.card_back_png)
+                this.cardBackSprite[index].attr({
+                    scaleX: card_width / this.cardBackSprite[index].getContentSize().width,
+                    scaleY: card_width / this.cardBackSprite[index].getContentSize().width,
+                    x: size.width / 2,
+                    y: size.height + card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].getContentSize().height / 2
+                })
+                this.addChild(this.cardBackSprite[index])
+                var movetoAction = new cc.MoveTo(renderingTime[index % 5], size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (index % 5), size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.cardBackSprite[index].getContentSize().width * this.cardBackSprite[index].height / 2)
+                await this.sleep(100)
+                this.cardBackSprite[index].runAction(movetoAction)
+            }
+        }, 2000);
         var bet_start_alert = new cc.Sprite(res.bet_start_alert_png)
         var bet_start_alert_width = cc.winSize.width / 5 * 3
         bet_start_alert.attr({
@@ -714,7 +717,7 @@ var BaccaratGameLayer = cc.Layer.extend({
         var draw_second = 10
         this.cancelBtn.setEnabled(false)
         this.confirmBtn.setEnabled(false)
-        var countDrawSecond = setInterval(() => {
+        var countDrawSecond = setInterval(async () => {
             if (draw_second == 0) {
                 clearInterval(countDrawSecond)
                 this.infoText.setString("开奖中")
@@ -724,20 +727,93 @@ var BaccaratGameLayer = cc.Layer.extend({
                     console.log("serial_num_panel format")
                     this.displaySerialPanel()
                 }, 2000);
-                setTimeout(async () => {
-                    await this.displayCard()
-                    // if (this.panel1_DealedCoins.length + this.panel2_DealedCoins.length + this.panel3_DealedCoins.length + this.panel4_DealedCoins.length + this.panel5_DealedCoins.length + this.panel6_DealedCoins.length + this.panel7_DealedCoins.length !== 0) {
-                    //     if (Math.floor(Math.random() * 10) % 2 == 1) {
-                    //         this.showBetWinDlg()
-                    //     }else {
-                    //         this.showBetFailDlg()
-                    //     }
-                    // }
-                    await this.sleep(5000)
-                    await this.removeCards()
-                    await this.sleep(7000)
-                    await this.betOpenInterval()
-                }, 5000);
+                await this.sleep(5000)
+                await this.displayCard()
+                await this.sleep(3000)
+                // rearrange cards
+                var changed_card_width = 50 - 15
+                var paddingY = 20
+                var paddingX = 20
+                for (let index = 0; index < this.resultCards.length; index++) {
+                    await this.resultCards[index].setScaleX(changed_card_width / this.resultCards[index].getContentSize().width * (-1))
+                    await this.resultCards[index].setScaleY(changed_card_width / this.resultCards[index].getContentSize().width)
+                }
+                for (let index = 0; index < 5; index++) {
+                    var movetoAction = new cc.MoveTo(1, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * index, cc.winSize.height - this.header_height - this.banner_height / 2 + paddingY / 8 + changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2 + paddingY))
+                    this.resultCards[index].runAction(movetoAction)
+                }
+                for (let index = 5; index < this.resultCards.length; index++) {
+                    var movetoAction = new cc.MoveTo(1, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * (index % 5), cc.winSize.height - this.header_height - this.banner_height / 2 + paddingY / 8 - changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2 - paddingY / 8 + paddingY))
+                    this.resultCards[index].runAction(movetoAction)
+                }
+                var choosedCardNum = []
+                for (let index = 0; index < 6; index++) {
+                    choosedCardNum[index] = Math.floor(Math.random() * 10)
+                    this.resultCards[choosedCardNum[index]].attr({
+                        opacity: 150
+                    }) 
+                }
+
+                // four cards for first showed
+                for (let index = 0; index < choosedCardNum.length; index++) {
+                    var cloneCard = this.resultCards[choosedCardNum[index]]
+                    cloneCard.attr({
+                        scaleX: changed_card_width / cloneCard.getContentSize().width,
+                        scaleY: changed_card_width / cloneCard.getContentSize().width,
+                        x: cc.winSize.width / 2 + paddingX / 8 * index,
+                        y: cc.winSize.height - this.header_height - this.banner_height
+                    })
+                    this.addChild(cloneCard)
+                }
+                
+
+                
+                // show score
+                var playerResult_RoundedRect_width = 30
+                var playerResult_RoundedRect_height = 45
+                var playerResult_RoundedRect = new RoundRect(playerResult_RoundedRect_width, playerResult_RoundedRect_height, cc.color(0, 0, 0), 2, cc.color(4, 186, 238), 5, null)
+                var bankerResult_RoundedRect = new RoundRect(playerResult_RoundedRect_width, playerResult_RoundedRect_height, cc.color(0, 0, 0), 0, null, 5, null)
+                playerResult_RoundedRect.setPosition(cc.p(paddingX * 2 , cc.winSize.height - this.header_height - this.banner_height / 2))
+                bankerResult_RoundedRect.setPosition(cc.p(cc.winSize.width - playerResult_RoundedRect_width - paddingX * 2, cc.winSize.height - this.header_height - this.banner_height / 2))
+                this.addChild(playerResult_RoundedRect)
+                this.addChild(bankerResult_RoundedRect)
+
+                var playerResultLabel = new cc.LabelTTF("闲", "Arial", 17)
+                playerResultLabel.attr({
+                    fillStyle: cc.color(80, 142, 255),
+                    x: playerResult_RoundedRect_width / 2,
+                    y: playerResult_RoundedRect_height - playerResultLabel.getContentSize().height / 2 - 3,
+                })
+                playerResult_RoundedRect.addChild(playerResultLabel)
+                var bankerResultLabel = new cc.LabelTTF("庄", "Arial", 17)
+                bankerResultLabel.attr({
+                    fillStyle: cc.color(255, 64, 71),
+                    x: playerResult_RoundedRect_width / 2,
+                    y: playerResult_RoundedRect_height - playerResultLabel.getContentSize().height / 2 - 3,
+                })
+                bankerResult_RoundedRect.addChild(bankerResultLabel)
+
+                var playerResultScore = new cc.LabelTTF("9", "Arial", 15)
+                playerResultScore.attr({
+                    fillStyle: cc.color(255, 255, 255),
+                    x: playerResult_RoundedRect_width / 2,
+                    y: paddingY / 2
+                })
+                playerResult_RoundedRect.addChild(playerResultScore)
+                var bankerResultScore = new cc.LabelTTF("7", "Arial", 15)
+                bankerResultScore.attr({
+                    fillStyle: cc.color(255, 255, 255),
+                    x: playerResult_RoundedRect_width / 2,
+                    y: paddingY / 2
+                })
+                bankerResult_RoundedRect.addChild(bankerResultScore)
+
+                
+                await this.sleep(7000)
+                this.removeCards()
+                this.removeChild(playerResult_RoundedRect)
+                this.removeChild(bankerResult_RoundedRect)
+                this.betOpenInterval()
                 return
             }
             draw_second = draw_second - 1
@@ -808,13 +884,19 @@ var BaccaratGameLayer = cc.Layer.extend({
             await this.sleep(200)
             this.addChild(this.resultCards[index])
             this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), (card_width / this.resultCards[index].getContentSize().width)))
-            await this.sleep(200)
+            await this.sleep(150)
         }
 
     },
 
     removeCards: function () {
         console.log("removecards method")
+        for (let index = 0; index < this.cardBackSprite.length; index++) {
+            this.removeChild(this.cardBackSprite[index])
+        }
+        for (let index = 0; index < this.resultCards.length; index++) {
+            this.removeChild(this.resultCards[index])
+        }
     },
 
     gotoHome: function (sender, type) {
