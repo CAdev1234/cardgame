@@ -199,6 +199,7 @@ var HomeLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
                 console.log("gotoNiuniu")
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, new NiuNiuGameScene()))
                 break
         }
@@ -209,6 +210,7 @@ var HomeLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoBaccarat")
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, new BaccaratGameScene()))
                 break
         }

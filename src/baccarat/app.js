@@ -9,10 +9,14 @@ var BgLayer = cc.Layer.extend({
 
 var BaccaratGameLayer = cc.Layer.extend({
     btnwrapSprite_zOrder: 1,
+    alert_zOrder: 100,
     header_height: null,
 
     serail_num_panel: null,
     serial_num: [],
+
+    cardCountVal: null,
+    cardCountVal_num: null,
 
     banner_height: null,
     historyBtn: null,
@@ -22,10 +26,15 @@ var BaccaratGameLayer = cc.Layer.extend({
     soundOnBtn: null,
     enableSoundOn: true,
 
+    btnwrapSprite_y_delta: null,
+    btnwrapSprite_height: null,
+
     cards: [],
     card_width: 50,
     cardBackSprite: [],
     resultCards: [],
+    resultCardsIndexArray: [],
+    cloneCards: [],
 
 
     gamePanel_height: null,
@@ -43,6 +52,20 @@ var BaccaratGameLayer = cc.Layer.extend({
     panel5_DealedCoins: [],
     panel6_DealedCoins: [],
     panel7_DealedCoins: [],
+    panel1_ValRoundRect_Label: null,
+    panel2_ValRoundRect_Label: null,
+    panel3_ValRoundRect_Label: null,
+    panel4_ValRoundRect_Label: null,
+    panel5_ValRoundRect_Label: null,
+    panel6_ValRoundRect_Label: null,
+    panel7_ValRoundRect_Label: null,
+    panel1_ValRoundRect: null,
+    panel2_ValRoundRect: null,
+    panel3_ValRoundRect: null,
+    panel4_ValRoundRect: null,
+    panel5_ValRoundRect: null,
+    panel6_ValRoundRect: null,
+    panel7_ValRoundRect: null,
 
     dealedCoins_tag: 1,
 
@@ -64,7 +87,18 @@ var BaccaratGameLayer = cc.Layer.extend({
     close_state: false,
     open_state: true,
 
+    overLay_zOrder: 2,
 
+    coinDealCheckDlg_overLay: null,
+    coinDealCheckDlg: null,
+    coinDealCheckDlgYesBtn: null,
+    coinDealCheckDlgNoBtn: null,
+    
+    checkSuccessDlg_overLay: null,
+    checkSuccessDlg: null,
+
+    dealCancelDlg_overLay: null,
+    dealCancelDlg: null,
 
     ctor: function () {
         this._super()
@@ -81,6 +115,9 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.panel7_DealedCoins = []
         this.enabledCoin.fill(false)
         
+        // game bgsound play
+        cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
+        cc.audioEngine.setMusicVolume(0.5)
 
         // store card image using batchNode
         var cardType = ["C", "D", "H", "S"]
@@ -171,24 +208,25 @@ var BaccaratGameLayer = cc.Layer.extend({
             y: size.height - this.header_height - paddingY
         })
         this.addChild(cardCountSprite)
-        var cardCountVal = new cc.LabelTTF("156/" + 8 * 52, "Arial", 15)
-        cardCountVal.attr({
+        this.cardCountVal_num = 156
+        this.cardCountVal = new cc.LabelTTF(this.cardCountVal_num + "/" + 8 * 52, "Arial", 15)
+        this.cardCountVal.attr({
             fillStyle: cc.color(255, 255, 255),
-            x: cardCountVal.getContentSize().width / 2 + paddingX / 4 + cardCountSprite_width,
+            x: this.cardCountVal.getContentSize().width / 2 + paddingX / 4 + cardCountSprite_width,
             y: size.height - this.header_height - paddingY
         })
-        this.addChild(cardCountVal)
+        this.addChild(this.cardCountVal)
 
         // btnwrap sprite
         var btnwrapSprite = new cc.Sprite(res.btn_wrap_png)
         var btnwrapSprite_width = size.width
-        var btnwrapSprite_height = btnwrapSprite_width / btnwrapSprite.getContentSize().width * btnwrapSprite.getContentSize().height
-        var btnwrapSprite_y_delta = 10
+        this.btnwrapSprite_height = btnwrapSprite_width / btnwrapSprite.getContentSize().width * btnwrapSprite.getContentSize().height
+        this.btnwrapSprite_y_delta = 10
         btnwrapSprite.attr({
             scaleX: btnwrapSprite_width / btnwrapSprite.getContentSize().width,
             scaleY: btnwrapSprite_width / btnwrapSprite.getContentSize().width,
             x: btnwrapSprite_width / 2,
-            y: size.height - btnwrapSprite_height / 2 - this.header_height - this.banner_height + btnwrapSprite_y_delta
+            y: size.height - this.btnwrapSprite_height / 2 - this.header_height - this.banner_height + this.btnwrapSprite_y_delta
         })
         this.addChild(btnwrapSprite, this.btnwrapSprite_zOrder)
 
@@ -198,7 +236,7 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.goHomeBtn.attr({
             pressedActionEnabled: true,
             x: size.width / 6,
-            y: size.height - goHomeBtn_height / 2 - this.header_height - this.banner_height + btnwrapSprite_y_delta,
+            y: size.height - goHomeBtn_height / 2 - this.header_height - this.banner_height + this.btnwrapSprite_y_delta,
             scaleX: goHomeBtn_width / this.goHomeBtn.getContentSize().width,
             scaleY: goHomeBtn_width / this.goHomeBtn.getContentSize().width,
             pressedActionEnabled: true
@@ -239,129 +277,158 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.addChild(this.soundOnBtn, this.btnwrapSprite_zOrder)
 
         // game panel
-        this.gamePanel_height = size.height - this.header_height - this.banner_height - this.coinWrapSprite_height - this.betAmountBg_height + btnwrapSprite_y_delta
-        this.panelArea1 = new cc.DrawNode()
+        this.gamePanel_height = size.height - this.header_height - this.banner_height - this.coinWrapSprite_height - this.betAmountBg_height + this.btnwrapSprite_y_delta
+        
         var panelArea1_width = size.width / 4 - 1
-        this.panelArea1.drawRect(cc.p(0, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(panelArea1_width, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        this.panelArea1 = new cc.LayerColor(cc.color(25, 74, 148), panelArea1_width, size.height - this.header_height - this.banner_height - this.coinWrapSprite_height - this.betAmountBg_height + this.betAmountBg_height_delta)
+        this.panelArea1.setPosition(cc.p(0, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta))
         this.addChild(this.panelArea1)
+
         var panelLabel1 = new cc.LabelTTF("闲", "Arial", 40)
         panelLabel1.attr({
             fillStyle: cc.color(80, 141, 255),
             x: panelArea1_width / 2,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 2
+            y: this.gamePanel_height / 2
         })
         this.panelArea1.addChild(panelLabel1)
         var panelLabel1_rate = new cc.LabelTTF("1:2", "Arial", 15)
         panelLabel1_rate.attr({
             fillStyle: cc.color(80, 141, 255),
             x: panelArea1_width / 2,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 2 - panelLabel1.getContentSize().height / 2 - paddingY / 4
+            y: this.gamePanel_height / 2 - panelLabel1.getContentSize().height / 2 - paddingY / 4
         })
         this.panelArea1.addChild(panelLabel1_rate)
 
         
 
-        this.panelArea2 = new cc.DrawNode()
-        this.panelArea2.drawRect(cc.p(panelArea1_width + 2, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2), cc.p(size.width / 2 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.panelArea2 = new cc.DrawNode()
+        // this.panelArea2.drawRect(cc.p(panelArea1_width + 2, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2), cc.p(size.width / 2 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea2)
+
+        this.panelArea2 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 4 - 2, this.gamePanel_height / 3)
+        this.panelArea2.setPosition(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2))
         this.addChild(this.panelArea2)
+
         var panelLabel2 = new cc.LabelTTF("大", "Arial", 20)
         panelLabel2.attr({
             fillStyle: cc.color(80, 141, 255),
-            x: size.width / 4 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + this.gamePanel_height / 6
+            x: size.width / 8,
+            y: this.gamePanel_height / 6
         })
         this.panelArea2.addChild(panelLabel2)
+        
+
         var panelLabel2_rate = new cc.LabelTTF("1:0.5", "Arial", 15)
         panelLabel2_rate.attr({
             fillStyle: cc.color(80, 141, 255),
-            x: size.width / 4 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + this.gamePanel_height / 6 - panelLabel2.getContentSize().height / 2 - paddingY / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 6 - panelLabel2.getContentSize().height / 2 - paddingY / 2
         })
         this.panelArea2.addChild(panelLabel2_rate)
 
 
-        this.panelArea3 = new cc.DrawNode()
-        this.panelArea3.drawRect(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.panelArea3 = new cc.DrawNode()
+        // this.panelArea3.drawRect(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea3)
+
+        this.panelArea3 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 4 - 2, this.gamePanel_height / 3)
+        this.panelArea3.setPosition(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2))
         this.addChild(this.panelArea3)
+
         var panelLabel3 = new cc.LabelTTF("小", "Arial", 20)
         panelLabel3.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 2 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + this.gamePanel_height / 6
+            x: size.width / 8,
+            y: this.gamePanel_height / 6
         })
         this.panelArea3.addChild(panelLabel3)
         var panelLabel3_rate = new cc.LabelTTF("1:0.5", "Arial", 15)
         panelLabel3_rate.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 2 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + this.gamePanel_height / 6 - panelLabel3.getContentSize().height / 2 - paddingY / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 6 - panelLabel3.getContentSize().height / 2 - paddingY / 2
         })
         this.panelArea3.addChild(panelLabel3_rate)
 
-        this.panelArea4 = new cc.DrawNode()
-        this.panelArea4.drawRect(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 + 1), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 - 2), cc.color(25, 74, 148), 0, null)
+        // this.panelArea4 = new cc.DrawNode()
+        // this.panelArea4.drawRect(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 + 1), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 - 2), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea4)
+
+        this.panelArea4 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 2 - 2, this.gamePanel_height / 3 - 2)
+        this.panelArea4.setPosition(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3))
         this.addChild(this.panelArea4)
         var panelLabel4 = new cc.LabelTTF("和 1:8", "Arial", 40)
         panelLabel4.attr({
             fillStyle: cc.color(0, 220, 52),
-            x: size.width / 2,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 2
+            x: size.width / 4,
+            y: this.gamePanel_height / 6
         })
         this.panelArea4.addChild(panelLabel4)
 
-        this.panelArea5 = new cc.DrawNode()
-        this.panelArea5.drawRect(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width / 2 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - 1), cc.color(25, 74, 148), 0, null)
+        // this.panelArea5 = new cc.DrawNode()
+        // this.panelArea5.drawRect(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width / 2 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - 1), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea5)
+
+        this.panelArea5 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 4 - 2, this.gamePanel_height / 3 - 1)
+        this.panelArea5.setPosition(cc.p(size.width / 4 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta))
         this.addChild(this.panelArea5)
         var panelLabel5 = new cc.LabelTTF("闲对", "Arial", 20)
         panelLabel5.attr({
             fillStyle: cc.color(80, 141, 255),
-            x: size.width / 4 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 6
+            x: size.width / 8,
+            y: this.gamePanel_height / 6
         })
         this.panelArea5.addChild(panelLabel5)
         var panelLabel5_rate = new cc.LabelTTF("1:12", "Arial", 15)
         panelLabel5_rate.attr({
             fillStyle: cc.color(80, 141, 255),
-            x: size.width / 4 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 6 - panelLabel5.getContentSize().height / 2 - paddingY / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 6 - panelLabel5.getContentSize().height / 2 - paddingY / 2
         })
         this.panelArea5.addChild(panelLabel5_rate)
 
-        this.panelArea6 = new cc.DrawNode()
-        this.panelArea6.drawRect(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - 1), cc.color(25, 74, 148), 0, null)
+        // this.panelArea6 = new cc.DrawNode()
+        // this.panelArea6.drawRect(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width / 4 * 3 - 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - 1), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea6)
+
+        this.panelArea6 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 4 - 2, this.gamePanel_height / 3 - 1)
+        this.panelArea6.setPosition(cc.p(size.width / 2 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta))
         this.addChild(this.panelArea6)
         var panelLabel6 = new cc.LabelTTF("庄对", "Arial", 20)
         panelLabel6.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 2 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 6
+            x: size.width / 8,
+            y: this.gamePanel_height / 6
         })
         this.panelArea6.addChild(panelLabel6)
         var panelLabel6_rate = new cc.LabelTTF("1:12", "Arial", 15)
         panelLabel6_rate.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 2 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 6 - panelLabel6.getContentSize().height / 2 - paddingY / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 6 - panelLabel6.getContentSize().height / 2 - paddingY / 2
         })
         this.panelArea6.addChild(panelLabel6_rate)
 
 
-        this.panelArea7 = new cc.DrawNode()
-        var panelArea7_width = size.width / 4 - 1
-        this.panelArea7.drawRect(cc.p(size.width / 4 * 3 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.panelArea7 = new cc.DrawNode()
+        // this.panelArea7.drawRect(cc.p(size.width / 4 * 3 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta), cc.p(size.width, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height), cc.color(25, 74, 148), 0, null)
+        // this.addChild(this.panelArea7)
+
+        this.panelArea7 = new cc.LayerColor(cc.color(25, 74, 148), size.width / 4 - 1, this.gamePanel_height)
+        this.panelArea7.setPosition(cc.p(size.width / 4 * 3 + 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta))
         this.addChild(this.panelArea7)
         var panelLabel7 = new cc.LabelTTF("庄", "Arial", 40)
         panelLabel7.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 4 * 3 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 2
         })
         this.panelArea7.addChild(panelLabel7)
         var panelLabel7_rate = new cc.LabelTTF("1:1.95", "Arial", 15)
         panelLabel7_rate.attr({
             fillStyle: cc.color(255, 64, 71),
-            x: size.width / 4 * 3 + size.width / 8,
-            y: this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 2 - panelLabel7.getContentSize().height / 2 - paddingY / 2
+            x: size.width / 8,
+            y: this.gamePanel_height / 2 - panelLabel7.getContentSize().height / 2 - paddingY / 2
         })
         this.panelArea7.addChild(panelLabel7_rate)
 
@@ -373,46 +440,48 @@ var BaccaratGameLayer = cc.Layer.extend({
         var betAmountTotalSprite = cc.Sprite.create(res.bet_amount_total_png)
         var betAmountTotalSprite_width = 20
         var betAmountTotalSprite_height = betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width * betAmountTotalSprite.getContentSize().height
+        
+        var betAmountTotal_RoundRect = new RoundRect(80, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
+        betAmountTotal_RoundRect.setPosition(paddingX / 4, this.coinWrapSprite_height)
+        this.addChild(betAmountTotal_RoundRect)
         betAmountTotalSprite.attr({
-            x: betAmountTotalSprite_width / 2 + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height,
+            x: betAmountTotalSprite_width / 2 + paddingX / 4,
+            y: betAmountTotalSprite_height / 2,
             scaleX: betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width,
             scaleY: betAmountTotalSprite_width / betAmountTotalSprite.getContentSize().width
         })
-        this.addChild(betAmountTotalSprite)
+        betAmountTotal_RoundRect.addChild(betAmountTotalSprite)
 
         var betAmountTotalVal = cc.LabelTTF.create("2000.0", "Arial", 15)
         betAmountTotalVal.attr({
-            x: betAmountTotalVal.getContentSize().width / 2 + betAmountTotalSprite_width + paddingX / 2 + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height,
+            x: betAmountTotal_RoundRect.getContentSize().width - 30,
+            y: betAmountTotalSprite_height / 2,
             fillStyle: cc.color(255, 255, 255)
         })
-        this.addChild(betAmountTotalVal)
+        betAmountTotal_RoundRect.addChild(betAmountTotalVal)
 
-        var betAmountTotal_RoundRect = new RoundRect(betAmountTotalSprite_width + betAmountTotalVal.getContentSize().width + paddingX, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        betAmountTotal_RoundRect.setPosition(paddingX / 4, this.coinWrapSprite_height)
-        this.addChild(betAmountTotal_RoundRect)
         
+        
+        this.betAmountToken_RoundRect = new RoundRect(80, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
+        this.betAmountToken_RoundRect.setPosition(cc.p(betAmountTotal_RoundRect.getContentSize().width + paddingX / 2, this.coinWrapSprite_height))
+        this.addChild(this.betAmountToken_RoundRect)
         var betAmountTokenSprite = cc.Sprite.create(res.bet_amount_token_png)
         var betAmountTokenSprite_height = 15
         var betAmountTokenSprite_width = betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height * betAmountTokenSprite.getContentSize().height
         betAmountTokenSprite.attr({
-            x: betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height,
             scaleX: betAmountTokenSprite_width / betAmountTokenSprite.getContentSize().width,
             scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
         })
-        this.addChild(betAmountTokenSprite)
+        betAmountTokenSprite.setPosition(cc.p(betAmountTokenSprite_width / 2 + paddingX / 4, betAmountTokenSprite_height / 2 + paddingY / 4))
+        this.betAmountToken_RoundRect.addChild(betAmountTokenSprite)
         this.betAmountTokenVal = new cc.LabelTTF("0.0", "Arial", 15)
         this.betAmountTokenVal.attr({
-            x: this.betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height,
+            x: this.betAmountToken_RoundRect.getContentSize().width - this.betAmountTokenVal.getContentSize().width,
+            y: this.betAmountTokenVal.getContentSize().height / 2 + 1,
             fillStyle: cc.color(255, 255, 255)
         })
-        this.addChild(this.betAmountTokenVal)
-        this.betAmountToken_RoundRect = new RoundRect(betAmountTokenSprite_width + paddingX / 2 + this.betAmountTokenVal.getContentSize().width + paddingX / 2, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        this.betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, this.coinWrapSprite_height)
-        this.addChild(this.betAmountToken_RoundRect)
+        this.betAmountToken_RoundRect.addChild(this.betAmountTokenVal)
+        
 
         // cancel button
         this.cancelBtn = new ccui.Button(res.red_btn_png, res.red_btn_png, res.disabled_red_btn_png)
@@ -505,13 +574,12 @@ var BaccaratGameLayer = cc.Layer.extend({
                             scaleY: bet_closed_alert_width / bet_closed_alert.getContentSize().width
                         })
                         bet_closed_alert.setPosition(cc.p(size.width / 2, size.height / 2))
-                        this.addChild(bet_closed_alert)
+                        this.addChild(bet_closed_alert, this.alert_zOrder)
                         setTimeout(() => {
                             this.removeChild(bet_closed_alert)
                         }, 2000);
                         return
                     }
-                    cc.audioEngine.playEffect(res.coin_drop_wav)
                     var coinItem = new cc.Sprite(this.coinImages[this.enabledCoin.findIndex(this.findTrue)])
                     var coinVal = this.coinImages[this.enabledCoin.findIndex(this.findTrue)].replace("res/niuniu/coin-sprite-", "")
                     coinVal = Number(coinVal.replace(".png", ""))
@@ -522,46 +590,130 @@ var BaccaratGameLayer = cc.Layer.extend({
                         scaleY: 25 / coinItem.getContentSize().width
                     })
                     if (touch_x > 0 && touch_x < size.width / 4 - paddingX) {
+                        if (this.panel1_DealedCoins.length == 0) {
+                            this.panel1_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                            this.panel1_ValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
+                            this.panel1_ValRoundRect = new RoundRect(60, this.panel1_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                            this.panel1_ValRoundRect_Label.setPosition(cc.p(this.panel1_ValRoundRect.getContentSize().width / 2, this.panel1_ValRoundRect_Label.getContentSize().height / 2))
+                            this.panel1_ValRoundRect.setPosition(cc.p(cc.winSize.width / 8 - this.panel1_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                            this.panelArea1.addChild(this.panel1_ValRoundRect) 
+                            this.panel1_ValRoundRect.addChild(this.panel1_ValRoundRect_Label)
+                        }
+                        cc.audioEngine.playEffect(res.coin_drop_wav)
                         this.panel1_DealedCoins.push(coinVal)
+                        var length_var = this.panel1_ValRoundRect_Label.getContentSize().width
+                        this.panel1_ValRoundRect_Label.setString(this.sumCoins(this.panel1_DealedCoins))
                         this.addChild(coinItem, 0, this.dealedCoins_tag)
                     }
                     if (touch_x > size.width / 4 + paddingX && 
                         touch_x < size.width / 2 - paddingX && 
                         touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + paddingY) &&
                         touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height - paddingY)) {
+                            if (this.panel2_DealedCoins.length == 0) {
+                                this.panel2_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel2_ValRoundRect_Label.attr({
+                                    fillStyle: cc.color(255, 255, 255),
+                                })
+                                this.panel2_ValRoundRect = new RoundRect(60, this.panel2_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel2_ValRoundRect_Label.setPosition(cc.p(this.panel2_ValRoundRect.getContentSize().width / 2, this.panel2_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel2_ValRoundRect.setPosition(cc.p(size.width / 8 - this.panel2_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea2.addChild(this.panel2_ValRoundRect) 
+                                this.panel2_ValRoundRect.addChild(this.panel2_ValRoundRect_Label)
+                                
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)
                             this.panel2_DealedCoins.push(coinVal)
+                            this.panel2_ValRoundRect_Label.setString(this.sumCoins(this.panel2_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                     }
                     if (touch_x > size.width / 2 + paddingX &&
                         touch_x < (size.width / 2 + size.width / 4 - paddingX) &&
                         touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 + paddingY) &&
                         touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height - paddingY)) {
+                            if (this.panel3_DealedCoins.length == 0) {
+                                this.panel3_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel3_ValRoundRect_Label.attr({
+                                    fillStyle: cc.color(255, 255, 255),
+                                })
+                                this.panel3_ValRoundRect = new RoundRect(60, this.panel3_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel3_ValRoundRect_Label.setPosition(cc.p(this.panel3_ValRoundRect.getContentSize().width / 2, this.panel3_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel3_ValRoundRect.setPosition(cc.p(size.width / 8 - this.panel3_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea3.addChild(this.panel3_ValRoundRect) 
+                                this.panel3_ValRoundRect.addChild(this.panel3_ValRoundRect_Label)
+                                
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)
                             this.panel3_DealedCoins.push(coinVal)
+                            this.panel3_ValRoundRect_Label.setString(this.sumCoins(this.panel3_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                         }
                     if (touch_x > size.width / 4 + paddingY &&
                         touch_x < (size.width / 2 + size.width / 4 - paddingY) &&
                         touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 + paddingY) &&
                         touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 * 2 - paddingY)) {
+                            if (this.panel4_DealedCoins.length == 0) {
+                                this.panel4_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel4_ValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
+                                this.panel4_ValRoundRect = new RoundRect(60, this.panel4_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel4_ValRoundRect_Label.setPosition(cc.p(this.panel4_ValRoundRect.getContentSize().width / 2, this.panel4_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel4_ValRoundRect.setPosition(cc.p(cc.winSize.width / 4 - this.panel4_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea4.addChild(this.panel4_ValRoundRect) 
+                                this.panel4_ValRoundRect.addChild(this.panel4_ValRoundRect_Label)
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)
                             this.panel4_DealedCoins.push(coinVal)
+                            this.panel4_ValRoundRect_Label.setString(this.sumCoins(this.panel4_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                         }
                     if (touch_x > size.width / 4 + paddingX &&
                         touch_x < size.width / 2 - paddingY &&
                         touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + paddingY) &&
                         touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - paddingY)) {
+                            if (this.panel5_DealedCoins.length == 0) {
+                                this.panel5_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel5_ValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
+                                this.panel5_ValRoundRect = new RoundRect(60, this.panel5_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel5_ValRoundRect_Label.setPosition(cc.p(this.panel5_ValRoundRect.getContentSize().width / 2, this.panel5_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel5_ValRoundRect.setPosition(cc.p(cc.winSize.width / 8 - this.panel5_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea5.addChild(this.panel5_ValRoundRect) 
+                                this.panel5_ValRoundRect.addChild(this.panel5_ValRoundRect_Label)
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)
                             this.panel5_DealedCoins.push(coinVal)
+                            this.panel5_ValRoundRect_Label.setString(this.sumCoins(this.panel5_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                         }
                     if (touch_x > size.width / 2 + paddingX &&
                         touch_x < (size.width / 2 + size.width / 4 - paddingX) &&
                         touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + paddingY) &&
                         touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 3 - paddingY)) {
+                            if (this.panel6_DealedCoins.length == 0) {
+                                this.panel6_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel6_ValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
+                                this.panel6_ValRoundRect = new RoundRect(60, this.panel6_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel6_ValRoundRect_Label.setPosition(cc.p(this.panel6_ValRoundRect.getContentSize().width / 2, this.panel6_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel6_ValRoundRect.setPosition(cc.p(cc.winSize.width / 8 - this.panel6_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea6.addChild(this.panel6_ValRoundRect) 
+                                this.panel6_ValRoundRect.addChild(this.panel6_ValRoundRect_Label)
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)
                             this.panel6_DealedCoins.push(coinVal)
+                            this.panel6_ValRoundRect_Label.setString(this.sumCoins(this.panel6_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                         }
                     if (touch_x > (size.width / 2 + size.width / 4 + paddingX) && touch_x < (size.width - paddingX)) {
+                            if (this.panel7_DealedCoins.length == 0) {
+                                this.panel7_ValRoundRect_Label = new cc.LabelTTF(coinVal, "Arial", 13)
+                                this.panel7_ValRoundRect_Label.setFontFillColor(cc.color(255, 255, 255))
+                                this.panel7_ValRoundRect = new RoundRect(60, this.panel7_ValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panel7_ValRoundRect_Label.setPosition(cc.p(this.panel7_ValRoundRect.getContentSize().width / 2, this.panel7_ValRoundRect_Label.getContentSize().height / 2))
+                                this.panel7_ValRoundRect.setPosition(cc.p(cc.winSize.width / 8 - this.panel7_ValRoundRect.getContentSize().width / 2, paddingY / 2))
+                                this.panelArea7.addChild(this.panel7_ValRoundRect) 
+                                this.panel7_ValRoundRect.addChild(this.panel7_ValRoundRect_Label)
+                            }
+                            cc.audioEngine.playEffect(res.coin_drop_wav)    
                             this.panel7_DealedCoins.push(coinVal)
+                            this.panel7_ValRoundRect_Label.setString(this.sumCoins(this.panel7_DealedCoins))
                             this.addChild(coinItem, 0, this.dealedCoins_tag)
                         }
                     
@@ -578,7 +730,6 @@ var BaccaratGameLayer = cc.Layer.extend({
 
         cc.eventManager.addListener(this.coinDropListener, this.panelArea1)
 
-        
         // betOpenInterval function called for counting seconds
         this.betOpenInterval()
 
@@ -595,6 +746,21 @@ var BaccaratGameLayer = cc.Layer.extend({
         )
     },
 
+    generateRandomNumArray: function (min, max, count) {
+        var random_number_array = []
+        for (let index = min; index < max; index++) {
+            var random_integer = Math.floor(Math.random() * (max - min + 1)) + min
+            if (count == index - min) break
+            if (random_number_array.filter(item => item === random_integer).length === 0) {
+                random_number_array.push(random_integer)
+            }else {
+                index = index - 1
+            }
+            
+        }
+        return random_number_array
+    },
+
     sumCoins: function (arrayVal) {
         var sum = 0
         for (let index = 0; index < arrayVal.length; index++) {
@@ -603,30 +769,397 @@ var BaccaratGameLayer = cc.Layer.extend({
         return sum
     },
 
-    displaySerialPanel: function () {
-        var size = cc.winSize
-        var paddingX = 20
-        var paddingY = 20
-        var serial_num_height = 20
-        this.serial_num_panel = new cc.DrawNode()
-        this.serial_num_panel.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
-        this.addChild(this.serial_num_panel)
-        for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
-            })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2))
-            this.serial_num[index].addChild(serial_num_label)
-            this.serial_num_panel.addChild(this.serial_num[index])
+    showCoinDealCheckDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("showcoindealcheckdlg")
+                this.disableAllBtn()
+                // coinDealCheckDlg
+                var paddingX = 20
+                var paddingY = 20
+                var panelOneSum = 0
+                var panelTwoSum = 0
+                var panelThreeSum = 0
+                this.coinDealCheckDlg_overLay = new cc.DrawNode()
+                this.coinDealCheckDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
+                this.addChild(this.coinDealCheckDlg_overLay, this.overLay_zOrder)
+                this.coinDealCheckDlg_zOrder = this.overLay_zOrder + 1
+                var coinDealCheckDlg_height = 420
+                var coinDealCheckDlg_width = cc.winSize.width - paddingX * 3
+                this.coinDealCheckDlg = new RoundRect(coinDealCheckDlg_width, coinDealCheckDlg_height, cc.color(0, 0, 0), 0, null, 10, null)
+                var coinDealCheckDlg_y = cc.winSize.height / 2 - coinDealCheckDlg_height / 2
+                this.coinDealCheckDlg.setPosition(cc.p(paddingX * 3 / 2, coinDealCheckDlg_y))
+                this.addChild(this.coinDealCheckDlg, this.coinDealCheckDlg_zOrder)
+                
+                var betAmountTokenSprite1 = cc.Sprite.create(res.bet_amount_token_png)
+                var betAmountTokenSprite1_height = 20
+                var betAmountTokenSprite1_width = betAmountTokenSprite1_height / betAmountTokenSprite1.getContentSize().height * betAmountTokenSprite1.getContentSize().height
+                var betOrderConfirmLabel = new cc.LabelTTF("确认下注单", "Arial", 16)
+                betAmountTokenSprite1.attr({
+                    scaleX: betAmountTokenSprite1_width / betAmountTokenSprite1.getContentSize().width,
+                    scaleY: betAmountTokenSprite1_height / betAmountTokenSprite1.getContentSize().height
+                })
+                betOrderConfirmLabel.attr({
+                    fillStyle: cc.color(255, 255, 255)
+                })
+                betAmountTokenSprite1.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite1_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2,  coinDealCheckDlg_height - betAmountTokenSprite1_height / 2 - paddingY + 2))
+                betOrderConfirmLabel.setPosition(cc.p(this.coinDealCheckDlg.getContentSize().width / 2 - (betAmountTokenSprite1_width + paddingX / 2 + betOrderConfirmLabel.getContentSize().width) / 2 + paddingX / 2 + betOrderConfirmLabel.getContentSize().width / 2 + paddingX / 2, coinDealCheckDlg_height - betAmountTokenSprite1_height / 2 - paddingY + 2))
+                this.coinDealCheckDlg.addChild(betAmountTokenSprite1, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(betOrderConfirmLabel, this.coinDealCheckDlg_zOrder)
 
-            
-            var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
-            this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
+                var closeBtn_width = 20
+                var closeBtn = new ccui.Button(res.cancel_icon_png, res.cancel_icon_png, res.cancel_icon_png)
+                closeBtn.attr({
+                    scaleX: closeBtn_width / closeBtn.getContentSize().width,
+                    scaleY: closeBtn_width / closeBtn.getContentSize().width,
+                    x: coinDealCheckDlg_width
+                })
+
+
+                var hrLine1 = new cc.LayerColor(cc.color(102, 102, 102), coinDealCheckDlg_width - paddingX, 1)
+                hrLine1.setPosition(cc.p(paddingX / 2, coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2))
+                this.coinDealCheckDlg.addChild(hrLine1, this.coinDealCheckDlg_zOrder)
+
+                var field1Label = new cc.LabelTTF("操作", "Arial", 15)
+                var field2Label = new cc.LabelTTF("玩法", "Arial", 15)
+                var field3Label = new cc.LabelTTF("赔率", "Arial", 15)
+                var field4Label = new cc.LabelTTF("金额", "Arial", 15)
+                field1Label.attr({
+                    fillStyle: cc.color(187, 187, 187)
+                })
+                field2Label.attr({
+                    fillStyle: cc.color(187, 187, 187)
+                })
+                field3Label.attr({
+                    fillStyle: cc.color(187, 187, 187)
+                })
+                field4Label.attr({
+                    fillStyle: cc.color(187, 187, 187)
+                })
+                field1Label.setPosition(cc.p(field1Label.getContentSize().width / 2 + paddingX / 2, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
+                field2Label.setPosition(cc.p(field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2- paddingY / 4))
+                field3Label.setPosition(cc.p(field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width  + paddingX, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2- paddingY / 4))
+                field4Label.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 + field4Label.getContentSize().width / 2 - 70, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
+                this.coinDealCheckDlg.addChild(field1Label, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(field2Label, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(field3Label, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(field4Label, this.coinDealCheckDlg_zOrder)
+
+                var hrLine2 = new cc.LayerColor(cc.color(102, 102, 102), coinDealCheckDlg_width - paddingX, 1)
+                hrLine2.setPosition(cc.p(paddingX / 2, coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2- paddingY / 4 - field1Label.getContentSize().height - paddingY / 4))
+                this.coinDealCheckDlg.addChild(hrLine2, this.coinDealCheckDlg_zOrder)
+                
+                var checkRadioSprite_width = 20
+                var dealedPanelNum = 0
+                if (this.panel1_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("闲", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(80, 141, 255),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("2", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel1_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel2_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("大", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(80, 141, 255),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("0.5", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel2_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel5_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("闲对", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(80, 141, 255),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("12", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel5_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel3_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("小", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(255, 64, 71),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("0.5", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel3_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel6_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("庄对", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(255, 64, 71),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("12", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel6_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel7_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("庄", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(255, 64, 71),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("1.95", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel7_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                if (this.panel4_DealedCoins.length !== 0) {
+                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
+                    checkRadioSprite1.attr({
+                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
+                        x: checkRadioSprite_width / 2 + paddingX / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(checkRadioSprite1, this.coinDealCheckDlg_zOrder)
+                    var field2Val = new cc.LabelTTF("和", "Arial", 18)
+                    field2Val.attr({
+                        fillStyle: cc.color(0, 221, 51),
+                        x: field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field2Val, this.coinDealCheckDlg_zOrder)
+                    var field3Val = new cc.LabelTTF("8", "Arial", 18)
+                    field3Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX + field2Label.getContentSize().width + paddingX,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field3Val)
+                    var field4RoundRect_width = 120
+                    var field4RoundRect_height = checkRadioSprite_width
+                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width, coinDealCheckDlg_height  - field4RoundRect_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
+                    this.coinDealCheckDlg.addChild(field4RoundRect, this.coinDealCheckDlg_zOrder)
+                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel4_DealedCoins), "Arial", 18)
+                    field4Val.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: coinDealCheckDlg_width - paddingX / 2 - field4RoundRect_width / 2,
+                        y: coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
+                    })
+                    this.coinDealCheckDlg.addChild(field4Val, this.coinDealCheckDlg_zOrder)
+                    dealedPanelNum = dealedPanelNum + 1
+                }
+
+                var totalfieldLabel = new cc.LabelTTF("总金额:", "Arial", 18)
+                totalfieldLabel.attr({
+                    fillStyle: cc.color(255, 255, 255),
+                    x: paddingX / 2 + totalfieldLabel.getContentSize().width / 2,
+                    y: coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - paddingY - 3
+                })
+                this.coinDealCheckDlg.addChild(totalfieldLabel)
+                var totalfieldRoundRect_width = 120
+                var totalfieldRoundRect_height = 20
+                var totalfieldRoundRect = new RoundRect(totalfieldRoundRect_width, totalfieldRoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
+                totalfieldRoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - totalfieldRoundRect_width, coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - paddingY))
+                this.coinDealCheckDlg.addChild(totalfieldRoundRect)
+                var totalfieldVal = new cc.LabelTTF((this.sumCoins(this.panel1_DealedCoins) + this.sumCoins(this.panel2_DealedCoins) + this.sumCoins(this.panel3_DealedCoins) + this.sumCoins(this.panel4_DealedCoins) + this.sumCoins(this.panel5_DealedCoins) + this.sumCoins(this.panel6_DealedCoins) + this.sumCoins(this.panel7_DealedCoins)).toString(), "Arial", 18)
+                totalfieldVal.attr({
+                    fillStyle: cc.color(255, 255, 255),
+                    x: totalfieldRoundRect_width / 2,
+                    y: totalfieldRoundRect_height / 2 - 3
+                })
+                totalfieldRoundRect.addChild(totalfieldVal)
+
+                var dlgBtnBg_height = 70
+                var dlgBtnBg = new RoundRect(cc.winSize.width - paddingX * 3, dlgBtnBg_height, cc.color(255, 255, 255), 0, null, 10, RectType.BOTTOM)
+                dlgBtnBg.setPosition(cc.p(0, 0))
+                this.coinDealCheckDlg.addChild(dlgBtnBg, this.coinDealCheckDlg_zOrder)
+
+                this.coinDealCheckDlgYesBtn = new ccui.Button(res.dlg_yes_btn_png, res.dlg_yes_btn_png, res.dlg_yes_btn_png)
+                var coinDealCheckDlgYesBtn_width = 70 
+                this.coinDealCheckDlgYesBtn.attr({
+                    scaleX: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width,
+                    scaleY: coinDealCheckDlgYesBtn_width / this.coinDealCheckDlgYesBtn.getContentSize().width
+                })
+                this.coinDealCheckDlgNoBtn = new ccui.Button(res.dlg_no_btn_png, res.dlg_no_btn_png, res.dlg_no_btn_png)
+                var coinDealCheckDlgNoBtn_width = 70
+                this.coinDealCheckDlgNoBtn.attr({
+                    scaleX: coinDealCheckDlgNoBtn_width / this.coinDealCheckDlgNoBtn.getContentSize().width,
+                    scaleY: coinDealCheckDlgNoBtn_width / this.coinDealCheckDlgNoBtn.getContentSize().width
+                })
+                this.coinDealCheckDlgYesBtn.setPosition(cc.p(coinDealCheckDlgYesBtn_width / 2 + coinDealCheckDlg_width / 2 - coinDealCheckDlgYesBtn_width - paddingX / 2 , this.coinDealCheckDlgYesBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - this.coinDealCheckDlgYesBtn.getContentSize().height / 2))
+                this.coinDealCheckDlgNoBtn.setPosition(cc.p(coinDealCheckDlgNoBtn_width / 2 + coinDealCheckDlg_width / 2 + paddingX / 2, this.coinDealCheckDlgNoBtn.getContentSize().height / 2 + dlgBtnBg_height / 2 - this.coinDealCheckDlgNoBtn.getContentSize().height / 2))
+                this.coinDealCheckDlgYesBtn.addTouchEventListener(this.showCheckSuccessDlg, this)
+                this.coinDealCheckDlgNoBtn.addTouchEventListener(this.showDealCancelDlg, this)
+                this.coinDealCheckDlg.addChild(this.coinDealCheckDlgYesBtn, this.coinDealCheckDlg_zOrder)
+                this.coinDealCheckDlg.addChild(this.coinDealCheckDlgNoBtn, this.coinDealCheckDlg_zOrder)
         }
     },
 
@@ -634,6 +1167,9 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         this.open_state = true
         this.close_state = false
+        // update cardcountval
+        this.cardCountVal_num = this.cardCountVal_num + 1
+        this.cardCountVal.setString(this.cardCountVal_num + "/" + 52 * 8)
         // card back sprite
         setTimeout(async () => {
             var size = cc.winSize
@@ -676,16 +1212,17 @@ var BaccaratGameLayer = cc.Layer.extend({
             scaleY: bet_start_alert_width / bet_start_alert.getContentSize().width
         })
         bet_start_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2))
-        this.addChild(bet_start_alert)
+        this.addChild(bet_start_alert, this.alert_zOrder)
         setTimeout(() => {
             this.removeChild(bet_start_alert)
         }, 2000); 
         await this.sleep(2000)
-        var close_second = 10
+        var close_second = 20
         var countCloseSecond = setInterval(() => {
             if (close_second == 0) {
                 clearInterval(countCloseSecond)
                 this.close_state = true
+                this.displayCard()
                 this.drawInterval()
                 return
             }
@@ -700,7 +1237,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
                     })
                     bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2))
-                    this.addChild(bet_stop_alert)
+                    this.addChild(bet_stop_alert, this.alert_zOrder)
                     setTimeout(() => {
                         this.removeChild(bet_stop_alert)
                         this.open_state = false
@@ -724,19 +1261,17 @@ var BaccaratGameLayer = cc.Layer.extend({
                 setTimeout(async () => {
                     this.serial_num_panel.removeAllChildren()
                     await this.sleep(500)
-                    console.log("serial_num_panel format")
                     this.displaySerialPanel()
                 }, 2000);
                 await this.sleep(5000)
-                await this.displayCard()
                 await this.sleep(3000)
                 // rearrange cards
                 var changed_card_width = 50 - 15
                 var paddingY = 20
                 var paddingX = 20
                 for (let index = 0; index < this.resultCards.length; index++) {
-                    await this.resultCards[index].setScaleX(changed_card_width / this.resultCards[index].getContentSize().width * (-1))
-                    await this.resultCards[index].setScaleY(changed_card_width / this.resultCards[index].getContentSize().width)
+                    this.resultCards[index].setScaleX(changed_card_width / this.resultCards[index].getContentSize().width * (-1))
+                    this.resultCards[index].setScaleY(changed_card_width / this.resultCards[index].getContentSize().width)
                 }
                 for (let index = 0; index < 5; index++) {
                     var movetoAction = new cc.MoveTo(1, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * index, cc.winSize.height - this.header_height - this.banner_height / 2 + paddingY / 8 + changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2 + paddingY))
@@ -746,28 +1281,50 @@ var BaccaratGameLayer = cc.Layer.extend({
                     var movetoAction = new cc.MoveTo(1, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * (index % 5), cc.winSize.height - this.header_height - this.banner_height / 2 + paddingY / 8 - changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2 - paddingY / 8 + paddingY))
                     this.resultCards[index].runAction(movetoAction)
                 }
-                var choosedCardNum = []
-                for (let index = 0; index < 6; index++) {
-                    choosedCardNum[index] = Math.floor(Math.random() * 10)
+                var choosedCardNum = this.generateRandomNumArray(0, 9, 6)
+                // for (let index = 0; index < choosedCardNum.length; index++) {
+                //     this.resultCards[choosedCardNum[index]].attr({
+                //         opacity: 150
+                //     })
+                // }
+
+                // four cards copy for first showed
+                this.cloneCards = []
+                for (let index = 0; index < choosedCardNum.length; index++) {
+                    
+                    this.cloneCards[index] = new cc.Sprite(this.cards[this.resultCardsIndexArray[choosedCardNum[index]]])
+                    this.cloneCards[index].attr({
+                        scaleX: changed_card_width / this.cloneCards[index].getContentSize().width,
+                        scaleY: changed_card_width /  this.cloneCards[index].getContentSize().width
+                    })
+
+                    this.cloneCards[index].setPosition(this.resultCards[choosedCardNum[index]].getPosition())
                     this.resultCards[choosedCardNum[index]].attr({
                         opacity: 150
-                    }) 
-                }
-
-                // four cards for first showed
-                for (let index = 0; index < choosedCardNum.length; index++) {
-                    var cloneCard = this.resultCards[choosedCardNum[index]]
-                    cloneCard.attr({
-                        scaleX: changed_card_width / cloneCard.getContentSize().width,
-                        scaleY: changed_card_width / cloneCard.getContentSize().width,
-                        x: cc.winSize.width / 2 + paddingX / 8 * index,
-                        y: cc.winSize.height - this.header_height - this.banner_height
                     })
-                    this.addChild(cloneCard)
+                    this.addChild(this.cloneCards[index])
+                    if (index < 2) {
+                        var movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 + (paddingX / 4 + changed_card_width) * index, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        this.cloneCards[index].runAction(movetoAction)
+                        await this.sleep(2000)
+                    }else if (index > 1 && index < 4) {
+                        var movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * (index - 2), cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        this.cloneCards[index].runAction(movetoAction)
+                        await this.sleep(2000)
+                    }else {
+                        // baccarat's third card rule action added
+                        var rotatebyAction = new cc.RotateBy(0.05, -90)
+                        var movetoAction = null
+                        if (index == 4) movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 - paddingX / 4 - (changed_card_width + paddingX / 4) * 2 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        else if (index == 5) movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * 2 + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        this.cloneCards[index].runAction(rotatebyAction)
+                        this.cloneCards[index].runAction(movetoAction)
+                        await this.sleep(2000)
+                    }
+                    
                 }
-                
 
-                
+                await this.sleep(2000)
                 // show score
                 var playerResult_RoundedRect_width = 30
                 var playerResult_RoundedRect_height = 45
@@ -793,26 +1350,32 @@ var BaccaratGameLayer = cc.Layer.extend({
                 })
                 bankerResult_RoundedRect.addChild(bankerResultLabel)
 
-                var playerResultScore = new cc.LabelTTF("9", "Arial", 15)
+                var playerResultScore = new cc.LabelTTF((Math.floor(Math.random() * 10)).toString(), "Arial", 15)
                 playerResultScore.attr({
                     fillStyle: cc.color(255, 255, 255),
                     x: playerResult_RoundedRect_width / 2,
                     y: paddingY / 2
                 })
                 playerResult_RoundedRect.addChild(playerResultScore)
-                var bankerResultScore = new cc.LabelTTF("7", "Arial", 15)
+                var bankerResultScore = new cc.LabelTTF((Math.floor(Math.random() * 10)).toString(), "Arial", 15)
                 bankerResultScore.attr({
                     fillStyle: cc.color(255, 255, 255),
                     x: playerResult_RoundedRect_width / 2,
                     y: paddingY / 2
                 })
                 bankerResult_RoundedRect.addChild(bankerResultScore)
-
                 
+                this.panelArea1.setOpacity(50)
+                this.panelArea3.setOpacity(50)
+
                 await this.sleep(7000)
                 this.removeCards()
+                this.removeCloneCards()
                 this.removeChild(playerResult_RoundedRect)
                 this.removeChild(bankerResult_RoundedRect)
+                this.panelArea1.setOpacity(255)
+                this.panelArea3.setOpacity(255)
+                this.removeDealedCoins()
                 this.betOpenInterval()
                 return
             }
@@ -854,9 +1417,10 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         this.resultCards = []
+        this.resultCardsIndexArray = this.generateRandomNumArray(0, 51, 10)
         var card_width = 50
         for (let index = 0; index < 5; index++) {
-            this.resultCards[index] = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
+            this.resultCards[index] = new cc.Sprite(this.cards[this.resultCardsIndexArray[index]])
             this.resultCards[index].attr({
                 flippedX: true,
                 scaleX: 0,
@@ -871,7 +1435,7 @@ var BaccaratGameLayer = cc.Layer.extend({
             await this.sleep(200)
         }
         for (let index = 5; index < 10; index++) {
-            this.resultCards[index] = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
+            this.resultCards[index] = new cc.Sprite(this.cards[this.resultCardsIndexArray[index]])
             this.resultCards[index].attr({
                 flippedX: true,
                 scaleX: 0,
@@ -887,6 +1451,7 @@ var BaccaratGameLayer = cc.Layer.extend({
             await this.sleep(150)
         }
 
+
     },
 
     removeCards: function () {
@@ -899,17 +1464,212 @@ var BaccaratGameLayer = cc.Layer.extend({
         }
     },
 
-    gotoHome: function (sender, type) {
-        switch (type) {
-            case ccui.Widget.TOUCH_ENDED:
-                cc.director.pushScene(new cc.TransitionFade(1.0, new HomeScene()))
+    removeCloneCards: function () {  
+        console.log("removeCloneCards method")
+        for (let index = 0; index < this.cloneCards.length; index++) {
+            this.removeChild(this.cloneCards[index])
         }
     },
 
+    displaySerialPanel: function () {
+        var size = cc.winSize
+        var paddingX = 20
+        var paddingY = 20
+        var serial_num_height = 20
+        this.serial_num_panel = new cc.DrawNode()
+        this.serial_num_panel.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
+        this.addChild(this.serial_num_panel)
+        for (let index = 0; index < 10; index++) {
+            this.serial_num[index] = new cc.DrawNode()
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
+            
+            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
+            serial_num_label.attr({
+                fillStyle: cc.color(255, 255, 255)
+            })
+            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2))
+            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num_panel.addChild(this.serial_num[index])
+
+            
+            var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
+            this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
+        }
+    },
+
+    showCheckSuccessDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("showCheckSuccessDlg")
+                var paddingX = 20
+                var paddingY = 20
+                var checkSuccessDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
+                this.checkSuccessDlg_overLay = new cc.DrawNode()
+                this.checkSuccessDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
+                this.addChild(this.checkSuccessDlg_overLay, checkSuccessDlg_zOrder)
+                var checkSuccessDlg_height = 120
+                this.checkSuccessDlg = new RoundRect(cc.winSize.width - paddingX * 3, checkSuccessDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
+                this.checkSuccessDlg.setPosition(cc.p(paddingX * 3 / 2, cc.winSize.height / 2 - checkSuccessDlg_height / 2))
+                this.addChild(this.checkSuccessDlg, checkSuccessDlg_zOrder)
+
+                var checkSuccessDlgLabel = new cc.LabelTTF("下注成功", "Arial", 15)
+                checkSuccessDlgLabel.attr({
+                    fillStyle: cc.color(0, 0, 0),
+                    x: this.checkSuccessDlg.getContentSize().width / 2 ,
+                    y: checkSuccessDlg_height / 2 - checkSuccessDlgLabel.getContentSize().height / 2 + paddingY
+                })
+                this.checkSuccessDlg.addChild(checkSuccessDlgLabel)
+                var dlgYesBtn = new ccui.Button(res.green_rounded_bg_rect_png, res.green_rounded_bg_rect_png, res.green_rounded_bg_rect_png)
+                var dlgYesBtn_width = 100
+                var dlgYesBtn_time = 5
+                dlgYesBtn.attr({
+                    pressedActionEnabled: true,
+                    scaleX: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    scaleY: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    x: this.checkSuccessDlg.getContentSize().width / 2,
+                    y: paddingY / 2 + dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2
+                })
+                dlgYesBtn.setTitleText("确定("+ dlgYesBtn_time +")")
+                dlgYesBtn.setTitleFontSize(40)
+                dlgYesBtn.setTitleColor(cc.color(0, 0, 0))
+                dlgYesBtn.addTouchEventListener(this.closeCheckSuccessDlg, this)
+                this.checkSuccessDlg.addChild(dlgYesBtn)
+
+                this.checkSuccessDlg_interval = setInterval(() => {
+                    if (dlgYesBtn_time == 0) {
+                        clearInterval(this.checkSuccessDlg_interval)
+                        this.removeChild(this.checkSuccessDlg)
+                        this.removeChild(this.checkSuccessDlg_overLay)
+                        this.removeChild(this.coinDealCheckDlg)
+                        this.removeChild(this.coinDealCheckDlg_overLay)
+                        this.enableAllBtn()
+
+                        // this.panelOneValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
+                        // this.panelTwoValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
+                        // this.panelThreeValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
+                    }
+                    dlgYesBtn_time = dlgYesBtn_time - 1
+                    dlgYesBtn.setTitleText("确定("+ dlgYesBtn_time +")")
+                }, 1000);
+
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+        }
+    },
+
+    closeCheckSuccessDlg: function (sender, type) { 
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("closeCheckSuccessDlg")
+                clearInterval(this.checkSuccessDlg_interval)
+                this.removeChild(this.checkSuccessDlg)
+                this.removeChild(this.checkSuccessDlg_overLay)
+                this.removeChild(this.coinDealCheckDlg)
+                this.removeChild(this.coinDealCheckDlg_overLay)
+                
+                if (this.panel1_ValRoundRect_Label !== null) this.panel1_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel2_ValRoundRect_Label !== null) this.panel2_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel3_ValRoundRect_Label !== null) this.panel3_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel4_ValRoundRect_Label !== null) this.panel4_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel5_ValRoundRect_Label !== null) this.panel5_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel6_ValRoundRect_Label !== null) this.panel6_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panel7_ValRoundRect_Label !== null) this.panel7_ValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                setTimeout(() => {
+                    this.enableAllBtn()    
+                }, 50);
+
+        }
+    },
+
+    showDealCancelDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("showDealCancelDlg")
+                this.disableAllBtn()
+                var paddingX = 20
+                var paddingY = 20
+                var dealCancelDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
+                var dealCancelDlg_height = 120
+                this.dealCancelDlg_overLay = new cc.DrawNode()
+                this.dealCancelDlg_overLay.drawRect(cc.p(0, 0), cc.p(cc.winSize.width, cc.winSize.height), cc.color(0, 0, 0, 100), 0)
+                this.addChild(this.dealCancelDlg_overLay, dealCancelDlg_zOrder)
+                this.dealCancelDlg = new RoundRect(cc.winSize.width - paddingX * 3, dealCancelDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
+                this.dealCancelDlg.setPosition(cc.p(paddingX * 3 / 2, cc.winSize.height / 2 - dealCancelDlg_height / 2))
+                this.addChild(this.dealCancelDlg, dealCancelDlg_zOrder)
+
+                var dealCancelDlgLabel = new cc.LabelTTF("你确定取消下注吗？", "Arial", 15)
+                dealCancelDlgLabel.attr({
+                    fillStyle: cc.color(0, 0, 0),
+                    x: this.dealCancelDlg.getContentSize().width / 2 ,
+                    y: dealCancelDlg_height / 2 - dealCancelDlgLabel.getContentSize().height / 2 + paddingY
+                })
+                this.dealCancelDlg.addChild(dealCancelDlgLabel, dealCancelDlg_zOrder)
+                var dlgYesBtn = new ccui.Button(res.dlg_yes_btn_png, res.dlg_yes_btn_png, res.dlg_yes_btn_png)
+                var dlgYesBtn_width = 70
+                dlgYesBtn.attr({
+                    scaleX: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    scaleY: dlgYesBtn_width / dlgYesBtn.getContentSize().width
+                })
+                var dlgNoBtn = new ccui.Button(res.dlg_no_btn_png, res.dlg_no_btn_png, res.dlg_no_btn_png)
+                var dlgNoBtn_width = 70
+                dlgNoBtn.attr({
+                    scaleX: dlgNoBtn_width / dlgNoBtn.getContentSize().width,
+                    scaleY: dlgNoBtn_width / dlgNoBtn.getContentSize().width
+                })
+                dlgYesBtn.setPosition(cc.p(dlgYesBtn_width / 2 + this.dealCancelDlg.getContentSize().width / 2 - dlgYesBtn_width - paddingX / 2 ,
+                                        dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2 + paddingY / 2))
+                dlgNoBtn.setPosition(cc.p(dlgNoBtn_width / 2 + this.dealCancelDlg.getContentSize().width / 2 + paddingX / 2, 
+                                        dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2 + paddingY / 2))
+                dlgYesBtn.addTouchEventListener(this.cancelDealedCoins, this)
+                dlgNoBtn.addTouchEventListener(this.closeCancelDlg, this)
+                this.dealCancelDlg.addChild(dlgYesBtn, this.coinDealCheckDlg_zOrder)
+                this.dealCancelDlg.addChild(dlgNoBtn, this.coinDealCheckDlg_zOrder)
+
+                // disable coinDealCheckDlg
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(false)
+        }
+    },
+
+    cancelDealedCoins: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("cancelDealedCoins")
+                this.removeChild(this.dealCancelDlg)
+                this.removeChild(this.dealCancelDlg_overLay)
+
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
+                
+                this.removeChild(this.coinDealCheckDlg)
+                this.removeChild(this.coinDealCheckDlg_overLay)
+
+                this.enableAllBtn()
+        }
+    },
+    closeCancelDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("closeCancelDlg")
+                this.enabledCoinDrop = true
+                this.removeChild(this.dealCancelDlg)
+                this.removeChild(this.dealCancelDlg_overLay)
+                this.coinDealCheckDlgYesBtn.setEnabled(true)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
+                break
+        }
+    },
     showHistory: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("showHistory")
+                var historyScene = new BaccaratHistoryScene()
+                cc.director.pushScene(new cc.TransitionFade(1.0, historyScene))
                 break
         }
     },
@@ -918,6 +1678,10 @@ var BaccaratGameLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("showHelp")
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
+                var helpScene = new BaccaratHelpScene()
+                // cc.director.popScene()
+                cc.director.pushScene(new cc.TransitionFade(1.0, helpScene))
                 break
         }
     },
@@ -1021,15 +1785,25 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.panel5_DealedCoins = []
         this.panel6_DealedCoins = []
         this.panel7_DealedCoins = []
-        // this.panelArea1.removeChild(this.panelOneValRoundRect)
-        // this.panelArea2.removeChild(this.panelOneValRoundRect_Label)
-        // this.panelArea3.removeChild(this.panelTwoValRoundRect)
-        // this.panelArea1.removeChild(this.panelTwoValRoundRect_Label)
-        // this.panelarea2.removeChild(this.panelThreeValRoundRect)
-        // this.panelArea3.removeChild(this.panelThreeValRoundRect_Label)
+        this.panelArea1.removeChild(this.panel1_ValRoundRect)
+        this.panelArea2.removeChild(this.panel2_ValRoundRect)
+        this.panelArea3.removeChild(this.panel3_ValRoundRect)
+        this.panelArea4.removeChild(this.panel4_ValRoundRect)
+        this.panelArea5.removeChild(this.panel5_ValRoundRect)
+        this.panelArea6.removeChild(this.panel6_ValRoundRect)
+        this.panelArea7.removeChild(this.panel7_ValRoundRect)
         this.confirmBtn.setEnabled(false)
         this.cancelBtn.setEnabled(false)
 
+    },
+
+    gotoHome: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                cc.audioEngine.end()
+                cc.director.popScene()
+                cc.director.pushScene(new cc.TransitionFade(1.0, new HomeScene()))
+        }
     },
 })
 

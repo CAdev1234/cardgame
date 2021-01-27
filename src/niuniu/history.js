@@ -1,4 +1,6 @@
-var HistoryLayer = cc.Layer.extend({
+var NiuniuHistoryLayer = cc.Layer.extend({
+    cards: [],
+    winSheet: [],
     bgLayer: null,
     dateInput: null,
     addressLabel: null,
@@ -7,6 +9,9 @@ var HistoryLayer = cc.Layer.extend({
     resultLabel: null,
     hrLine: null,
     history1Content: null,
+    serial_num: [],
+    serial_num_panel1: null,
+    serial_num_panel2: null,
 
     dateInput2: null,
     numPeriodLabel2: null,
@@ -20,6 +25,39 @@ var HistoryLayer = cc.Layer.extend({
         var size = cc.winSize
         var paddingY = 20
         var paddingX = 20
+
+        // load card and niuniu alert images as batchnode
+        var cardType = ["C", "D", "H", "S"]
+        var cardWidth = 20
+        var cardGroup_width = cardWidth + paddingX * 1.5 * 4
+        var card_cache = cc.spriteFrameCache.addSpriteFrames(res.card_sheet_plist)
+        var card_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 13; index++) {
+            for (let indexi = 0; indexi < cardType.length; indexi++) {
+                var cardName = "card" + (index + 1).toString() + cardType[indexi] + ".png"
+                var card_frame = cc.spriteFrameCache.getSpriteFrame(cardName)
+                this.cards.push(card_frame)
+            }
+        }
+
+        // load winsheet image using batchNode
+        var win_cache = cc.spriteFrameCache.addSpriteFrames(res.win_sheet_plist)
+        var win_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 11; index++) {
+            var win_name = "win-" + index.toString() + ".png"
+            var win_frame = cc.spriteFrameCache.getSpriteFrame(win_name)
+            this.winSheet.push(win_frame)
+        }
+
+        // load failsheet image using batchNode
+        var fail_cache = cc.spriteFrameCache.addSpriteFrames(res.fail_sheet_plist)
+        var fail_sheet = new cc.SpriteBatchNode(res.fail_sheet_png)
+        for (let index = 0; index < 11; index++) {
+            var fail_name = "fail-" + index.toString() + ".png"
+            var fail_frame = cc.spriteFrameCache.getSpriteFrame(fail_name)
+            this.failSheet.push(fail_frame)
+        }
+
 
         // background layer
         this.bgLayer = cc.LayerColor.create(cc.color(0, 0, 0), size.width, size.height)
@@ -79,12 +117,24 @@ var HistoryLayer = cc.Layer.extend({
 
 
         // first history content
+        var datepickerSprite = new cc.Sprite(res.datepicker_png)
+        var datePickerSprite_width = 25
+        var datepickerSprite_height = datePickerSprite_width / datepickerSprite.getContentSize().width * datepickerSprite.getContentSize().height
+        datepickerSprite.attr({
+            scaleX: datePickerSprite_width / datepickerSprite.getContentSize().width,
+            scaleY: datePickerSprite_width / datepickerSprite.getContentSize().width,
+            x: datePickerSprite_width / 2 + paddingX / 2 ,
+            y: size.height - datepickerSprite_height / 2 - header_height - paddingY * 2 - history1_btn_height - paddingY
+        })
+        this.addChild(datepickerSprite)
         this.dateInput = ccui.TextField.create()
-        this.dateInput.setPlaceHolder("2021-1-1")
+        var currentDate = new Date()
+        var str_var = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1).toString() + "-" + currentDate.getDate()
+        this.dateInput.setPlaceHolder(str_var)
         this.dateInput.setPlaceHolderColor(cc.color(255, 255, 255))
         this.dateInput.setFontSize(15)
         var dateInput_height = this.dateInput.getVirtualRendererSize().height
-        this.dateInput.setPosition(cc.p(paddingX * 2, size.height - dateInput_height / 2 - header_height - paddingY * 2 - history1_btn_height - paddingY))
+        this.dateInput.setPosition(cc.p(this.dateInput.getContentSize().width / 2 + paddingX / 2 + datePickerSprite_width + paddingX / 2, size.height - datepickerSprite_height / 2 - header_height - paddingY * 2 - history1_btn_height - paddingY))
         this.addChild(this.dateInput, 1, 1)
 
         this.addressLabel = cc.LabelTTF.create("官方开奖地址")
@@ -184,37 +234,55 @@ var HistoryLayer = cc.Layer.extend({
         serialResultTitle.setPosition(cc.p(serialResultTitle.getContentSize().width / 2, history1Content_height - blueCircleSprite_height - paddingY))
         this.history1Content.addChild(serialResultTitle)
 
-        var serial_num = []
+        // generate serial circle num
+        var size = cc.winSize
+        var paddingX = 20
+        var paddingY = 20
         var serial_num_height = 20
+        this.serial_num_panel1 = new cc.LayerColor(cc.color(0, 0, 0), serial_num_height * 10 + paddingX / 4 * 9 + paddingX, serial_num_height)
+        this.serial_num_panel1.setPosition(cc.p(this.history1Content.getContentSize().width - (serial_num_height * 10 + paddingX / 4 * 9 + paddingX), history1Content_height - this.serial_num_panel1.getContentSize().height - blueCircleSprite_height - paddingY / 2))
+        this.history1Content.addChild(this.serial_num_panel1)
         for (let index = 0; index < 10; index++) {
-            serial_num[index] = new cc.Sprite("res/niuniu/serial" + (index + 1) + ".png");
-            serial_num[index].attr({
-                x: size.width - paddingX / 2 - (size.width - paddingX) / 3 * 2 * 0.1 * (index + 1),
-                y: history1Content_height - blueCircleSprite_height - paddingY,
-                scaleX: serial_num_height / serial_num[index].getContentSize().height, 
-                scaleY: serial_num_height / serial_num[index].getContentSize().height,
+            this.serial_num[index] = new cc.DrawNode()
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
+            
+            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
+            serial_num_label.attr({
+                fillStyle: cc.color(255, 255, 255)
             })
-            this.history1Content.addChild(serial_num[index], 0)
+            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
+            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num_panel1.addChild(this.serial_num[index])
         }
+
+        this.serial_num_panel2 = new cc.LayerColor(cc.color(0, 0, 0), serial_num_height * 10 + paddingX / 4 * 9 + paddingX, serial_num_height)
+        this.serial_num_panel2.setPosition(cc.p(this.history1Content.getContentSize().width - (serial_num_height * 10 + paddingX / 4 * 9 + paddingX), history1Content_height - this.serial_num_panel1.getContentSize().height - blueCircleSprite_height - paddingY / 2 - this.serial_num_panel2.getContentSize().height - paddingY / 2))
+        this.history1Content.addChild(this.serial_num_panel2)
         for (let index = 0; index < 10; index++) {
-            serial_num[index] = new cc.Sprite("res/niuniu/serial" + (index + 1) + ".png");
-            serial_num[index].attr({
-                x: size.width - paddingX / 2 - (size.width - paddingX) / 3 * 2 * 0.1 * (index + 1),
-                y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2,
-                scaleX: serial_num_height / serial_num[index].getContentSize().height, 
-                scaleY: serial_num_height / serial_num[index].getContentSize().height,
+            this.serial_num[index] = new cc.DrawNode()
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
+            
+            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
+            serial_num_label.attr({
+                fillStyle: cc.color(255, 255, 255)
             })
-            this.history1Content.addChild(serial_num[index], 0)
+            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
+            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num_panel2.addChild(this.serial_num[index])
         }
 
 
         // second history content
         this.dateInput2 = ccui.TextField.create()
-        this.dateInput2.setPlaceHolder("2021-1-1")
+        var currentDate = new Date()
+        var str_var = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1).toString() + "-" + currentDate.getDate()
+        this.dateInput2.setPlaceHolder(str_var)
         this.dateInput2.setPlaceHolderColor(cc.color(255, 255, 255))
         this.dateInput2.setFontSize(15)
         var dateInput2_height = this.dateInput2.getVirtualRendererSize().height
-        this.dateInput2.setPosition(cc.p(paddingX * 2, size.height - dateInput2_height / 2 - header_height - paddingY * 2 - history1_btn_height - paddingY))
+        this.dateInput2.setPosition(cc.p(this.dateInput2.getContentSize().width / 2 + paddingX / 2 + datePickerSprite_width + paddingX / 2, size.height - datepickerSprite_height / 2 - header_height - paddingY * 2 - history1_btn_height - paddingY))
         this.addChild(this.dateInput2, 2, 2)
 
         this.numPeriodLabel2 = cc.LabelTTF.create("期数/下注单", "Arial", 14)
@@ -381,7 +449,7 @@ var HistoryLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 var gameScene = new NiuNiuGameScene()
-                cc.director.popScene()
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, gameScene))
                 break
         }
@@ -436,14 +504,15 @@ var HistoryLayer = cc.Layer.extend({
         var duration = time;   // duration in seconds for performing this action
         var scaleAction = new cc.ScaleTo(duration , scaleX , scaleY );
         this.runAction(scaleAction);
-    }
+    },
+
 })
 
 
-var HistoryScene = cc.Scene.extend({
+var NiuniuHistoryScene = cc.Scene.extend({
     onEnter: function () {
         this._super()
-        var historyLayer = new HistoryLayer()
+        var historyLayer = new NiuniuHistoryLayer()
         this.addChild(historyLayer)
     }
 })

@@ -1,4 +1,4 @@
-var HelpLayer = cc.Layer.extend({
+var niuniuHelpLayer = cc.Layer.extend({
     bgLayer: null,
     navBar: null,
     howPlayNav: null,
@@ -296,7 +296,7 @@ var HelpLayer = cc.Layer.extend({
                 break
             case ccui.Widget.TOUCH_ENDED:
                 var gameScene = new NiuNiuGameScene()
-                cc.director.popScene()
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, gameScene))
                 break
             case ccui.Widget.TOUCH_CANCELED:
@@ -336,10 +336,10 @@ var HelpLayer = cc.Layer.extend({
 
 
 
-var HelpScene = cc.Scene.extend({
+var NiuniuHelpScene = cc.Scene.extend({
     onEnter: function () {
         this._super()
-        var helpLayer = new HelpLayer()
+        var helpLayer = new niuniuHelpLayer()
         this.addChild(helpLayer)
     }
 })

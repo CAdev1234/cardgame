@@ -15,6 +15,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
     betAmountBg_height: null,
 
     cards: [],
+    winSheet: [],
+    failSheet: [],
     
     close_state: null,
     dealedCoins_tag: 1,
@@ -113,7 +115,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
         this.enabledCoin.fill(false)
 
-        // store card image using batchNode
+        // load card image using batchNode
         var cardType = ["C", "D", "H", "S"]
         var cardWidth = 50
         var cardGroup_width = cardWidth + paddingX * 1.5 * 4
@@ -126,6 +128,24 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 var card_frame = cc.spriteFrameCache.getSpriteFrame(cardName)
                 this.cards.push(card_frame)
             }
+        }
+
+        // load winsheet image using batchNode
+        var win_cache = cc.spriteFrameCache.addSpriteFrames(res.win_sheet_plist)
+        var win_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 11; index++) {
+            var win_name = "win-" + index.toString() + ".png"
+            var win_frame = cc.spriteFrameCache.getSpriteFrame(win_name)
+            this.winSheet.push(win_frame)
+        }
+
+        // load failsheet image using batchNode
+        var fail_cache = cc.spriteFrameCache.addSpriteFrames(res.fail_sheet_plist)
+        var fail_sheet = new cc.SpriteBatchNode(res.fail_sheet_png)
+        for (let index = 0; index < 11; index++) {
+            var fail_name = "fail-" + index.toString() + ".png"
+            var fail_frame = cc.spriteFrameCache.getSpriteFrame(fail_name)
+            this.failSheet.push(fail_frame)
         }
 
         // header
@@ -502,7 +522,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             }
                             this.panelOneDealedCoins.push(coinVal)
                             this.panelOneValRoundRect_Label.setString(this.sumCoins(this.panelOneDealedCoins))
-                            this.panelOneValRoundRect.setContentSize(cc.size(this.panelOneValRoundRect_Label.getContentSize().width + paddingX, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4))
+                            this.panelOneValRoundRect.setContentSize(cc.size(60, this.panelOneValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     if (touch_x > size.width / 2 && touch_x < size.width &&
                         touch_y < size.height - this.header_height - this.bank_height - paddingY &&
@@ -512,7 +532,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 this.panelTwoValRoundRect_Label.attr({
                                     fillStyle: cc.color(255, 255, 255),
                                 })
-                                this.panelTwoValRoundRect = new RoundRect(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panelTwoValRoundRect = new RoundRect(60, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
                                 this.panelTwoValRoundRect_Label.setPosition(cc.p(this.panelTwoValRoundRect.getContentSize().width / 2, this.panelTwoValRoundRect_Label.getContentSize().height / 2))
                                 this.panelTwoValRoundRect.setPosition(cc.p(size.width / 4 * 3 - this.panelTwoValRoundRect.getContentSize().width / 2, size.height - this.header_height - this.bank_height - this.panelOne_height + paddingY / 4))
                                 this.panelTwoArea.addChild(this.panelTwoValRoundRect) 
@@ -521,7 +541,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             }
                             this.panelTwoDealedCoins.push(coinVal)
                             this.panelTwoValRoundRect_Label.setString(this.sumCoins(this.panelTwoDealedCoins))
-                            this.panelTwoValRoundRect.setContentSize(cc.size(this.panelTwoValRoundRect_Label.getContentSize().width + paddingX, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4))
+                            this.panelTwoValRoundRect.setContentSize(cc.size(60, this.panelTwoValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     if (touch_y < size.height - this.header_height - this.bank_height - this.panelOne_height - paddingY &&
                         touch_y > betAmountTotalSprite_height + this.coinWrapSprite_height + 60) {
@@ -530,7 +550,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 this.panelThreeValRoundRect_Label.attr({
                                     fillStyle: cc.color(255, 255, 255),
                                 })
-                                this.panelThreeValRoundRect = new RoundRect(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
+                                this.panelThreeValRoundRect = new RoundRect(60, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4, cc.color(0, 0, 0, 100), 0, null, 10, null)
                                 this.panelThreeValRoundRect_Label.setPosition(cc.p(this.panelThreeValRoundRect.getContentSize().width / 2, this.panelThreeValRoundRect_Label.getContentSize().height / 2))
                                 this.panelThreeValRoundRect.setPosition(cc.p(size.width / 2 - this.panelThreeValRoundRect.getContentSize().width / 2, this.coinWrapSprite_height + this.betAmountBg_height + this.panelThreeValRoundRect.getContentSize().height + paddingY / 2))
                                 this.panelThreeArea.addChild(this.panelThreeValRoundRect) 
@@ -753,6 +773,9 @@ var NiuNiuGameLayer = cc.Layer.extend({
         for (let index = 0; index < 5; index++) {
             var cardNum = Math.floor(Math.random() * 52)
             this.bankResultCards[index] = new cc.Sprite(this.cards[cardNum])
+            // var cardShadow = new RoundRect(cardWidth + 10 + paddingX / 4, (cardWidth + 10 + paddingX / 4) / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height, cc.color(0, 0, 0, 150), 0, null, 10, null)
+            // cardShadow.setPosition(cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4))
+            // this.addChild(cardShadow)
             this.bankResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4,
@@ -760,6 +783,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 scaleY: (cardWidth + 10) / this.bankResultCards[index].getContentSize().width
             })
             this.addChild(this.bankResultCards[index])
+            
             var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4));
             this.bankResultCards[index].runAction(moveToAction)
         }
@@ -844,7 +868,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
     showHistory: async function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                var historyScene = new HistoryScene()
+                var historyScene = new NiuniuHistoryScene()
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, historyScene))
                 break
         }
@@ -857,6 +882,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
                 this.removeDealedCoins()
                 cc.audioEngine.end()
+                cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, new HomeScene()))
                 break
         }
@@ -891,7 +917,8 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 break
             case ccui.Widget.TOUCH_ENDED:
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
-                var helpScene = new HelpScene()
+                var helpScene = new NiuniuHelpScene()
+                // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, helpScene))
                 break
             case ccui.Widget.TOUCH_CANCELED:
@@ -959,7 +986,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
     showCoinDealCheckDlg: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                console.log("show coinDealCheckDlg")
+                console.log("showcoinDealCheckDlg")
                 this.disableAllBtn()
                 // coinDealCheckDlg
                 var paddingX = 20
@@ -1335,12 +1362,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.removeChild(this.coinDealCheckDlg)
         this.removeChild(this.coinDealCheckDlg_overLay)
         
-        this.panelOneValRoundRect_Label.setColor(cc.color(34, 162, 211))
-        this.panelTwoValRoundRect_Label.setColor(cc.color(34, 162, 211))
-        this.panelThreeValRoundRect_Label.setColor(cc.color(34, 162, 211))
+        if (this.panelOneValRoundRect_Label !== null) this.panelOneValRoundRect_Label.setColor(cc.color(34, 162, 211))
+        if (this.panelTwoValRoundRect_Label !== null) this.panelTwoValRoundRect_Label.setColor(cc.color(34, 162, 211))
+        if (this.panelThreeValRoundRect_Label !== null) this.panelThreeValRoundRect_Label.setColor(cc.color(34, 162, 211))
         setTimeout(() => {
             this.enableAllBtn()    
-        }, 1000);
+        }, 50);
     },
     showDealCancelDlg: function (sender, type) {
         switch (type) {

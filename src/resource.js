@@ -63,7 +63,13 @@ var res = {
     card_sheet_png: "res/niuniu/cards/cardSheet.png",
     card_sheet_plist: "res/niuniu/cards/cardSheet.plist",
 
+    win_sheet_png: "res/niuniu/win/win-sheet.png",
+    win_sheet_plist: "res/niuniu/win/win-sheet.plist",
+    fail_sheet_png: "res/niuniu/fail/fail-sheet.png",
+    fail_sheet_plist: "res/niuniu/fail/fail-sheet.plist",
+
     star_png: "res/niuniu/star.png",
+    datepicker_png: "res/niuniu/datepicker-img.png",
 
     gameBgSound_mp3: "res/niuniu/sounds/bg-sound.mp3",
     choose_coin_wav: "res/niuniu/sounds/choose-coin.wav",
