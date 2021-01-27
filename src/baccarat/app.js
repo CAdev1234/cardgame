@@ -1264,7 +1264,6 @@ var BaccaratGameLayer = cc.Layer.extend({
                     this.displaySerialPanel()
                 }, 2000);
                 await this.sleep(5000)
-                await this.sleep(3000)
                 // rearrange cards
                 var changed_card_width = 50 - 15
                 var paddingY = 20
@@ -1282,11 +1281,6 @@ var BaccaratGameLayer = cc.Layer.extend({
                     this.resultCards[index].runAction(movetoAction)
                 }
                 var choosedCardNum = this.generateRandomNumArray(0, 9, 6)
-                // for (let index = 0; index < choosedCardNum.length; index++) {
-                //     this.resultCards[choosedCardNum[index]].attr({
-                //         opacity: 150
-                //     })
-                // }
 
                 // four cards copy for first showed
                 this.cloneCards = []
@@ -1299,27 +1293,26 @@ var BaccaratGameLayer = cc.Layer.extend({
                     })
 
                     this.cloneCards[index].setPosition(this.resultCards[choosedCardNum[index]].getPosition())
+                    await this.sleep(2000)
                     this.resultCards[choosedCardNum[index]].attr({
                         opacity: 150
                     })
                     this.addChild(this.cloneCards[index])
                     if (index < 2) {
-                        var movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 + (paddingX / 4 + changed_card_width) * index, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        var movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 + (paddingX / 4 + changed_card_width) * index, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.cloneCards[index].runAction(movetoAction)
-                        await this.sleep(2000)
+                        
                     }else if (index > 1 && index < 4) {
-                        var movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * (index - 2), cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        var movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * (index - 2), cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.cloneCards[index].runAction(movetoAction)
-                        await this.sleep(2000)
                     }else {
                         // baccarat's third card rule action added
                         var rotatebyAction = new cc.RotateBy(0.05, -90)
                         var movetoAction = null
-                        if (index == 4) movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 - paddingX / 4 - (changed_card_width + paddingX / 4) * 2 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
-                        else if (index == 5) movetoAction = new cc.MoveTo(2, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * 2 + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        if (index == 4) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 - paddingX / 4 - (changed_card_width + paddingX / 4) * 2 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        else if (index == 5) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * 2 + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.cloneCards[index].runAction(rotatebyAction)
                         this.cloneCards[index].runAction(movetoAction)
-                        await this.sleep(2000)
                     }
                     
                 }
@@ -1390,6 +1383,7 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 23
+        this.serial_num_panel = null
         this.serial_num_panel = new cc.DrawNode()
         this.serial_num_panel.drawRect(cc.p(paddingX / 4, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel)

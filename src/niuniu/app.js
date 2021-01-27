@@ -602,6 +602,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 20
+        this.serial_num_panel1 = null
         this.serial_num_panel1 = new cc.DrawNode()
         this.serial_num_panel1.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel1)
@@ -629,6 +630,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 20
+        this.serial_num_panel2 = null
         this.serial_num_panel2 = new cc.DrawNode()
         this.serial_num_panel2.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2 - serial_num_height - paddingY / 4), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height - paddingY / 4 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel2)
@@ -811,8 +813,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         await this.sleep(1000)
         
         for (let index = 0; index < 5; index++) {
-            var cardNum = Math.floor(Math.random() * 52 + 1)
-            console.log("cardNum=", cardNum)
+            var cardNum = Math.floor(Math.random() * 52)
             this.secondDealResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.secondDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2,
@@ -831,7 +832,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         await this.sleep(1000)
 
         for (let index = 0; index < 5; index++) {
-            var cardNum = Math.floor(Math.random() * 52 + 1)
+            var cardNum = Math.floor(Math.random() * 52)
             this.thirdDealResultCards[index] = new cc.Sprite(this.cards[cardNum])
             this.thirdDealResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
