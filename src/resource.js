@@ -19,6 +19,8 @@ var home_res = {
 // niuniu res
 var res = {
     HelloWorld_png : "res/HelloWorld.png",
+    circle_color_png: "res/niuniu/circleColors/circle-color.png",
+    circle_color_plist: "res/niuniu/circleColors/circle-color.plist",
     banner_png: "res/niuniu/banner.png",
     bank_title_png: "res/niuniu/bank-title.png",
     bet_amount_token_png: "res/niuniu/bet-amount-token.png",
@@ -30,17 +32,20 @@ var res = {
     btn_wrap_png: "res/niuniu/btn-wrap.png",
     home_btn_png: "res/niuniu/home-btn.png",
     cancel_icon_png: "res/niuniu/cancel-icon.png",
+
+    coin_sprite_10_png: "res/niuniu/coin-sprite-10.png",
     coin_sprite_50_png: "res/niuniu/coin-sprite-50.png",
     coin_sprite_100_png: "res/niuniu/coin-sprite-100.png",
     coin_sprite_500_png: "res/niuniu/coin-sprite-500.png",
     coin_sprite_1000_png: "res/niuniu/coin-sprite-1000.png",
     coin_sprite_5000_png: "res/niuniu/coin-sprite-5000.png",
     coin_sprite_10000_png: "res/niuniu/coin-sprite-10000.png",
-    coin_sprite_10_png: "res/niuniu/coin-sprite-10.png",
     coin_wrap_png: "res/niuniu/coin-wrap.png",
+    
     help_btn_png: "res/niuniu/help-btn.png",
     sound_on_btn_png: "res/niuniu/sound-on-btn.png",
     sound_off_btn_png: "res/niuniu/sound-off-btn.png",
+
     table_img_png: "res/niuniu/table_img.png",
     history1_active_btn: "res/niuniu/history1_active_btn.png",
     history1_nonactive_btn: "res/niuniu/history1_nonactive_btn.png",
@@ -48,6 +53,11 @@ var res = {
     history2_nonactive_btn: "res/niuniu/history2_nonactive_btn.png",
     history_blue_circle: "res/niuniu/history_blue_circle.png",
     history_btn_png: "res/niuniu/history-btn.png",
+
+    wenlu_btn_png: "res/niuniu/wenlu-btn.png",
+    wenlu_win_png: "res/niuniu/wenlu-win.png",
+    wenlu_fail_png: "res/niuniu/wenlu-fail.png",
+
     green_btn_png: "res/niuniu/green-btn.png",
     green_rounded_rect_png: "res/niuniu/green-rounded-rect.png",
     green_rounded_bg_rect_png: "res/niuniu/green-rounded-bg-rect.png",
@@ -79,7 +89,25 @@ var res = {
 var baccarat_res = {
     banner_png: "res/baccarat/banner.png",
     card_back_png: "res/baccarat/card-back.png",
-    card_count_png: "res/baccarat/card-count.png"
+    card_count_png: "res/baccarat/card-count.png",
+
+    zpl_0_png: "res/baccarat/zpl-0.png",
+    zpl_1_png: "res/baccarat/zpl-1.png",
+    zpl_2_png: "res/baccarat/zpl-2.png",
+    zpl_3_png: "res/baccarat/zpl-3.png",
+    zpl_4_png: "res/baccarat/zpl-4.png",
+    zpl_5_png: "res/baccarat/zpl-5.png",
+
+    dl_0_png: "res/baccarat/dl-0.png",
+    dl_1_png: "res/baccarat/dl-1.png",
+    dl_2_png: "res/baccarat/dl-2.png",
+    dl_3_png: "res/baccarat/dl-3.png",
+    dl_4_png: "res/baccarat/dl-4.png",
+
+    dalu_btn_active_png: "res/baccarat/dalu-btn-active.png",
+    dalu_btn_nonactive_png: "res/baccarat/dalu-btn-nonactive.png",
+    zhupanlu_btn_active_png: "res/baccarat/zhupanlu-btn-active.png",
+    zhupanlu_btn_nonactive_png: "res/baccarat/zhupanlu-btn-nonactive.png",
 };
 
 

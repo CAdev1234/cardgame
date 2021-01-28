@@ -14,9 +14,12 @@ var NiuNiuGameLayer = cc.Layer.extend({
     bank_height: null,
     betAmountBg_height: null,
 
+    circleColors: [], 
+
     cards: [],
     winSheet: [],
     failSheet: [],
+    winfailSheet_zOrder: 8,
     
     close_state: null,
     dealedCoins_tag: 1,
@@ -27,6 +30,11 @@ var NiuNiuGameLayer = cc.Layer.extend({
 
     overLay_zOrder: 10,
     coinDealCheckDlg_zOrder: null,
+
+    
+    wenluPanel_zOrder: 8,
+    wenluPanel_enabled: false,
+    wenluPanel: null,
 
     goHomeBtn: null,
     soundOnBtn: null,
@@ -114,6 +122,15 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.panelThreeDealedCoins = []
 
         this.enabledCoin.fill(false)
+
+        // load circle color image using batchNode
+        var circleColors_cache = cc.spriteFrameCache.addSpriteFrames(res.circle_color_plist)
+        var circleColors_sheet = new cc.SpriteBatchNode(res.circle_color_png)
+        for (let index = 0; index < 10; index++) {
+            var circleColors_name = "circle-color-" + index + ".png"
+            var circleColors_frame = cc.spriteFrameCache.getSpriteFrame(circleColors_name)
+            this.circleColors.push(circleColors_frame)
+        }
 
         // load card image using batchNode
         var cardType = ["C", "D", "H", "S"]
@@ -227,7 +244,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.addChild(bankLabel)
         this.bank_height = bankBg_height
 
-        this.historyBtn = ccui.Button.create(res.history_btn_png)
+        this.historyBtn = new ccui.Button(res.history_btn_png, res.history_btn_png, res.history_btn_png)
         var historyBtn_width = 26
         this.historyBtn.attr({
             scaleX: historyBtn_width / this.historyBtn.getContentSize().width,
@@ -238,20 +255,30 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.historyBtn.addTouchEventListener(this.showHistory, this)
         this.addChild(this.historyBtn)
 
+        this.wenluBtn = new ccui.Button(res.wenlu_btn_png, res.wenlu_btn_png, res.wenlu_btn_png)
+        var wenluBtn_width = 26
+        this.wenluBtn.attr({
+            scaleX: wenluBtn_width / this.wenluBtn.getContentSize().width,
+            scaleY: wenluBtn_width / this.wenluBtn.getContentSize().width
+        })
+        this.wenluBtn.setPosition(cc.p(wenluBtn_width / 2, size.height - this.header_height - this.bank_height / 2 + 10))
+        this.wenluBtn.addTouchEventListener(this.showWenluPanel, this)
+        this.addChild(this.wenluBtn, this.wenluPanel_zOrder + 1)
+
         // GamePanel
         this.panelOne_width = size.width / 2 - 1
         // this.panelOne_height = size.width / 2 + 15
         this.panelOne_height = (size.height - this.header_height - this.bank_height - this.coinWrapSprite_height - this.betAmountBg_height) / 2
 
 
-        this.panelOneArea = new cc.DrawNode()
-        this.panelOneArea.drawRect(cc.p(0, size.height - this.header_height - this.bank_height - this.panelOne_height), cc.p(this.panelOne_width, size.height - this.header_height - this.bank_height), cc.color(25, 74, 148), 0)
+        this.panelOneArea = new cc.LayerColor(cc.color(25, 74, 148), size.width / 2 - 1, this.panelOne_height)
+        this.panelOneArea.setPosition(0, size.height - this.header_height - this.bank_height - this.panelOne_height)
         this.addChild(this.panelOneArea)
         
         var panelOneLabel = cc.LabelTTF.create("闲1", "Arial", 40)
         panelOneLabel.attr({
             x: size.width / 4,
-            y: size.height - this.header_height - this.bank_height - btnWrapSprite_height,
+            y: this.panelOne_height - panelOneLabel.getContentSize().height,
             fillStyle: cc.color(0, 102, 203)
         })
         this.panelOneArea.addChild(panelOneLabel)
@@ -260,21 +287,21 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.panelTwo_width = size.width / 2
         this.panelTwo_height = size.width / 2 + 15
 
-        this.panelTwoArea = new cc.DrawNode()
-        this.panelTwoArea.drawRect(cc.p(size.width / 2 + 1, size.height - this.header_height - this.bank_height - this.panelOne_height), cc.p(size.width, size.height - this.header_height - this.bank_height), cc.color(25, 74, 148), 0)
+        this.panelTwoArea = new cc.LayerColor(cc.color(25, 74, 148), size.width / 2 - 1, this.panelOne_height)
+        this.panelTwoArea.setPosition(size.width / 2 + 1, size.height - this.header_height - this.bank_height - this.panelOne_height)
         this.addChild(this.panelTwoArea)
         
         var panelTwoLabel = cc.LabelTTF.create("闲2", "Arial", 40)
         panelTwoLabel.attr({
-            x: size.width / 4 * 3,
-            y: size.height - this.header_height - this.bank_height - btnWrapSprite_height,
+            x: size.width / 4,
+            y: this.panelOne_height - panelTwoLabel.getContentSize().height,
             fillStyle: cc.color(0, 102, 203)
         })
-        this.addChild(panelTwoLabel)
+        this.panelTwoArea.addChild(panelTwoLabel)
 
 
-        this.panelThreeArea = new cc.DrawNode()
-        this.panelThreeArea.drawRect(cc.p(0, 0), cc.p(size.width, size.height - this.header_height - this.bank_height - this.panelOne_height - 2), cc.color(25, 74, 148), 0)
+        this.panelThreeArea = new cc.LayerColor(cc.color(25, 74, 148), size.width, size.height - this.header_height - this.bank_height - this.panelOne_height - 1)
+        this.panelThreeArea.setPosition(0, 0)
         this.addChild(this.panelThreeArea)
 
         var panelThreeLabel = cc.LabelTTF.create("闲3", "Arial", 40)
@@ -283,7 +310,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
             y: size.height - this.header_height - this.bank_height - btnWrapSprite_height - this.panelOne_height,
             fillStyle: cc.color(0, 102, 203)
         })
-        this.addChild(panelThreeLabel)
+        this.panelThreeArea.addChild(panelThreeLabel)
         
         btnWrapSprite.attr({
             x: size.width / 2,
@@ -557,7 +584,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
                                 this.panelThreeValRoundRect.addChild(this.panelThreeValRoundRect_Label)
                                 
                             }
-                            console.log("this.panelThreeDealedCoins=", this.panelThreeDealedCoins)
                             this.panelThreeDealedCoins.push(coinVal)
                             this.panelThreeValRoundRect_Label.setString(this.sumCoins(this.panelThreeDealedCoins))
                             this.panelThreeValRoundRect.setContentSize(cc.size(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4))
@@ -605,19 +631,23 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.serial_num_panel1.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel1)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2, size.height - serial_num_height / 2 - paddingX / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel1.addChild(this.serial_num[index])
-
+            this.serial_num[index].addChild(randomNumLabel)
             
+           
             var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
             this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
         }
@@ -633,18 +663,23 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.serial_num_panel2.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2 - serial_num_height - paddingY / 4), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height - paddingY / 4 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel2)
         for (let index = 10; index < 20; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY - serial_num_height - paddingY / 4), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY - serial_num_height - paddingY / 4), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index % 10])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2 - serial_num_height - paddingY / 4))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2, size.height - serial_num_height / 2 - paddingX / 2 - serial_num_height - paddingX / 4)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel2.addChild(this.serial_num[index])
-
+            this.serial_num[index].addChild(randomNumLabel)
+            
+           
             var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * (index % 10), 0))
             this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
         }
@@ -744,6 +779,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 }, 2000);
                 setTimeout(async () => {
                     await this.displayCard()
+                    
                     if (this.panelOneDealedCoins.length + this.panelTwoDealedCoins.length + this.panelThreeDealedCoins.length !== 0) {
                         if (Math.floor(Math.random() * 10) % 2 == 1) {
                             this.showBetWinDlg()
@@ -751,8 +787,80 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             this.showBetFailDlg()
                         }
                     }
-                    await this.sleep(5000)
+
+                    // show win or fail sheet and star image
+                    await this.sleep(1000)
+                    var winfailSprite0_width = 70
+                    var winfailSprite0 = new cc.Sprite(this.failSheet[Math.floor(Math.random() * 11)])
+                    winfailSprite0.attr({
+                        scaleX: winfailSprite0_width / winfailSprite0.getContentSize().width,
+                        scaleY: winfailSprite0_width / winfailSprite0.getContentSize().width,
+                        x: cc.winSize.width / 2,
+                        y: cc.winSize.height - this.header_height - this.bank_height / 2 - 20
+                    })
+                    this.addChild(winfailSprite0, this.winfailSheet_zOrder)
+
+                    var winfailSprite1_width = 70
+                    var winfailSprite1 = new cc.Sprite(this.winSheet[Math.floor(Math.random() * 11)])
+                    winfailSprite1.attr({
+                        scaleX: winfailSprite1_width / winfailSprite1.getContentSize().width,
+                        scaleY: winfailSprite1_width / winfailSprite1.getContentSize().width,
+                        x: cc.winSize.width / 4,
+                        y: cc.winSize.height - this.header_height - this.bank_height - this.panelOne_height / 2 - 20
+                    })
+                    this.addChild(winfailSprite1, this.winfailSheet_zOrder)
+                    var starSprite1 = new cc.Sprite(res.star_png)
+                    var starSprite1_width = 50
+                    starSprite1.attr({
+                        scaleX: starSprite1_width / starSprite1.getContentSize().width,
+                        scaleY: starSprite1_width / starSprite1.getContentSize().width,
+                        x: cc.winSize.width / 4,
+                        y: cc.winSize.height - this.header_height - this.bank_height - this.panelOne_height / 3
+                    })
+                    this.addChild(starSprite1, this.winfailSheet_zOrder)
+
+
+                    var winfailSprite2_width = 70
+                    var winfailSprite2 = new cc.Sprite(this.winSheet[Math.floor(Math.random() * 11)])
+                    winfailSprite2.attr({
+                        scaleX: winfailSprite2_width / winfailSprite2.getContentSize().width,
+                        scaleY: winfailSprite2_width / winfailSprite2.getContentSize().width,
+                        x: cc.winSize.width / 4 * 3,
+                        y: cc.winSize.height - this.header_height - this.bank_height - this.panelOne_height / 2 - 20
+                    })
+                    this.addChild(winfailSprite2, this.winfailSheet_zOrder)
+                    var starSprite2 = new cc.Sprite(res.star_png)
+                    var starSprite2_width = 50
+                    starSprite2.attr({
+                        scaleX: starSprite2_width / starSprite2.getContentSize().width,
+                        scaleY: starSprite2_width / starSprite2.getContentSize().width,
+                        x: cc.winSize.width / 4 * 3,
+                        y: cc.winSize.height - this.header_height - this.bank_height - this.panelOne_height / 3
+                    })
+                    this.addChild(starSprite2, this.winfailSheet_zOrder)
+
+
+                    var winfailSprite3_width = 70
+                    var winfailSprite3 = new cc.Sprite(this.failSheet[Math.floor(Math.random() * 11)])
+                    winfailSprite3.attr({
+                        scaleX: winfailSprite3_width / winfailSprite3.getContentSize().width,
+                        scaleY: winfailSprite3_width / winfailSprite3.getContentSize().width,
+                        x: cc.winSize.width / 2,
+                        y: cc.winSize.height - winfailSprite3.getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height * 4 / 3
+                    })
+                    this.addChild(winfailSprite3, this.winfailSheet_zOrder)
+
+
+                    await this.sleep(7000)
                     await this.removeCards()
+                    
+                    await this.removeChild(winfailSprite0)
+                    await this.removeChild(winfailSprite1)
+                    await this.removeChild(winfailSprite2)
+                    await this.removeChild(winfailSprite3)
+                    await this.removeChild(starSprite1)
+                    await this.removeChild(starSprite2)
+
                     await this.sleep(7000)
                     await this.betOpenInterval()
                 }, 5000);
@@ -802,8 +910,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
             })
             this.addChild(this.firstDealResultCards[index])
             var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + this.panelOne_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.firstDealResultCards[index].getContentSize().width * this.firstDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3));
-            moveToAction.setSpeed(40)
-            moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
             this.firstDealResultCards[index].runAction(actionSequence)
         }
@@ -821,8 +927,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
             })
             this.addChild(this.secondDealResultCards[index])
             var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 + this.panelTwo_width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.secondDealResultCards[index].getContentSize().width * this.secondDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height / 3));
-            moveToAction.setSpeed(40)
-            moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
             this.secondDealResultCards[index].runAction(actionSequence)
         }
@@ -840,8 +944,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
             })
             this.addChild(this.thirdDealResultCards[index])
             var moveToAction = new cc.MoveTo(0.5, cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2 + paddingX * 1.5 * index, size.height - cardWidth / this.thirdDealResultCards[index].getContentSize().width * this.thirdDealResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height - this.panelOne_height * 5 / 4));
-            moveToAction.setSpeed(40)
-            moveToAction.setAmplitudeRate(10)
             var actionSequence = new cc.Sequence(moveToAction)
             this.thirdDealResultCards[index].runAction(actionSequence)
         }
@@ -864,12 +966,132 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.removeDealedCoins()
     },
 
-    showHistory: async function (sender, type) {
+    showHistory: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 var historyScene = new NiuniuHistoryScene()
                 // cc.director.popScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, historyScene))
+                break
+        }
+    },
+    showWenluPanel: async function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                var size = cc.winSize
+                var paddingX = 20
+                var paddingY = 20
+                if (!this.wenluPanel_enabled) {
+                    console.log("showWenluPanel")
+                    var wenluPanel_height = this.bank_height - 20
+                    this.wenluPanel = new cc.LayerColor(cc.color(0, 0, 0), size.width, wenluPanel_height)
+                    this.wenluPanel.setPosition(size.width * (-1), size.height - this.header_height - this.bank_height + 20)
+                    this.addChild(this.wenluPanel, this.wenluPanel_zOrder)
+                    var wenluPanel_title = new cc.LabelTTF("开奖走势", "Arial", 16)
+                    wenluPanel_title.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: size.width / 2,
+                        y: wenluPanel_height - paddingY - wenluPanel_title.getContentSize().height / 2
+                    })
+                    this.wenluPanel.addChild(wenluPanel_title)
+
+                    var playerOneLabel = new cc.LabelTTF("闲一", "Arial", 15)
+                    playerOneLabel.attr({
+                        fillStyle: cc.color(53, 168, 224),
+                        x: playerOneLabel.getContentSize().width / 2 + paddingX * 3 / 2,
+                        y: wenluPanel_height - playerOneLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(playerOneLabel)
+                    var barLetter1 = new cc.LabelTTF("|", "Arial", 15)
+                    barLetter1.attr({
+                        fillStyle: cc.color(153, 153, 153),
+                        x: barLetter1.getContentSize().width / 2 + paddingX * 3 / 2 + playerOneLabel.getContentSize().width + paddingX / 4,
+                        y: wenluPanel_height - playerOneLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(barLetter1)
+                    for (let index = 0; index < 13; index++) {
+                        var wenlu_win_fail_array = [res.wenlu_win_png, res.wenlu_fail_png]
+                        var wenlu_win_fail_width = (size.width - paddingX * 3 - playerOneLabel.getContentSize().width - barLetter1.getContentSize().width - paddingX / 4) / 13 - paddingX / 4
+                        var wenlu_win_fail = new cc.Sprite(wenlu_win_fail_array[Math.floor(Math.random() * 13) % 2])
+                        wenlu_win_fail.attr({
+                            scaleX: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            scaleY: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + playerOneLabel.getContentSize().width + paddingX / 4 + barLetter1.getContentSize().width + paddingX / 4 + index * (wenlu_win_fail_width + paddingX / 4),
+                            y: wenluPanel_height - playerOneLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2
+                        })
+                        this.wenluPanel.addChild(wenlu_win_fail)
+                    }
+
+
+                    var playerTwoLabel = new cc.LabelTTF("闲二", "Arial", 15)
+                    playerTwoLabel.attr({
+                        fillStyle: cc.color(53, 168, 224),
+                        x: playerTwoLabel.getContentSize().width / 2 + paddingX * 3 / 2,
+                        y: wenluPanel_height - playerTwoLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(playerTwoLabel)
+                    var barLetter2 = new cc.LabelTTF("|", "Arial", 15)
+                    barLetter2.attr({
+                        fillStyle: cc.color(153, 153, 153),
+                        x: barLetter2.getContentSize().width / 2 + paddingX * 3 / 2 + playerTwoLabel.getContentSize().width + paddingX / 4,
+                        y: wenluPanel_height - playerTwoLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(barLetter2)
+                    for (let index = 0; index < 13; index++) {
+                        var wenlu_win_fail_array = [res.wenlu_win_png, res.wenlu_fail_png]
+                        var wenlu_win_fail_width = (size.width - paddingX * 3 - playerTwoLabel.getContentSize().width - barLetter2.getContentSize().width - paddingX / 4) / 13 - paddingX / 4
+                        var wenlu_win_fail = new cc.Sprite(wenlu_win_fail_array[Math.floor(Math.random() * 13) % 2])
+                        wenlu_win_fail.attr({
+                            scaleX: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            scaleY: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + playerTwoLabel.getContentSize().width + paddingX / 4 + barLetter2.getContentSize().width + paddingX / 4 + index * (wenlu_win_fail_width + paddingX / 4),
+                            y: wenluPanel_height - playerTwoLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                        })
+                        this.wenluPanel.addChild(wenlu_win_fail)
+                    }
+
+
+                    var playerThreeLabel = new cc.LabelTTF("闲二", "Arial", 15)
+                    playerThreeLabel.attr({
+                        fillStyle: cc.color(53, 168, 224),
+                        x: playerThreeLabel.getContentSize().width / 2 + paddingX * 3 / 2,
+                        y: wenluPanel_height - playerThreeLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(playerThreeLabel)
+                    var barLetter3 = new cc.LabelTTF("|", "Arial", 15)
+                    barLetter3.attr({
+                        fillStyle: cc.color(153, 153, 153),
+                        x: barLetter3.getContentSize().width / 2 + paddingX * 3 / 2 + playerThreeLabel.getContentSize().width + paddingX / 4,
+                        y: wenluPanel_height - playerThreeLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                    })
+                    this.wenluPanel.addChild(barLetter3)
+                    for (let index = 0; index < 13; index++) {
+                        var wenlu_win_fail_array = [res.wenlu_win_png, res.wenlu_fail_png]
+                        var wenlu_win_fail_width = (size.width - paddingX * 3 - playerThreeLabel.getContentSize().width - barLetter3.getContentSize().width - paddingX / 4) / 13 - paddingX / 4
+                        var wenlu_win_fail = new cc.Sprite(wenlu_win_fail_array[Math.floor(Math.random() * 13) % 2])
+                        wenlu_win_fail.attr({
+                            scaleX: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            scaleY: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
+                            x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + playerThreeLabel.getContentSize().width + paddingX / 4 + barLetter3.getContentSize().width + paddingX / 4 + index * (wenlu_win_fail_width + paddingX / 4),
+                            y: wenluPanel_height - playerThreeLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
+                        })
+                        this.wenluPanel.addChild(wenlu_win_fail)
+                    }
+                    
+                    var movebyAction = new cc.MoveBy(0.3, cc.p(size.width , 0))
+                    this.wenluPanel.runAction(movebyAction)
+                    this.wenluPanel_enabled = true
+                    return
+                }else {
+                    console.log("closeWenluPanel")
+                    var movebyAction = new cc.MoveBy(0.3, cc.p(size.width * (-1), 0))
+                    this.wenluPanel.runAction(movebyAction)
+                    await this.sleep(300)
+                    this.removeChild(this.wenluPanel)
+                    this.wenluPanel_enabled = false
+                    return
+                }
+                
                 break
         }
     },
@@ -1339,9 +1561,9 @@ var NiuNiuGameLayer = cc.Layer.extend({
                 this.removeChild(this.coinDealCheckDlg_overLay)
                 this.enableAllBtn()
 
-                this.panelOneValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
-                this.panelTwoValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
-                this.panelThreeValRoundRect_Label.setFontFillColor(cc.color(34, 162, 211))
+                if (this.panelOneValRoundRect_Label !== null) this.panelOneValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panelTwoValRoundRect_Label !== null) this.panelTwoValRoundRect_Label.setColor(cc.color(34, 162, 211))
+                if (this.panelThreeValRoundRect_Label !== null) this.panelThreeValRoundRect_Label.setColor(cc.color(34, 162, 211))
             }
             dlgYesBtn_time = dlgYesBtn_time - 1
             dlgYesBtn.setTitleText("确定("+ dlgYesBtn_time +")")

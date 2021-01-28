@@ -17,12 +17,22 @@ var BaccaratHistoryLayer = cc.Layer.extend({
 
     serial_num: [],
     cards: [],
+    circleColors: [],
 
     ctor: function () {
         this._super()
         var size = cc.winSize
         var paddingY = 20
         var paddingX = 20
+
+        // load circle color image using batchNode
+        var circleColors_cache = cc.spriteFrameCache.addSpriteFrames(res.circle_color_plist)
+        var circleColors_sheet = new cc.SpriteBatchNode(res.circle_color_png)
+        for (let index = 0; index < 10; index++) {
+            var circleColors_name = "circle-color-" + index + ".png"
+            var circleColors_frame = cc.spriteFrameCache.getSpriteFrame(circleColors_name)
+            this.circleColors.push(circleColors_frame)
+        }
 
         // load card images as batchnode
         var cardType = ["C", "D", "H", "S"]
@@ -198,23 +208,26 @@ var BaccaratHistoryLayer = cc.Layer.extend({
         serialResultTitle.setPosition(cc.p(serialResultTitle.getContentSize().width / 2, history1Content_height - numPeriodVal.getContentSize().height - paddingY))
         this.history1Content.addChild(serialResultTitle)
 
-        
         var serial_num_height = 20
         this.serial_num_panel = new cc.LayerColor(cc.color(0, 0, 0), serial_num_height * 10 + paddingX / 4 * 9 + paddingX, serial_num_height)
         this.serial_num_panel.setPosition(cc.p(paddingX * 3, history1Content_height - serial_num_height / 2 - numPeriodVal.getContentSize().height - paddingY))
         this.history1Content.addChild(this.serial_num_panel)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2 + index * (serial_num_height + paddingX / 4), serial_num_height / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel.addChild(this.serial_num[index])
+            this.serial_num[index].addChild(randomNumLabel)
         }
 
         var resultCardsTitle = new cc.LabelTTF("随机牌面", "Arial", history1Content_fontSize)

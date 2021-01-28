@@ -18,6 +18,14 @@ var BaccaratGameLayer = cc.Layer.extend({
     cardCountVal: null,
     cardCountVal_num: null,
 
+    wenluPanel: null,
+    wenluPanel_zOrder: 8,
+    wenluPanel_enabled: false,
+    zhupanluScrollView: null,
+    zhupanluBtn: null,
+    daluScrollView: null,
+    daluBtn: null,
+
     banner_height: null,
     historyBtn: null,
     goHomeBtn: null,
@@ -28,6 +36,8 @@ var BaccaratGameLayer = cc.Layer.extend({
 
     btnwrapSprite_y_delta: null,
     btnwrapSprite_height: null,
+
+    circleColors: [],
 
     cards: [],
     card_width: 50,
@@ -119,6 +129,15 @@ var BaccaratGameLayer = cc.Layer.extend({
         cc.audioEngine.playMusic(res.gameBgSound_mp3, true)
         cc.audioEngine.setMusicVolume(0.5)
 
+        // load circle color image using batchNode
+        var circleColors_cache = cc.spriteFrameCache.addSpriteFrames(res.circle_color_plist)
+        var circleColors_sheet = new cc.SpriteBatchNode(res.circle_color_png)
+        for (let index = 0; index < 10; index++) {
+            var circleColors_name = "circle-color-" + index + ".png"
+            var circleColors_frame = cc.spriteFrameCache.getSpriteFrame(circleColors_name)
+            this.circleColors.push(circleColors_frame)
+        }
+
         // store card image using batchNode
         var cardType = ["C", "D", "H", "S"]
         var cardWidth = 50
@@ -147,20 +166,18 @@ var BaccaratGameLayer = cc.Layer.extend({
         }, 1000);
 
         var num_period_font_size = 13
-        var num_period_label = new cc.LabelTTF.create("期数")
-        var num_period_value = new cc.LabelTTF.create("31071466-1")
+        var num_period_label = new cc.LabelTTF.create("期数", "Arial", num_period_font_size)
+        var num_period_value = new cc.LabelTTF.create("31071466-1", "Arial", num_period_font_size)
         num_period_label.attr({
-            x: size.width - num_period_label.getContentSize().width / 2 - num_period_value.getContentSize().width,
+            x: size.width - paddingX / 4 - num_period_label.getContentSize().width / 2 - num_period_value.getContentSize().width,
             y: size.height - this.header_height / 2 - 2,
-            fillStyle: cc.color(233, 133, 62),
-            fontSize: num_period_font_size
+            fillStyle: cc.color(233, 133, 62)
         })
         this.addChild(num_period_label)
         num_period_value.attr({
-            x: size.width - num_period_value.getContentSize().width / 2,
+            x: size.width - num_period_value.getContentSize().width / 2 - paddingX / 4,
             y: size.height - this.header_height / 2 - 2,
-            fillStyle: cc.color(255, 255, 255),
-            fontSize: num_period_font_size
+            fillStyle: cc.color(255, 255, 255)
         })
         this.addChild(num_period_value)
 
@@ -186,7 +203,19 @@ var BaccaratGameLayer = cc.Layer.extend({
         this.addChild(bannerBg)
         this.addChild(bannerSprite)
 
-        this.historyBtn = new ccui.Button(res.history_btn_png)
+        this.wenluBtn = new ccui.Button(res.wenlu_btn_png, res.wenlu_btn_png, res.wenlu_btn_png)
+        var wenluBtn_width = 26
+        this.wenluBtn.attr({
+            pressedActionEnabled: true,
+            scaleX: wenluBtn_width / this.wenluBtn.getContentSize().width,
+            scaleY: wenluBtn_width / this.wenluBtn.getContentSize().width,
+            x: wenluBtn_width / 2,
+            y: size.height - this.header_height - this.banner_height / 2
+        })
+        this.wenluBtn.addTouchEventListener(this.showWenluPanel, this)
+        this.addChild(this.wenluBtn, this.wenluPanel_zOrder + 1)
+
+        this.historyBtn = new ccui.Button(res.history_btn_png, res.history_btn_png, res.history_btn_png)
         var historyBtn_width = 26
         this.historyBtn.attr({
             pressedActionEnabled: true,
@@ -1258,8 +1287,8 @@ var BaccaratGameLayer = cc.Layer.extend({
             if (draw_second == 0) {
                 clearInterval(countDrawSecond)
                 this.infoText.setString("开奖中")
+                this.serial_num_panel.removeAllChildren()
                 setTimeout(async () => {
-                    this.serial_num_panel.removeAllChildren()
                     await this.sleep(500)
                     this.displaySerialPanel()
                 }, 2000);
@@ -1336,7 +1365,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                     
 
                     if (index == 0) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var fadeinAction = new cc.FadeIn(2)
@@ -1349,7 +1378,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         await this.sleep(300)
                     }
                     if (index == 1) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var fadeinAction = new cc.FadeIn(2)
@@ -1362,7 +1391,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         await this.sleep(300)
                     }
                     if (index == 2) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var fadeinAction = new cc.FadeIn(2)
@@ -1375,7 +1404,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         await this.sleep(300)
                     }
                     if (index == 3) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var fadeinAction = new cc.FadeIn(2)
@@ -1388,7 +1417,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         await this.sleep(300)
                     }
                     if (index == 4) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 - changed_card_width - paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var rotationbyAction = new cc.RotateBy(0, -90)
@@ -1408,7 +1437,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                         
                     }
                     if (index == 5) {
-                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
+                        backCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / backCards[index].getContentSize().width * backCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8 + 3))
                         this.cloneCards[index].setPosition(cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + changed_card_width + paddingX / 4 + changed_card_width + paddingX / 4, cc.winSize.height + changed_card_width / this.cloneCards[index].getContentSize().width * this.cloneCards[index].getContentSize().height - this.header_height - this.banner_height - paddingY / 8))
                         this.addChild(backCards[index])
                         var rotationbyAction = new cc.RotateBy(0, -90)
@@ -1501,24 +1530,29 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 23
-        this.serial_num_panel.clear()
+        this.serial_num_panel = null
         this.serial_num_panel = new cc.DrawNode()
         this.serial_num_panel.drawRect(cc.p(paddingX / 4, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 4 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 4 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 4 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2 + 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2, size.height - serial_num_height / 2 - paddingX / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel.addChild(this.serial_num[index])
+            this.serial_num[index].addChild(randomNumLabel)
             
-            var moveByAction = new cc.MoveBy(1, cc.p(serial_num_height * index, 0))
+           
+            var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
             this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
         }
     },
@@ -1588,23 +1622,28 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 20
+        this.serial_num_panel = null
         this.serial_num_panel = new cc.DrawNode()
         this.serial_num_panel.drawRect(cc.p(paddingX / 2, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2, size.height - paddingY), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2, size.height + serial_num_label.getContentSize().height / 2 - paddingY - serial_num_height / 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2, size.height - serial_num_height / 2 - paddingX / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel.addChild(this.serial_num[index])
-
+            this.serial_num[index].addChild(randomNumLabel)
             
+           
             var moveByAction = new cc.MoveBy(1, cc.p((serial_num_height + paddingX / 4) * index, 0))
             this.serial_num[index].runAction(cc.EaseBackInOut.create(moveByAction))
         }
@@ -1776,6 +1815,221 @@ var BaccaratGameLayer = cc.Layer.extend({
                 break
         }
     },
+
+    showWenluPanel: async function (sender, type) {  
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                var size = cc.winSize
+                var paddingX = 20
+                var paddingY = 20
+                if (!this.wenluPanel_enabled) {
+                    console.log("showWenluPanel")
+                    var wenluPanel_height = this.banner_height - this.btnwrapSprite_y_delta
+                    this.wenluPanel = new cc.LayerColor(cc.color(0, 0, 0), size.width, wenluPanel_height)
+                    this.wenluPanel.setPosition(size.width * (-1), size.height - wenluPanel_height - this.header_height)
+                    this.addChild(this.wenluPanel, this.wenluPanel_zOrder)
+                    var wenluPanel_title = new cc.LabelTTF("路线", "Arial", 16)
+                    wenluPanel_title.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: size.width / 2,
+                        y: wenluPanel_height - paddingY - wenluPanel_title.getContentSize().height / 2
+                    })
+                    this.wenluPanel.addChild(wenluPanel_title)
+
+                    // wenlu panel footer
+                    var wenluPanelFooter_height = 25
+                    var wenluPanelFooter_width = size.width - paddingX * 3
+                    var wenluPanelFooter = new cc.LayerColor(cc.color(0, 0, 0), wenluPanelFooter_width, wenluPanelFooter_height)
+                    wenluPanelFooter.setPosition(paddingX * 2, paddingY / 2)
+                    this.wenluPanel.addChild(wenluPanelFooter)
+                    this.zhupanluBtn = new ccui.Button(baccarat_res.zhupanlu_btn_active_png)
+                    var zhupanluBtn_width = wenluPanelFooter_height / this.zhupanluBtn.getContentSize().height * this.zhupanluBtn.getContentSize().width
+                    this.zhupanluBtn.attr({
+                        pressedActionEnabled: true,
+                        scaleX: zhupanluBtn_width / this.zhupanluBtn.getContentSize().width,
+                        scaleY: zhupanluBtn_width / this.zhupanluBtn.getContentSize().width,
+                        x: zhupanluBtn_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    this.zhupanluBtn.addTouchEventListener(this.showZhupanluScrollView, this)
+                    wenluPanelFooter.addChild(this.zhupanluBtn)
+                    this.daluBtn = new ccui.Button(baccarat_res.dalu_btn_nonactive_png)
+                    var daluBtn_width = wenluPanelFooter_height / this.daluBtn.getContentSize().height * this.daluBtn.getContentSize().width
+                    this.daluBtn.attr({
+                        pressedActionEnabled: true,
+                        scaleX: daluBtn_width / this.daluBtn.getContentSize().width,
+                        scaleY: daluBtn_width / this.daluBtn.getContentSize().width,
+                        x: daluBtn_width / 2 + zhupanluBtn_width + paddingX / 4,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    this.daluBtn.addTouchEventListener(this.showDaluScrollView, this)
+                    wenluPanelFooter.addChild(this.daluBtn)
+
+                    var count_width = (wenluPanelFooter_width - zhupanluBtn_width - paddingX / 4 - daluBtn_width - paddingX / 4) / 5
+                    var countBank = new cc.LayerColor(cc.color(255, 55, 62), count_width, wenluPanelFooter_height)
+                    countBank.setPosition(zhupanluBtn_width + paddingX / 4 + daluBtn_width + paddingX / 4, 0)
+                    wenluPanelFooter.addChild(countBank)
+                    var countBankLabel = new cc.LabelTTF("庄 190", "Arial", 12)
+                    countBankLabel.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: count_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    countBank.addChild(countBankLabel)
+                    
+                    var countPlayer = new cc.LayerColor(cc.color(51, 116, 255), count_width, wenluPanelFooter_height)
+                    countPlayer.setPosition(zhupanluBtn_width + paddingX / 4 + daluBtn_width + paddingX / 4 + count_width, 0)
+                    wenluPanelFooter.addChild(countPlayer)
+                    var countPlayerLabel = new cc.LabelTTF("闲 161", "Arial", 12)
+                    countPlayerLabel.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: count_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    countPlayer.addChild(countPlayerLabel)
+                    
+                    var countPair = new cc.LayerColor(cc.color(20, 153, 102), count_width, wenluPanelFooter_height)
+                    countPair.setPosition(zhupanluBtn_width + paddingX / 4 + daluBtn_width + paddingX / 4 + count_width * 2, 0)
+                    wenluPanelFooter.addChild(countPair)
+                    var countPairLabel = new cc.LabelTTF("和 37", "Arial", 12)
+                    countPairLabel.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: count_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    countPair.addChild(countPairLabel)
+                    
+                    
+                    var countBankPair = new cc.LayerColor(null, count_width, wenluPanelFooter_height)
+                    countBankPair.setPosition(zhupanluBtn_width + paddingX / 4 + daluBtn_width + paddingX / 4 + count_width * 3, 0)
+                    wenluPanelFooter.addChild(countBankPair)
+                    var countBankPairRect = new cc.DrawNode()
+                    countBankPairRect.drawRect(cc.p(0, 0), cc.p(count_width, wenluPanelFooter_height), cc.color(0, 0, 0), 1, cc.color(255, 55, 62))
+                    countBankPair.addChild(countBankPairRect)
+                    var countBankPairLabel = new cc.LabelTTF("对 24", "Arial", 12)
+                    countBankPairLabel.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: count_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    countBankPair.addChild(countBankPairLabel)
+
+                    var countPlayerPair = new cc.LayerColor(null, count_width, wenluPanelFooter_height)
+                    countPlayerPair.setPosition(zhupanluBtn_width + paddingX / 4 + daluBtn_width + paddingX / 4 + count_width * 4, 0)
+                    wenluPanelFooter.addChild(countPlayerPair)
+                    var countPlayerPairRect = new cc.DrawNode()
+                    countPlayerPairRect.drawRect(cc.p(0, 0), cc.p(count_width, wenluPanelFooter_height), cc.color(0, 0, 0), 1, cc.color(51, 116, 255))
+                    countPlayerPair.addChild(countPlayerPairRect)
+                    var countPlayerPairLabel = new cc.LabelTTF("对 29", "Arial", 12)
+                    countPlayerPairLabel.attr({
+                        fillStyle: cc.color(255, 255, 255),
+                        x: count_width / 2,
+                        y: wenluPanelFooter_height / 2
+                    })
+                    countPlayerPair.addChild(countPlayerPairLabel)
+
+
+
+                    // 珠盘路 zhupanlu scrollview
+                    this.zhupanluScrollView = new ccui.ScrollView()
+                    var zhupanluScrollView_height = wenluPanel_height - paddingY - wenluPanel_title.getContentSize().height - wenluPanelFooter_height - paddingY / 2
+                    var zhupanluScrollView_width = size.width - paddingX * 3
+                    this.zhupanluScrollView.attr({
+                        innerHeight: zhupanluScrollView_height,
+                        innerWidth: 700
+                    })
+                    this.zhupanluScrollView.setDirection(ccui.ScrollView.DIR_HORIZONTAL)
+                    this.zhupanluScrollView.setTouchEnabled(true)
+                    this.zhupanluScrollView.setBounceEnabled(true)
+                    this.zhupanluScrollView.setContentSize(cc.size(zhupanluScrollView_width, zhupanluScrollView_height))
+                    this.zhupanluScrollView.setPosition(paddingX * 2, paddingY / 2 + wenluPanelFooter_height)
+                    this.wenluPanel.addChild(this.zhupanluScrollView)
+
+                    for (let indexi = 0; indexi < 5; indexi++) {
+                        for (let index = 0; index < 30; index++) {
+                            var zplSprite_width = (size.width - paddingX * 3 - paddingX / 4 * 12) / 13
+                            var zplSprite_name = "res/baccarat/zpl-" + Math.floor(Math.random() * 6) + ".png"
+                            var zplSprite = new cc.Sprite(zplSprite_name)
+                            zplSprite.attr({
+                                scaleX: zplSprite_width / zplSprite.getContentSize().width,
+                                scaleY: zplSprite_width / zplSprite.getContentSize().width,
+                                x: zplSprite_width / 2 + index * (zplSprite_width + paddingX / 4),
+                                y: zhupanluScrollView_height - zplSprite_width / 2 - paddingY / 2 - (zplSprite_width + paddingY / 4) * indexi
+                            })
+                            this.zhupanluScrollView.addChild(zplSprite)
+                        } 
+                    }
+
+                    // 大路 dalu scrollview
+                    this.daluScrollView = new ccui.ScrollView()
+                    var daluScrollView_height = wenluPanel_height - paddingY - wenluPanel_title.getContentSize().height - wenluPanelFooter_height - paddingY / 2
+                    var daluScrollView_width = size.width - paddingX * 3
+                    this.daluScrollView.attr({
+                        innerHeight: daluScrollView_height,
+                        innerWidth: 700
+                    })
+                    this.daluScrollView.setDirection(ccui.ScrollView.DIR_HORIZONTAL)
+                    this.daluScrollView.setTouchEnabled(true)
+                    this.daluScrollView.setBounceEnabled(true)
+                    this.daluScrollView.setContentSize(cc.size(daluScrollView_width, daluScrollView_height))
+                    this.daluScrollView.setPosition(paddingX * 2, paddingY / 2 + wenluPanelFooter_height)
+                    // this.wenluPanel.addChild(this.daluScrollView)
+                    for (let indexi = 0; indexi < 5; indexi++) {
+                        for (let index = 0; index < 30; index++) {
+                            var zplSprite_width = (size.width - paddingX * 3 - paddingX / 4 * 12) / 13
+                            var zplSprite_name = "res/baccarat/zpl-" + Math.floor(Math.random() * 6) + ".png"
+                            var zplSprite = new cc.Sprite(zplSprite_name)
+                            zplSprite.attr({
+                                scaleX: zplSprite_width / zplSprite.getContentSize().width,
+                                scaleY: zplSprite_width / zplSprite.getContentSize().width,
+                                x: zplSprite_width / 2 + index * (zplSprite_width + paddingX / 4),
+                                y: zhupanluScrollView_height - zplSprite_width / 2 - paddingY / 2 - (zplSprite_width + paddingY / 4) * indexi
+                            })
+                            this.daluScrollView.addChild(zplSprite)
+                        } 
+                    }
+
+
+
+                    var movebyAction = new cc.MoveBy(0.3, cc.p(size.width , 0))
+                    this.wenluPanel.runAction(movebyAction)
+                    this.wenluPanel_enabled = true
+                    return
+                }else {
+                    console.log("closeWenluPanel")
+                    var movebyAction = new cc.MoveBy(0.3, cc.p(size.width * (-1), 0))
+                    this.wenluPanel.runAction(movebyAction)
+                    await this.sleep(300)
+                    this.removeChild(this.wenluPanel)
+                    this.wenluPanel_enabled = false
+                    return
+                }
+                break
+        }
+    },
+
+    showZhupanluScrollView: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                this.daluBtn.loadTextureNormal(baccarat_res.dalu_btn_nonactive_png)
+                this.zhupanluBtn.loadTextureNormal(baccarat_res.zhupanlu_btn_active_png)
+                this.wenluPanel.removeChild(this.daluScrollView)
+                this.wenluPanel.addChild(this.zhupanluScrollView)
+
+                break
+        }
+    },
+    showDaluScrollView: function (sender, type) {  
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                this.daluBtn.loadTextureNormal(baccarat_res.dalu_btn_active_png)
+                this.zhupanluBtn.loadTextureNormal(baccarat_res.zhupanlu_btn_nonactive_png)
+                this.wenluPanel.removeChild(this.zhupanluScrollView)
+                this.wenluPanel.addChild(this.daluScrollView)
+                break
+        }
+    },
+
     showHistory: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:

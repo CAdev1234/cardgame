@@ -1,4 +1,5 @@
 var NiuniuHistoryLayer = cc.Layer.extend({
+    circleColors: [],
     cards: [],
     winSheet: [],
     failSheet: [],
@@ -27,7 +28,16 @@ var NiuniuHistoryLayer = cc.Layer.extend({
         var paddingY = 20
         var paddingX = 20
 
-        // load card and niuniu alert images as batchnode
+        // load circle color image using batchNode
+        var circleColors_cache = cc.spriteFrameCache.addSpriteFrames(res.circle_color_plist)
+        var circleColors_sheet = new cc.SpriteBatchNode(res.circle_color_png)
+        for (let index = 0; index < 10; index++) {
+            var circleColors_name = "circle-color-" + index + ".png"
+            var circleColors_frame = cc.spriteFrameCache.getSpriteFrame(circleColors_name)
+            this.circleColors.push(circleColors_frame)
+        }
+
+        // load card images as batchnode
         var cardType = ["C", "D", "H", "S"]
         var cardWidth = 20
         var cardGroup_width = cardWidth + paddingX * 1.5 * 4
@@ -244,34 +254,42 @@ var NiuniuHistoryLayer = cc.Layer.extend({
         this.serial_num_panel1.setPosition(cc.p(this.history1Content.getContentSize().width - (serial_num_height * 10 + paddingX / 4 * 9 + paddingX), history1Content_height - this.serial_num_panel1.getContentSize().height - blueCircleSprite_height - paddingY / 2))
         this.history1Content.addChild(this.serial_num_panel1)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2 + index * (serial_num_height + paddingX / 4), serial_num_height / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel1.addChild(this.serial_num[index])
+            this.serial_num[index].addChild(randomNumLabel)
         }
 
         this.serial_num_panel2 = new cc.LayerColor(cc.color(0, 0, 0), serial_num_height * 10 + paddingX / 4 * 9 + paddingX, serial_num_height)
         this.serial_num_panel2.setPosition(cc.p(this.history1Content.getContentSize().width - (serial_num_height * 10 + paddingX / 4 * 9 + paddingX), history1Content_height - this.serial_num_panel1.getContentSize().height - blueCircleSprite_height - paddingY / 2 - this.serial_num_panel2.getContentSize().height - paddingY / 2))
         this.history1Content.addChild(this.serial_num_panel2)
         for (let index = 0; index < 10; index++) {
-            this.serial_num[index] = new cc.DrawNode()
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
-            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
-            
-            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
-            serial_num_label.attr({
-                fillStyle: cc.color(255, 255, 255)
+            this.serial_num[index] = new cc.Sprite(this.circleColors[index])
+            var serial_num_scale = serial_num_height / this.serial_num[index].getContentSize().width
+            this.serial_num[index].attr({
+                scaleX: serial_num_scale,
+                scaleY: serial_num_scale
             })
-            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
-            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num[index].setPosition(serial_num_height / 2 + paddingX / 2 + index * (serial_num_height + paddingX / 4), serial_num_height / 2)
+            var randomNumLabel = new cc.LabelTTF(Math.floor(Math.random() * 100).toString(), "Arial", 35)
+            randomNumLabel.attr({
+                fillStyle: cc.color(255, 255, 255),  
+            })
+            randomNumLabel.enableStroke(cc.color(0, 0, 0), 2)
+            randomNumLabel.setPosition(serial_num_height / (2 * serial_num_scale), serial_num_height / (2 * serial_num_scale) - randomNumLabel.getContentSize().height / 2 * serial_num_scale)
             this.serial_num_panel2.addChild(this.serial_num[index])
+            this.serial_num[index].addChild(randomNumLabel)
         }
 
         var bankerLabel = new cc.LabelTTF("庄", "Arial", 15)
