@@ -164,16 +164,16 @@ var NiuNiuGameLayer = cc.Layer.extend({
             this.displaySerialPanel2()
         }, 2000);
 
-        var num_period_font_size = 15
+        var num_period_font_size = 13
         var num_period_label = new cc.LabelTTF.create("期数");
         num_period_label.attr({
-            x: size.width - 80,
+            x: size.width - 90,
             y: size.height -  this.header_height / 2,
             fillStyle: cc.color(233, 133, 62),
             fontSize: num_period_font_size
         })
         this.addChild(num_period_label)
-        var num_period_value = new cc.LabelTTF.create("530")
+        var num_period_value = new cc.LabelTTF.create("31071466-1")
         num_period_value.attr({
             x: size.width - 40,
             y: size.height - this.header_height / 2,
@@ -366,26 +366,26 @@ var NiuNiuGameLayer = cc.Layer.extend({
         betAmountTotal_RoundRect.setPosition(paddingX / 4, this.coinWrapSprite_height + 40)
         this.addChild(betAmountTotal_RoundRect)
         
+        this.betAmountToken_RoundRect = new RoundRect(70, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
+        this.betAmountToken_RoundRect.setPosition(paddingX / 4 + betAmountTotal_RoundRect.getContentSize().width + paddingX / 2, this.coinWrapSprite_height + 40)
+        this.addChild(this.betAmountToken_RoundRect)
         var betAmountTokenSprite = cc.Sprite.create(res.bet_amount_token_png)
         var betAmountTokenSprite_height = 15
         var betAmountTokenSprite_width = betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height * betAmountTokenSprite.getContentSize().height
         betAmountTokenSprite.attr({
-            x: betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40 + 2,
+            x: betAmountTokenSprite_width / 2 + paddingX / 4,
+            y: betAmountTotalSprite_height / 2 + 2,
             scaleX: betAmountTokenSprite_width / betAmountTokenSprite.getContentSize().width,
             scaleY: betAmountTokenSprite_height / betAmountTokenSprite.getContentSize().height
         })
-        this.addChild(betAmountTokenSprite)
+        this.betAmountToken_RoundRect.addChild(betAmountTokenSprite)
         this.betAmountTokenVal = new cc.LabelTTF("0.0", "Arial", 15)
         this.betAmountTokenVal.attr({
-            x: this.betAmountTokenVal.getContentSize().width / 2 + paddingX / 2  + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX + betAmountTokenSprite_width + paddingX / 2,
-            y: betAmountTotalSprite_height / 2 + this.coinWrapSprite_height + 40,
+            x: this.betAmountToken_RoundRect.getContentSize().width - this.betAmountTokenVal.getContentSize().width,
+            y: betAmountTotalSprite_height / 2,
             fillStyle: cc.color(255, 255, 255)
         })
-        this.addChild(this.betAmountTokenVal)
-        this.betAmountToken_RoundRect = new RoundRect(betAmountTokenSprite_width + paddingX / 2 + this.betAmountTokenVal.getContentSize().width + paddingX / 2, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
-        this.betAmountToken_RoundRect.setPosition(betAmountTokenSprite_width / 2 + paddingX / 2 + betAmountTotalSprite_width + paddingX / 2 + betAmountTotalVal.getContentSize().width + paddingX - paddingX / 2, this.coinWrapSprite_height + 40)
-        this.addChild(this.betAmountToken_RoundRect)
+        this.betAmountToken_RoundRect.addChild(this.betAmountTokenVal)
 
         
         // cancel button
@@ -563,11 +563,9 @@ var NiuNiuGameLayer = cc.Layer.extend({
                             this.panelThreeValRoundRect.setContentSize(cc.size(this.panelThreeValRoundRect_Label.getContentSize().width + paddingX, this.panelThreeValRoundRect_Label.getContentSize().height + paddingY / 4))
                     }
                     this.addChild(coinItem, 0, this.dealedCoins_tag)
+                    this.betAmountTokenVal.setString(this.sumCoins(this.panelOneDealedCoins) + this.sumCoins(this.panelTwoDealedCoins) + this.sumCoins(this.panelThreeDealedCoins))
                     this.cancelBtn.setEnabled(true)
                     this.confirmBtn.setEnabled(true)
-
-                    this.betAmountTokenVal.setString(this.sumCoins(this.panelOneDealedCoins) + this.sumCoins(this.panelTwoDealedCoins) + this.sumCoins(this.panelThreeDealedCoins))
-                    
                 }
 
             }

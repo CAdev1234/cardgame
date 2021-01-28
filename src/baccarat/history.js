@@ -15,11 +15,28 @@ var BaccaratHistoryLayer = cc.Layer.extend({
     hrLine2: null,
     history2Content: null,
 
+    serial_num: [],
+    cards: [],
+
     ctor: function () {
         this._super()
         var size = cc.winSize
         var paddingY = 20
         var paddingX = 20
+
+        // load card images as batchnode
+        var cardType = ["C", "D", "H", "S"]
+        var cardWidth = 20
+        var cardGroup_width = cardWidth + paddingX * 1.5 * 4
+        var card_cache = cc.spriteFrameCache.addSpriteFrames(res.card_sheet_plist)
+        var card_sheet = new cc.SpriteBatchNode(res.card_sheet_png)
+        for (let index = 0; index < 13; index++) {
+            for (let indexi = 0; indexi < cardType.length; indexi++) {
+                var cardName = "card" + (index + 1).toString() + cardType[indexi] + ".png"
+                var card_frame = cc.spriteFrameCache.getSpriteFrame(cardName)
+                this.cards.push(card_frame)
+            }
+        }
 
         // background layer
         this.bgLayer = cc.LayerColor.create(cc.color(0, 0, 0), size.width, size.height)
@@ -150,75 +167,121 @@ var BaccaratHistoryLayer = cc.Layer.extend({
         this.addChild(this.history1Content, 1, 1)
 
         var history1Content_fontSize = 13
-        var blueCircleSprite1 = cc.Sprite.create(res.history_blue_circle)
-        var blueCircleSprite_height = 30
-        blueCircleSprite1.attr({
-            scaleX: blueCircleSprite_height / blueCircleSprite1.getContentSize().width,
-            scaleY: blueCircleSprite_height / blueCircleSprite1.getContentSize().width,
-            x: size.width - paddingX / 2 - 30 * 3,
-            y: history1Content_height - blueCircleSprite_height / 2
-        })
-        this.history1Content.addChild(blueCircleSprite1)
-        var blueCircleSprite2 = cc.Sprite.create(res.history_blue_circle)
-        var blueCircleSprite_height = 30
-        blueCircleSprite2.attr({
-            scaleX: blueCircleSprite_height / blueCircleSprite2.getContentSize().width,
-            scaleY: blueCircleSprite_height / blueCircleSprite2.getContentSize().width,
-            x: size.width - paddingX / 2 - 30 * 2,
-            y: history1Content_height - blueCircleSprite_height / 2
-        })
-        this.history1Content.addChild(blueCircleSprite2)
-        var blueCircleSprite3 = cc.Sprite.create(res.history_blue_circle)
-        var blueCircleSprite_height = 30
-        blueCircleSprite3.attr({
-            scaleX: blueCircleSprite_height / blueCircleSprite3.getContentSize().width,
-            scaleY: blueCircleSprite_height / blueCircleSprite3.getContentSize().width,
-            x: size.width - paddingX / 2 - 30 * 1,
-            y: history1Content_height - blueCircleSprite_height / 2
-        })
-        this.history1Content.addChild(blueCircleSprite3)
         var numPeriodVal = cc.LabelTTF.create("31084949", "Arial", history1Content_fontSize)
         numPeriodVal.attr({
             fillStyle: cc.color(255, 255, 255),
             x: numPeriodVal.getContentSize().width / 2,
-            y: history1Content_height - blueCircleSprite_height / 2
+            y: history1Content_height - numPeriodVal.getContentSize().height / 2
         })
         this.history1Content.addChild(numPeriodVal)
         var gameTimeVal = cc.LabelTTF.create("09:25", "Arial", history1Content_fontSize)
         gameTimeVal.attr({
             fillStyle: cc.color(255, 255, 255),
             x: (size.width - paddingX) / 5 * 2,
-            y: history1Content_height - blueCircleSprite_height / 2
+            y: history1Content_height - numPeriodVal.getContentSize().height / 2
         })
         this.history1Content.addChild(gameTimeVal)
 
-        var serialResultTitle = cc.LabelTTF.create("官方开奖结果", "Arial", history1Content_fontSize + 1)
+        var bankerLabel = new cc.LabelTTF("庄", "Arial", history1Content_fontSize)
+        bankerLabel.attr({
+            fillStyle: cc.color(255, 64, 71),
+            x: this.history1Content.getContentSize().width - bankerLabel.getContentSize().width / 2,
+            y: history1Content_height - numPeriodVal.getContentSize().height / 2
+        })
+        this.history1Content.addChild(bankerLabel)
+
+        var serialResultTitle = cc.LabelTTF.create("开出号码", "Arial", history1Content_fontSize)
+        serialResultTitle.attr({
+            fillStyle: cc.color(154, 154, 154, 154)
+        })
         serialResultTitle_height = serialResultTitle.getContentSize().height
-        serialResultTitle.setPosition(cc.p(serialResultTitle.getContentSize().width / 2, history1Content_height - blueCircleSprite_height - paddingY))
+        serialResultTitle.setPosition(cc.p(serialResultTitle.getContentSize().width / 2, history1Content_height - numPeriodVal.getContentSize().height - paddingY))
         this.history1Content.addChild(serialResultTitle)
 
-        var serial_num = []
+        
         var serial_num_height = 20
+        this.serial_num_panel = new cc.LayerColor(cc.color(0, 0, 0), serial_num_height * 10 + paddingX / 4 * 9 + paddingX, serial_num_height)
+        this.serial_num_panel.setPosition(cc.p(paddingX * 3, history1Content_height - serial_num_height / 2 - numPeriodVal.getContentSize().height - paddingY))
+        this.history1Content.addChild(this.serial_num_panel)
         for (let index = 0; index < 10; index++) {
-            serial_num[index] = new cc.Sprite("res/niuniu/serial" + (index + 1) + ".png");
-            serial_num[index].attr({
-                x: size.width - paddingX / 2 - (size.width - paddingX) / 3 * 2 * 0.1 * (index + 1),
-                y: history1Content_height - blueCircleSprite_height - paddingY,
-                scaleX: serial_num_height / serial_num[index].getContentSize().height, 
-                scaleY: serial_num_height / serial_num[index].getContentSize().height,
+            this.serial_num[index] = new cc.DrawNode()
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height) / 2, cc.color(255, 255, 255, 100))
+            this.serial_num[index].drawDot(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2), (serial_num_height - 2) / 2, cc.color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)))
+            
+            var serial_num_label = new cc.LabelTTF((Math.ceil(Math.random() * 100 )).toString(), "Arial", 13)
+            serial_num_label.attr({
+                fillStyle: cc.color(255, 255, 255)
             })
-            this.history1Content.addChild(serial_num[index], 0)
+            serial_num_label.setPosition(cc.p(paddingX / 2 + serial_num_height / 2 + index * (paddingX / 4 + serial_num_height), serial_num_height / 2 - 2))
+            this.serial_num[index].addChild(serial_num_label)
+            this.serial_num_panel.addChild(this.serial_num[index])
         }
+
+        var resultCardsTitle = new cc.LabelTTF("随机牌面", "Arial", history1Content_fontSize)
+        resultCardsTitle.attr({
+            fillStyle: cc.color(154, 154, 154),
+        })
+        resultCardsTitle.setPosition(cc.p(resultCardsTitle.getContentSize().width / 2, history1Content_height - serialResultTitle_height / 2 - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height))
+        this.history1Content.addChild(resultCardsTitle)
+
         for (let index = 0; index < 10; index++) {
-            serial_num[index] = new cc.Sprite("res/niuniu/serial" + (index + 1) + ".png");
-            serial_num[index].attr({
-                x: size.width - paddingX / 2 - (size.width - paddingX) / 3 * 2 * 0.1 * (index + 1),
-                y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2,
-                scaleX: serial_num_height / serial_num[index].getContentSize().height, 
-                scaleY: serial_num_height / serial_num[index].getContentSize().height,
+            var resultCards = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
+            var resultCards_width = 15
+            var resultCards_height = resultCards_width / resultCards.getContentSize().width * resultCards.getContentSize().height
+            resultCards.attr({
+                scaleX: resultCards_width / resultCards.getContentSize().width,
+                scaleY: resultCards_width / resultCards.getContentSize().width,
+                x: resultCards_width / 2 + resultCardsTitle.getContentSize().width + paddingX + index * (resultCards_width + paddingX / 4),
+                y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - paddingY / 2
             })
-            this.history1Content.addChild(serial_num[index], 0)
+            this.history1Content.addChild(resultCards)
         }
+
+        var cloneCardsTitle = new cc.LabelTTF("结果牌面", "Arial", history1Content_fontSize)
+        cloneCardsTitle.attr({
+            fillStyle: cc.color(154, 154, 154),
+            x: cloneCardsTitle.getContentSize().width / 2,
+            y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - resultCards_height - paddingY
+        })
+        this.history1Content.addChild(cloneCardsTitle)
+        var playerLabel = new cc.LabelTTF("闲", "Arial", history1Content_fontSize)
+        playerLabel.attr({
+            fillStyle: cc.color(77, 134, 237),
+            x: playerLabel.getContentSize().width / 2 + cloneCardsTitle.getContentSize().width + paddingX,
+            y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - resultCards_height - paddingY
+        })
+        this.history1Content.addChild(playerLabel)
+        for (let index = 0; index < 3; index++) {
+            var cloneCard = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])    
+            cloneCard.attr({
+                scaleX: resultCards_width / cloneCard.getContentSize().width,
+                scaleY: resultCards_width / cloneCard.getContentSize().width,
+                x: resultCards_width / 2 + cloneCardsTitle.getContentSize().width + paddingX + playerLabel.getContentSize().width + paddingX / 2 + index * (resultCards_width + paddingX / 4),
+                y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - resultCards_height - paddingY
+            })
+            this.history1Content.addChild(cloneCard)
+        }
+        var bankLabel = new cc.LabelTTF("庄", "Arial", history1Content_fontSize)
+        bankLabel.attr({
+            fillStyle: cc.color(255, 64, 71),
+            x: bankLabel.getContentSize().width / 2 + cloneCardsTitle.getContentSize().width + paddingX + playerLabel.getContentSize().width + paddingX / 2 + resultCards_width * 3 + paddingX / 4 * 2 + paddingX / 2,
+            y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - resultCards_height - paddingY
+        })
+        this.history1Content.addChild(bankLabel)
+        for (let index = 0; index < 3; index++) {
+            var cloneCard = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])    
+            cloneCard.attr({
+                scaleX: resultCards_width / cloneCard.getContentSize().width,
+                scaleY: resultCards_width / cloneCard.getContentSize().width,
+                x: resultCards_width / 2 + cloneCardsTitle.getContentSize().width + paddingX + playerLabel.getContentSize().width + paddingX / 2 + resultCards_width * 3 + paddingX / 4 * 2 + paddingX / 2 + bankLabel.getContentSize().width + paddingX / 2 + index * (resultCards_width + paddingX / 4),
+                y: history1Content_height - numPeriodVal.getContentSize().height - paddingY - this.serial_num_panel.getContentSize().height - resultCards_height - paddingY
+            })
+            this.history1Content.addChild(cloneCard)
+        }
+
+        
+
+
 
 
         // second history content

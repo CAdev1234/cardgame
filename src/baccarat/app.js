@@ -462,7 +462,7 @@ var BaccaratGameLayer = cc.Layer.extend({
 
         
         
-        this.betAmountToken_RoundRect = new RoundRect(80, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
+        this.betAmountToken_RoundRect = new RoundRect(70, betAmountTotalSprite_height + paddingY / 4, cc.color(255, 255, 255, 0), 1, cc.color(255, 255, 255), 10, null)
         this.betAmountToken_RoundRect.setPosition(cc.p(betAmountTotal_RoundRect.getContentSize().width + paddingX / 2, this.coinWrapSprite_height))
         this.addChild(this.betAmountToken_RoundRect)
         var betAmountTokenSprite = cc.Sprite.create(res.bet_amount_token_png)
@@ -1324,7 +1324,7 @@ var BaccaratGameLayer = cc.Layer.extend({
                     backCards[index] = new cc.Sprite(baccarat_res.card_back_png)
                     backCards[index].attr({
                         scaleX: changed_card_width / backCards[index].getContentSize().width,
-                        scaleY: changed_card_width / backCards[index].getContentSize().width,
+                        scaleY: changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / backCards[index].getContentSize().height,
                     })
                     backCards[index].setOpacity(0)
                     this.cloneCards[index] = new cc.Sprite(this.cards[this.resultCardsIndexArray[choosedCardNum[index]]])
@@ -1418,12 +1418,12 @@ var BaccaratGameLayer = cc.Layer.extend({
                         backCards[index].runAction(movebyAction)
                         backCards[index].runAction(fadeinAction)
                         await this.sleep(2000)
-                        backCards[index].runAction(new cc.ScaleTo(1, 0, changed_card_width / backCards[index].getContentSize().width))
+                        backCards[index].runAction(new cc.ScaleTo(0.3, 0, changed_card_width / backCards[index].getContentSize().width))
                         await this.sleep(300)
                         this.addChild(this.cloneCards[index])
                         this.cloneCards[index].runAction(rotationbyAction)
                         this.cloneCards[index].runAction(movebyAction)
-                        this.cloneCards[index].runAction(new cc.ScaleTo(1, -1 * (changed_card_width / this.cloneCards[index].getContentSize().width), changed_card_width / this.cloneCards[index].getContentSize().width))
+                        this.cloneCards[index].runAction(new cc.ScaleTo(0.3, -1 * (changed_card_width / this.cloneCards[index].getContentSize().width), changed_card_width / this.cloneCards[index].getContentSize().width))
                         await this.sleep(300)
                     }
                     await this.sleep(2000)
@@ -1501,7 +1501,7 @@ var BaccaratGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var serial_num_height = 23
-        this.serial_num_panel = null
+        this.serial_num_panel.clear()
         this.serial_num_panel = new cc.DrawNode()
         this.serial_num_panel.drawRect(cc.p(paddingX / 4, size.height - paddingY / 2), cc.p(paddingX / 2 + 10 * serial_num_height + 9 * paddingX / 4, size.height - paddingY / 2 - serial_num_height), null, 0, null)
         this.addChild(this.serial_num_panel)

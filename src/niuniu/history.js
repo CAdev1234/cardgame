@@ -304,13 +304,16 @@ var NiuniuHistoryLayer = cc.Layer.extend({
         })
         this.history1Content.addChild(winfailSprite)
 
+
+
+
         var panelOneLabel = new cc.LabelTTF("闲一", "Arial", 15)
-        bankerLabel.attr({
+        panelOneLabel.attr({
             fillStyle: cc.color(80, 141, 255),
-            x: size.width / 3 + bankerLabel.getContentSize().width / 2,
-            y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY
+            x: size.width / 3 + panelOneLabel.getContentSize().width / 2,
+            y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY - 40
         })
-        this.history1Content.addChild(bankerLabel)
+        this.history1Content.addChild(panelOneLabel)
 
         for (let index = 0; index < 5; index++) {
             var historyCard = new cc.Sprite(this.cards[Math.floor(Math.random() * 52)])
@@ -319,18 +322,18 @@ var NiuniuHistoryLayer = cc.Layer.extend({
                 scaleX: historyCard_width / historyCard.getContentSize().width,
                 scaleY: historyCard_width / historyCard.getContentSize().width,
                 x: size.width / 3 + historyCard_width / 2 + paddingX * 3 + index * (historyCard_width / 3 * 2),
-                y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY
+                y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY - 40
             })
             this.history1Content.addChild(historyCard)
         }
 
-        var winfailSprite = new cc.Sprite(this.failSheet[Math.floor(Math.random() * 11)])
+        var winfailSprite = new cc.Sprite(this.winSheet[Math.floor(Math.random() * 11)])
         var winfailSprite_width = 35
         winfailSprite.attr({
             scaleX: winfailSprite_width / winfailSprite.getContentSize().width,
             scaleY: winfailSprite_width / winfailSprite.getContentSize().width,
             x: size.width / 3 + winfailSprite_width / 2 + paddingX * 3 + paddingX * 5, 
-            y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY
+            y: history1Content_height - blueCircleSprite_height - paddingY - serial_num_height - paddingY / 2 - serial_num_height - paddingY - 40
         })
         this.history1Content.addChild(winfailSprite)
 
