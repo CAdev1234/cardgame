@@ -841,12 +841,12 @@ var GFGameLayer = cc.Layer.extend({
         }, 2000);
         await this.sleep(2000)
         var close_second = 20
-        var countCloseSecond = setInterval(() => {
+        var countCloseSecond = setInterval(async () => {
             if (close_second == 0) {
                 clearInterval(countCloseSecond)
                 this.close_state = true
-                this.displayCard()
-                this.drawInterval()
+                await this.displayCard()
+                await this.drawInterval()
                 return
             }
             close_second = close_second - 1

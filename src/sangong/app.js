@@ -1000,12 +1000,12 @@ var SangongGameLayer = cc.Layer.extend({
         }, 2000);
         await this.sleep(2000)
         var close_second = 20
-        var countCloseSecond = setInterval(() => {
+        var countCloseSecond = setInterval(async () => {
             if (close_second == 0) {
                 clearInterval(countCloseSecond)
                 this.close_state = true
-                this.displayCard()
-                this.drawInterval()
+                await this.displayCard()
+                await this.drawInterval()
                 return
             }
             close_second = close_second - 1
@@ -1052,6 +1052,10 @@ var SangongGameLayer = cc.Layer.extend({
                 var paddingY = 20
                 var paddingX = 20
                 for (let index = 0; index < this.resultCards.length; index++) {
+                    this.resultCards[index].setScaleX(changed_card_width / this.resultCards[index].getContentSize().width * (-1))
+                    this.resultCards[index].setScaleY(changed_card_width / this.resultCards[index].getContentSize().width)
+                }
+                for (let index = 0; index < this.resultCards.length; index++) {
                     var scaletoAction = new cc.ScaleTo(0, changed_card_width / this.resultCards[index].getContentSize().width * (-1), changed_card_width / this.resultCards[index].getContentSize().width)
                     var movetoAction
                     if (index < 5) {
@@ -1059,12 +1063,14 @@ var SangongGameLayer = cc.Layer.extend({
                     }else {
                         movetoAction = new cc.MoveTo(0.5, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * (index % 5), cc.winSize.height - this.header_height - this.banner_height / 2 + paddingY / 8 - changed_card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2 - paddingY / 8 + paddingY))
                     }
-                    var actionSequence = new cc.Sequence(scaletoAction, movetoAction)
+                    var actionSequence = new cc.Sequence(movetoAction)
                     this.resultCards[index].runAction(actionSequence)
                 }
                 var choosedCardNum = this.generateRandomNumArray(0, 9, 6)
 
                 // four cards copy for first showed
+                console.log("resultCard=", this.resultCards)
+                console.log("choosedCardNum=", choosedCardNum)
                 this.cloneCards = []
                 for (let index = 0; index < choosedCardNum.length; index++) {
                     this.cloneCards[index] = new cc.Sprite(this.cards[this.resultCardsIndexArray[choosedCardNum[index]]])
@@ -1072,6 +1078,7 @@ var SangongGameLayer = cc.Layer.extend({
                         scaleX: changed_card_width / this.cloneCards[index].getContentSize().width,
                         scaleY: changed_card_width /  this.cloneCards[index].getContentSize().width
                     })
+                    console.log("index=", index)
                     this.cloneCards[index].setPosition(this.resultCards[choosedCardNum[index]].getPosition())
                     await this.sleep(2000)
                     this.resultCards[choosedCardNum[index]].attr({
@@ -1195,6 +1202,7 @@ var SangongGameLayer = cc.Layer.extend({
             this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), (card_width / this.resultCards[index].getContentSize().width)))
             await this.sleep(150)
         }
+        console.log("first resultCards=", this.resultCards)
     },
 
     removeCards: function () {

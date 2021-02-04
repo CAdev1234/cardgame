@@ -1020,9 +1020,9 @@ var SangongGameLayer = cc.Layer.extend({
     var _this2 = this;
 
     var bet_start_alert, bet_start_alert_width, close_second, countCloseSecond;
-    return regeneratorRuntime.async(function betOpenInterval$(_context2) {
+    return regeneratorRuntime.async(function betOpenInterval$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             this.open_state = true;
             this.close_state = false; // update cardcountval
@@ -1124,53 +1124,72 @@ var SangongGameLayer = cc.Layer.extend({
             setTimeout(function () {
               _this2.removeChild(bet_start_alert);
             }, 2000);
-            _context2.next = 13;
+            _context3.next = 13;
             return regeneratorRuntime.awrap(this.sleep(2000));
 
           case 13:
             close_second = 20;
-            countCloseSecond = setInterval(function () {
-              if (close_second == 0) {
-                clearInterval(countCloseSecond);
-                _this2.close_state = true;
+            countCloseSecond = setInterval(function _callee2() {
+              var bet_stop_alert, bet_stop_alert_width;
+              return regeneratorRuntime.async(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      if (!(close_second == 0)) {
+                        _context2.next = 8;
+                        break;
+                      }
 
-                _this2.displayCard();
+                      clearInterval(countCloseSecond);
+                      _this2.close_state = true;
+                      _context2.next = 5;
+                      return regeneratorRuntime.awrap(_this2.displayCard());
 
-                _this2.drawInterval();
+                    case 5:
+                      _context2.next = 7;
+                      return regeneratorRuntime.awrap(_this2.drawInterval());
 
-                return;
-              }
+                    case 7:
+                      return _context2.abrupt("return");
 
-              close_second = close_second - 1;
+                    case 8:
+                      close_second = close_second - 1;
 
-              if (close_second < 10) {
-                _this2.infoText.setString("距封盘时间 00:0" + close_second);
+                      if (close_second < 10) {
+                        _this2.infoText.setString("距封盘时间 00:0" + close_second);
 
-                if (close_second == 1) {
-                  var bet_stop_alert = new cc.Sprite(res.bet_stop_alert_png);
-                  var bet_stop_alert_width = cc.winSize.width / 5 * 3;
-                  bet_stop_alert.attr({
-                    scaleX: bet_stop_alert_width / bet_stop_alert.getContentSize().width,
-                    scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
-                  });
-                  bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2));
+                        if (close_second == 1) {
+                          bet_stop_alert = new cc.Sprite(res.bet_stop_alert_png);
+                          bet_stop_alert_width = cc.winSize.width / 5 * 3;
+                          bet_stop_alert.attr({
+                            scaleX: bet_stop_alert_width / bet_stop_alert.getContentSize().width,
+                            scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
+                          });
+                          bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2));
 
-                  _this2.addChild(bet_stop_alert, _this2.alert_zOrder);
+                          _this2.addChild(bet_stop_alert, _this2.alert_zOrder);
 
-                  setTimeout(function () {
-                    _this2.removeChild(bet_stop_alert);
+                          setTimeout(function () {
+                            _this2.removeChild(bet_stop_alert);
 
-                    _this2.open_state = false;
-                  }, 2000);
+                            _this2.open_state = false;
+                          }, 2000);
+                        }
+                      } else {
+                        _this2.infoText.setString("距封盘时间 00:" + close_second);
+                      }
+
+                    case 10:
+                    case "end":
+                      return _context2.stop();
+                  }
                 }
-              } else {
-                _this2.infoText.setString("距封盘时间 00:" + close_second);
-              }
+              });
             }, 1000);
 
           case 15:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
     }, null, this);
@@ -1181,15 +1200,15 @@ var SangongGameLayer = cc.Layer.extend({
     var draw_second = 10;
     this.cancelBtn.setEnabled(false);
     this.confirmBtn.setEnabled(false);
-    var countDrawSecond = setInterval(function _callee3() {
-      var changed_card_width, paddingY, paddingX, index, scaletoAction, movetoAction, actionSequence, choosedCardNum, _index4, playerResult_RoundedRect_width, playerResult_RoundedRect_height, playerResult_RoundedRect, bankerResult_RoundedRect, playerResultLabel, bankerResultLabel, playerResultScore, bankerResultScore;
+    var countDrawSecond = setInterval(function _callee4() {
+      var changed_card_width, paddingY, paddingX, index, _index4, scaletoAction, movetoAction, actionSequence, choosedCardNum, _index5, playerResult_RoundedRect_width, playerResult_RoundedRect_height, playerResult_RoundedRect, bankerResult_RoundedRect, playerResultLabel, bankerResultLabel, playerResultScore, bankerResultScore;
 
-      return regeneratorRuntime.async(function _callee3$(_context4) {
+      return regeneratorRuntime.async(function _callee4$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
               if (!(draw_second == 0)) {
-                _context4.next = 62;
+                _context5.next = 66;
                 break;
               }
 
@@ -1197,12 +1216,12 @@ var SangongGameLayer = cc.Layer.extend({
 
               _this3.infoText.setString("开奖中");
 
-              setTimeout(function _callee2() {
-                return regeneratorRuntime.async(function _callee2$(_context3) {
+              setTimeout(function _callee3() {
+                return regeneratorRuntime.async(function _callee3$(_context4) {
                   while (1) {
-                    switch (_context3.prev = _context3.next) {
+                    switch (_context4.prev = _context4.next) {
                       case 0:
-                        _context3.next = 2;
+                        _context4.next = 2;
                         return regeneratorRuntime.awrap(_this3.sleep(500));
 
                       case 2:
@@ -1212,12 +1231,12 @@ var SangongGameLayer = cc.Layer.extend({
 
                       case 4:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
                   }
                 });
               }, 2000);
-              _context4.next = 6;
+              _context5.next = 6;
               return regeneratorRuntime.awrap(_this3.sleep(3000));
 
             case 6:
@@ -1227,75 +1246,85 @@ var SangongGameLayer = cc.Layer.extend({
               paddingX = 20;
 
               for (index = 0; index < _this3.resultCards.length; index++) {
-                scaletoAction = new cc.ScaleTo(0, changed_card_width / _this3.resultCards[index].getContentSize().width * -1, changed_card_width / _this3.resultCards[index].getContentSize().width);
+                _this3.resultCards[index].setScaleX(changed_card_width / _this3.resultCards[index].getContentSize().width * -1);
 
-                if (index < 5) {
-                  movetoAction = new cc.MoveTo(0.5, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * index, cc.winSize.height - _this3.header_height - _this3.banner_height / 2 + paddingY / 8 + changed_card_width / _this3.resultCards[index].getContentSize().width * _this3.resultCards[index].getContentSize().height / 2 + paddingY));
+                _this3.resultCards[index].setScaleY(changed_card_width / _this3.resultCards[index].getContentSize().width);
+              }
+
+              for (_index4 = 0; _index4 < _this3.resultCards.length; _index4++) {
+                scaletoAction = new cc.ScaleTo(0, changed_card_width / _this3.resultCards[_index4].getContentSize().width * -1, changed_card_width / _this3.resultCards[_index4].getContentSize().width);
+
+                if (_index4 < 5) {
+                  movetoAction = new cc.MoveTo(0.5, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * _index4, cc.winSize.height - _this3.header_height - _this3.banner_height / 2 + paddingY / 8 + changed_card_width / _this3.resultCards[_index4].getContentSize().width * _this3.resultCards[_index4].getContentSize().height / 2 + paddingY));
                 } else {
-                  movetoAction = new cc.MoveTo(0.5, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * (index % 5), cc.winSize.height - _this3.header_height - _this3.banner_height / 2 + paddingY / 8 - changed_card_width / _this3.resultCards[index].getContentSize().width * _this3.resultCards[index].getContentSize().height / 2 - paddingY / 8 + paddingY));
+                  movetoAction = new cc.MoveTo(0.5, cc.p(cc.winSize.width / 2 - paddingX / 8 * 2 - changed_card_width * 2 + (paddingX / 8 + changed_card_width) * (_index4 % 5), cc.winSize.height - _this3.header_height - _this3.banner_height / 2 + paddingY / 8 - changed_card_width / _this3.resultCards[_index4].getContentSize().width * _this3.resultCards[_index4].getContentSize().height / 2 - paddingY / 8 + paddingY));
                 }
 
-                actionSequence = new cc.Sequence(scaletoAction, movetoAction);
+                actionSequence = new cc.Sequence(movetoAction);
 
-                _this3.resultCards[index].runAction(actionSequence);
+                _this3.resultCards[_index4].runAction(actionSequence);
               }
 
               choosedCardNum = _this3.generateRandomNumArray(0, 9, 6); // four cards copy for first showed
 
+              console.log("resultCard=", _this3.resultCards);
+              console.log("choosedCardNum=", choosedCardNum);
               _this3.cloneCards = [];
-              _index4 = 0;
+              _index5 = 0;
 
-            case 13:
-              if (!(_index4 < choosedCardNum.length)) {
-                _context4.next = 25;
+            case 16:
+              if (!(_index5 < choosedCardNum.length)) {
+                _context5.next = 29;
                 break;
               }
 
-              _this3.cloneCards[_index4] = new cc.Sprite(_this3.cards[_this3.resultCardsIndexArray[choosedCardNum[_index4]]]);
+              _this3.cloneCards[_index5] = new cc.Sprite(_this3.cards[_this3.resultCardsIndexArray[choosedCardNum[_index5]]]);
 
-              _this3.cloneCards[_index4].attr({
-                scaleX: changed_card_width / _this3.cloneCards[_index4].getContentSize().width,
-                scaleY: changed_card_width / _this3.cloneCards[_index4].getContentSize().width
+              _this3.cloneCards[_index5].attr({
+                scaleX: changed_card_width / _this3.cloneCards[_index5].getContentSize().width,
+                scaleY: changed_card_width / _this3.cloneCards[_index5].getContentSize().width
               });
 
-              _this3.cloneCards[_index4].setPosition(_this3.resultCards[choosedCardNum[_index4]].getPosition());
+              console.log("index=", _index5);
 
-              _context4.next = 19;
+              _this3.cloneCards[_index5].setPosition(_this3.resultCards[choosedCardNum[_index5]].getPosition());
+
+              _context5.next = 23;
               return regeneratorRuntime.awrap(_this3.sleep(2000));
 
-            case 19:
-              _this3.resultCards[choosedCardNum[_index4]].attr({
+            case 23:
+              _this3.resultCards[choosedCardNum[_index5]].attr({
                 opacity: 150
               });
 
-              _this3.addChild(_this3.cloneCards[_index4]);
+              _this3.addChild(_this3.cloneCards[_index5]);
 
-              if (_index4 < 2) {
-                movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 + (paddingX / 4 + changed_card_width) * _index4, cc.winSize.height + changed_card_width / _this3.cloneCards[_index4].getContentSize().width * _this3.cloneCards[_index4].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
+              if (_index5 < 2) {
+                movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 - changed_card_width / 2 - paddingX / 4 - changed_card_width - paddingX / 4 + (paddingX / 4 + changed_card_width) * _index5, cc.winSize.height + changed_card_width / _this3.cloneCards[_index5].getContentSize().width * _this3.cloneCards[_index5].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
 
-                _this3.cloneCards[_index4].runAction(movetoAction);
-              } else if (_index4 > 1 && _index4 < 4) {
-                movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * (_index4 - 2), cc.winSize.height + changed_card_width / _this3.cloneCards[_index4].getContentSize().width * _this3.cloneCards[_index4].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
+                _this3.cloneCards[_index5].runAction(movetoAction);
+              } else if (_index5 > 1 && _index5 < 4) {
+                movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * (_index5 - 2), cc.winSize.height + changed_card_width / _this3.cloneCards[_index5].getContentSize().width * _this3.cloneCards[_index5].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
 
-                _this3.cloneCards[_index4].runAction(movetoAction);
+                _this3.cloneCards[_index5].runAction(movetoAction);
               } else {
                 // baccarat's third card rule action added
                 movetoAction = null;
-                if (_index4 == 4) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 - paddingX / 4 - (changed_card_width + paddingX / 4) * 2 - changed_card_width, cc.winSize.height + changed_card_width / _this3.cloneCards[_index4].getContentSize().width * _this3.cloneCards[_index4].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));else if (_index4 == 5) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * 2, cc.winSize.height + changed_card_width / _this3.cloneCards[_index4].getContentSize().width * _this3.cloneCards[_index4].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
+                if (_index5 == 4) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 - paddingX / 4 - (changed_card_width + paddingX / 4) * 2 - changed_card_width, cc.winSize.height + changed_card_width / _this3.cloneCards[_index5].getContentSize().width * _this3.cloneCards[_index5].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));else if (_index5 == 5) movetoAction = new cc.MoveTo(0.3, cc.p(cc.winSize.width / 2 + changed_card_width / 2 + paddingX / 4 + (changed_card_width + paddingX / 4) * 2, cc.winSize.height + changed_card_width / _this3.cloneCards[_index5].getContentSize().width * _this3.cloneCards[_index5].getContentSize().height - _this3.header_height - _this3.banner_height - paddingY / 8));
 
-                _this3.cloneCards[_index4].runAction(movetoAction);
+                _this3.cloneCards[_index5].runAction(movetoAction);
               }
 
-            case 22:
-              _index4++;
-              _context4.next = 13;
+            case 26:
+              _index5++;
+              _context5.next = 16;
               break;
 
-            case 25:
-              _context4.next = 27;
+            case 29:
+              _context5.next = 31;
               return regeneratorRuntime.awrap(_this3.sleep(2000));
 
-            case 27:
+            case 31:
               // show score
               playerResult_RoundedRect_width = 30;
               playerResult_RoundedRect_height = 45;
@@ -1343,10 +1372,10 @@ var SangongGameLayer = cc.Layer.extend({
 
               _this3.panelArea13.setOpacity(50);
 
-              _context4.next = 52;
+              _context5.next = 56;
               return regeneratorRuntime.awrap(_this3.sleep(7000));
 
-            case 52:
+            case 56:
               _this3.removeCards();
 
               _this3.removeCloneCards();
@@ -1365,26 +1394,26 @@ var SangongGameLayer = cc.Layer.extend({
 
               _this3.betOpenInterval();
 
-              return _context4.abrupt("return");
+              return _context5.abrupt("return");
 
-            case 62:
+            case 66:
               draw_second = draw_second - 1;
               if (draw_second < 10) _this3.infoText.setString("距开奖时间 00:0" + draw_second);else _this3.infoText.setString("距开奖时间 00:" + draw_second);
 
-            case 64:
+            case 68:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
       });
     }, 1000);
   },
   displayCard: function displayCard() {
-    var size, paddingX, paddingY, card_width, index, _index5;
+    var size, paddingX, paddingY, card_width, index, _index6;
 
-    return regeneratorRuntime.async(function displayCard$(_context5) {
+    return regeneratorRuntime.async(function displayCard$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             console.log("displayCard");
             size = cc.winSize;
@@ -1397,7 +1426,7 @@ var SangongGameLayer = cc.Layer.extend({
 
           case 8:
             if (!(index < 5)) {
-              _context5.next = 21;
+              _context6.next = 21;
               break;
             }
 
@@ -1410,60 +1439,63 @@ var SangongGameLayer = cc.Layer.extend({
               y: size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2
             });
             this.cardBackSprite[index].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[index].getContentSize().width));
-            _context5.next = 14;
+            _context6.next = 14;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 14:
             this.addChild(this.resultCards[index]);
             this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), card_width / this.resultCards[index].getContentSize().width));
-            _context5.next = 18;
+            _context6.next = 18;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 18:
             index++;
-            _context5.next = 8;
+            _context6.next = 8;
             break;
 
           case 21:
-            _index5 = 5;
+            _index6 = 5;
 
           case 22:
-            if (!(_index5 < 10)) {
-              _context5.next = 35;
+            if (!(_index6 < 10)) {
+              _context6.next = 35;
               break;
             }
 
-            this.resultCards[_index5] = new cc.Sprite(this.cards[this.resultCardsIndexArray[_index5]]);
+            this.resultCards[_index6] = new cc.Sprite(this.cards[this.resultCardsIndexArray[_index6]]);
 
-            this.resultCards[_index5].attr({
+            this.resultCards[_index6].attr({
               flippedX: true,
               scaleX: 0,
-              scaleY: card_width / this.resultCards[_index5].getContentSize().width,
-              x: size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (_index5 % 5),
-              y: size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.resultCards[_index5].getContentSize().width * this.resultCards[_index5].height / 2
+              scaleY: card_width / this.resultCards[_index6].getContentSize().width,
+              x: size.width / 2 - paddingX / 4 * 2 - card_width * 2 + (paddingX / 4 + card_width) * (_index6 % 5),
+              y: size.height - this.header_height - this.banner_height / 2 - paddingY / 8 - card_width / this.resultCards[_index6].getContentSize().width * this.resultCards[_index6].height / 2
             });
 
-            this.cardBackSprite[_index5].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[_index5].getContentSize().width));
+            this.cardBackSprite[_index6].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[_index6].getContentSize().width));
 
-            _context5.next = 28;
+            _context6.next = 28;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 28:
-            this.addChild(this.resultCards[_index5]);
+            this.addChild(this.resultCards[_index6]);
 
-            this.resultCards[_index5].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[_index5].getContentSize().width), card_width / this.resultCards[_index5].getContentSize().width));
+            this.resultCards[_index6].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[_index6].getContentSize().width), card_width / this.resultCards[_index6].getContentSize().width));
 
-            _context5.next = 32;
+            _context6.next = 32;
             return regeneratorRuntime.awrap(this.sleep(150));
 
           case 32:
-            _index5++;
-            _context5.next = 22;
+            _index6++;
+            _context6.next = 22;
             break;
 
           case 35:
+            console.log("first resultCards=", this.resultCards);
+
+          case 36:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
     }, null, this);
@@ -1475,8 +1507,8 @@ var SangongGameLayer = cc.Layer.extend({
       this.removeChild(this.cardBackSprite[index]);
     }
 
-    for (var _index6 = 0; _index6 < this.resultCards.length; _index6++) {
-      this.removeChild(this.resultCards[_index6]);
+    for (var _index7 = 0; _index7 < this.resultCards.length; _index7++) {
+      this.removeChild(this.resultCards[_index7]);
     }
   },
   removeCloneCards: function removeCloneCards() {
@@ -1560,14 +1592,14 @@ var SangongGameLayer = cc.Layer.extend({
     }
   },
   showWenluPanel: function showWenluPanel(sender, type) {
-    var size, paddingX, paddingY, wenluPanel_height, wenluPanel_title, playerOneLabel, barLetter1, index, wenlu_win_fail_array, wenlu_win_fail_width, wenlu_win_fail, playerTwoLabel, barLetter2, _index7, bankLabel, barLetter3, _index8, movebyAction;
+    var size, paddingX, paddingY, wenluPanel_height, wenluPanel_title, playerOneLabel, barLetter1, index, wenlu_win_fail_array, wenlu_win_fail_width, wenlu_win_fail, playerTwoLabel, barLetter2, _index8, bankLabel, barLetter3, _index9, movebyAction;
 
-    return regeneratorRuntime.async(function showWenluPanel$(_context6) {
+    return regeneratorRuntime.async(function showWenluPanel$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context6.t0 = type;
-            _context6.next = _context6.t0 === ccui.Widget.TOUCH_ENDED ? 3 : 51;
+            _context7.t0 = type;
+            _context7.next = _context7.t0 === ccui.Widget.TOUCH_ENDED ? 3 : 51;
             break;
 
           case 3:
@@ -1576,7 +1608,7 @@ var SangongGameLayer = cc.Layer.extend({
             paddingY = 20;
 
             if (this.wenluPanel_enabled) {
-              _context6.next = 42;
+              _context7.next = 42;
               break;
             }
 
@@ -1635,14 +1667,14 @@ var SangongGameLayer = cc.Layer.extend({
             });
             this.wenluPanel.addChild(barLetter2);
 
-            for (_index7 = 0; _index7 < 13; _index7++) {
+            for (_index8 = 0; _index8 < 13; _index8++) {
               wenlu_win_fail_array = [res.wenlu_win_png, res.wenlu_fail_png];
               wenlu_win_fail_width = (size.width - paddingX * 3 - playerTwoLabel.getContentSize().width - barLetter2.getContentSize().width - paddingX / 4) / 13 - paddingX / 4;
               wenlu_win_fail = new cc.Sprite(wenlu_win_fail_array[Math.floor(Math.random() * 13) % 2]);
               wenlu_win_fail.attr({
                 scaleX: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
                 scaleY: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
-                x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + playerTwoLabel.getContentSize().width + paddingX / 4 + barLetter2.getContentSize().width + paddingX / 4 + _index7 * (wenlu_win_fail_width + paddingX / 4),
+                x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + playerTwoLabel.getContentSize().width + paddingX / 4 + barLetter2.getContentSize().width + paddingX / 4 + _index8 * (wenlu_win_fail_width + paddingX / 4),
                 y: wenluPanel_height - playerTwoLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
               });
               this.wenluPanel.addChild(wenlu_win_fail);
@@ -1663,14 +1695,14 @@ var SangongGameLayer = cc.Layer.extend({
             });
             this.wenluPanel.addChild(barLetter3);
 
-            for (_index8 = 0; _index8 < 13; _index8++) {
+            for (_index9 = 0; _index9 < 13; _index9++) {
               wenlu_win_fail_array = [res.wenlu_win_png, res.wenlu_fail_png];
               wenlu_win_fail_width = (size.width - paddingX * 3 - bankLabel.getContentSize().width - barLetter3.getContentSize().width - paddingX / 4) / 13 - paddingX / 4;
               wenlu_win_fail = new cc.Sprite(wenlu_win_fail_array[Math.floor(Math.random() * 13) % 2]);
               wenlu_win_fail.attr({
                 scaleX: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
                 scaleY: wenlu_win_fail_width / wenlu_win_fail.getContentSize().width,
-                x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + bankLabel.getContentSize().width + paddingX / 4 + barLetter3.getContentSize().width + paddingX / 4 + _index8 * (wenlu_win_fail_width + paddingX / 4),
+                x: wenlu_win_fail_width / 2 + paddingX * 3 / 2 + bankLabel.getContentSize().width + paddingX / 4 + barLetter3.getContentSize().width + paddingX / 4 + _index9 * (wenlu_win_fail_width + paddingX / 4),
                 y: wenluPanel_height - bankLabel.getContentSize().height / 2 - paddingY - wenluPanel_title.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2 - playerOneLabel.getContentSize().height - paddingY / 2
               });
               this.wenluPanel.addChild(wenlu_win_fail);
@@ -1679,26 +1711,26 @@ var SangongGameLayer = cc.Layer.extend({
             movebyAction = new cc.MoveBy(0.3, cc.p(size.width, 0));
             this.wenluPanel.runAction(movebyAction);
             this.wenluPanel_enabled = true;
-            return _context6.abrupt("return");
+            return _context7.abrupt("return");
 
           case 42:
             console.log("closeWenluPanel");
             movebyAction = new cc.MoveBy(0.3, cc.p(size.width * -1, 0));
             this.wenluPanel.runAction(movebyAction);
-            _context6.next = 47;
+            _context7.next = 47;
             return regeneratorRuntime.awrap(this.sleep(300));
 
           case 47:
             this.removeChild(this.wenluPanel);
             this.wenluPanel_enabled = false;
-            return _context6.abrupt("return");
+            return _context7.abrupt("return");
 
           case 50:
-            return _context6.abrupt("break", 51);
+            return _context7.abrupt("break", 51);
 
           case 51:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
     }, null, this);
@@ -1800,8 +1832,8 @@ var SangongGameLayer = cc.Layer.extend({
     this.panel13_DealedCoins = [];
     this.panel14_DealedCoins = [];
 
-    for (var _index9 = 0; _index9 < this.panel_ValRoundRect.length; _index9++) {
-      eval("this.panelArea" + (_index9 + 1).toString()).removeChild(this.panel_ValRoundRect[_index9]);
+    for (var _index10 = 0; _index10 < this.panel_ValRoundRect.length; _index10++) {
+      eval("this.panelArea" + (_index10 + 1).toString()).removeChild(this.panel_ValRoundRect[_index10]);
     }
 
     this.confirmBtn.setEnabled(false);

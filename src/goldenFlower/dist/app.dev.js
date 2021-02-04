@@ -807,9 +807,9 @@ var GFGameLayer = cc.Layer.extend({
     var _this2 = this;
 
     var paddingX, bet_start_alert, bet_start_alert_width, close_second, countCloseSecond;
-    return regeneratorRuntime.async(function betOpenInterval$(_context2) {
+    return regeneratorRuntime.async(function betOpenInterval$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             paddingX = 20;
             this.open_state = true;
@@ -912,53 +912,72 @@ var GFGameLayer = cc.Layer.extend({
             setTimeout(function () {
               _this2.removeChild(bet_start_alert);
             }, 2000);
-            _context2.next = 14;
+            _context3.next = 14;
             return regeneratorRuntime.awrap(this.sleep(2000));
 
           case 14:
             close_second = 20;
-            countCloseSecond = setInterval(function () {
-              if (close_second == 0) {
-                clearInterval(countCloseSecond);
-                _this2.close_state = true;
+            countCloseSecond = setInterval(function _callee2() {
+              var bet_stop_alert, bet_stop_alert_width;
+              return regeneratorRuntime.async(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      if (!(close_second == 0)) {
+                        _context2.next = 8;
+                        break;
+                      }
 
-                _this2.displayCard();
+                      clearInterval(countCloseSecond);
+                      _this2.close_state = true;
+                      _context2.next = 5;
+                      return regeneratorRuntime.awrap(_this2.displayCard());
 
-                _this2.drawInterval();
+                    case 5:
+                      _context2.next = 7;
+                      return regeneratorRuntime.awrap(_this2.drawInterval());
 
-                return;
-              }
+                    case 7:
+                      return _context2.abrupt("return");
 
-              close_second = close_second - 1;
+                    case 8:
+                      close_second = close_second - 1;
 
-              if (close_second < 10) {
-                _this2.infoText.setString("距封盘时间 00:0" + close_second);
+                      if (close_second < 10) {
+                        _this2.infoText.setString("距封盘时间 00:0" + close_second);
 
-                if (close_second == 1) {
-                  var bet_stop_alert = new cc.Sprite(res.bet_stop_alert_png);
-                  var bet_stop_alert_width = cc.winSize.width / 5 * 3;
-                  bet_stop_alert.attr({
-                    scaleX: bet_stop_alert_width / bet_stop_alert.getContentSize().width,
-                    scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
-                  });
-                  bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2));
+                        if (close_second == 1) {
+                          bet_stop_alert = new cc.Sprite(res.bet_stop_alert_png);
+                          bet_stop_alert_width = cc.winSize.width / 5 * 3;
+                          bet_stop_alert.attr({
+                            scaleX: bet_stop_alert_width / bet_stop_alert.getContentSize().width,
+                            scaleY: bet_stop_alert_width / bet_stop_alert.getContentSize().width
+                          });
+                          bet_stop_alert.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2));
 
-                  _this2.addChild(bet_stop_alert, _this2.alert_zOrder);
+                          _this2.addChild(bet_stop_alert, _this2.alert_zOrder);
 
-                  setTimeout(function () {
-                    _this2.removeChild(bet_stop_alert);
+                          setTimeout(function () {
+                            _this2.removeChild(bet_stop_alert);
 
-                    _this2.open_state = false;
-                  }, 2000);
+                            _this2.open_state = false;
+                          }, 2000);
+                        }
+                      } else {
+                        _this2.infoText.setString("距封盘时间 00:" + close_second);
+                      }
+
+                    case 10:
+                    case "end":
+                      return _context2.stop();
+                  }
                 }
-              } else {
-                _this2.infoText.setString("距封盘时间 00:" + close_second);
-              }
+              });
             }, 1000);
 
           case 16:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
     }, null, this);
@@ -969,15 +988,15 @@ var GFGameLayer = cc.Layer.extend({
     var draw_second = 10;
     this.cancelBtn.setEnabled(false);
     this.confirmBtn.setEnabled(false);
-    var countDrawSecond = setInterval(function _callee3() {
+    var countDrawSecond = setInterval(function _callee4() {
       var changed_card_width, paddingY, paddingX, index, scaletoAction, movetoAction, actionSequence, choosedCardNum, _index4, playerResult_RoundedRect_width, playerResult_RoundedRect_height, playerResult_RoundedRect, bankerResult_RoundedRect, playerResultLabel, bankerResultLabel, playerResultScore, bankerResultScore;
 
-      return regeneratorRuntime.async(function _callee3$(_context4) {
+      return regeneratorRuntime.async(function _callee4$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
               if (!(draw_second == 0)) {
-                _context4.next = 60;
+                _context5.next = 60;
                 break;
               }
 
@@ -985,12 +1004,12 @@ var GFGameLayer = cc.Layer.extend({
 
               _this3.infoText.setString("开奖中");
 
-              setTimeout(function _callee2() {
-                return regeneratorRuntime.async(function _callee2$(_context3) {
+              setTimeout(function _callee3() {
+                return regeneratorRuntime.async(function _callee3$(_context4) {
                   while (1) {
-                    switch (_context3.prev = _context3.next) {
+                    switch (_context4.prev = _context4.next) {
                       case 0:
-                        _context3.next = 2;
+                        _context4.next = 2;
                         return regeneratorRuntime.awrap(_this3.sleep(500));
 
                       case 2:
@@ -1000,12 +1019,12 @@ var GFGameLayer = cc.Layer.extend({
 
                       case 4:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
                   }
                 });
               }, 2000);
-              _context4.next = 6;
+              _context5.next = 6;
               return regeneratorRuntime.awrap(_this3.sleep(3000));
 
             case 6:
@@ -1039,7 +1058,7 @@ var GFGameLayer = cc.Layer.extend({
 
             case 13:
               if (!(_index4 < choosedCardNum.length)) {
-                _context4.next = 25;
+                _context5.next = 25;
                 break;
               }
 
@@ -1052,7 +1071,7 @@ var GFGameLayer = cc.Layer.extend({
 
               _this3.cloneCards[_index4].setPosition(_this3.resultCards[choosedCardNum[_index4]].getPosition());
 
-              _context4.next = 19;
+              _context5.next = 19;
               return regeneratorRuntime.awrap(_this3.sleep(2000));
 
             case 19:
@@ -1080,11 +1099,11 @@ var GFGameLayer = cc.Layer.extend({
 
             case 22:
               _index4++;
-              _context4.next = 13;
+              _context5.next = 13;
               break;
 
             case 25:
-              _context4.next = 27;
+              _context5.next = 27;
               return regeneratorRuntime.awrap(_this3.sleep(2000));
 
             case 27:
@@ -1133,7 +1152,7 @@ var GFGameLayer = cc.Layer.extend({
 
               _this3.panelArea3.setOpacity(50);
 
-              _context4.next = 51;
+              _context5.next = 51;
               return regeneratorRuntime.awrap(_this3.sleep(7000));
 
             case 51:
@@ -1153,7 +1172,7 @@ var GFGameLayer = cc.Layer.extend({
 
               _this3.betOpenInterval();
 
-              return _context4.abrupt("return");
+              return _context5.abrupt("return");
 
             case 60:
               draw_second = draw_second - 1;
@@ -1161,7 +1180,7 @@ var GFGameLayer = cc.Layer.extend({
 
             case 62:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
       });
@@ -1170,9 +1189,9 @@ var GFGameLayer = cc.Layer.extend({
   displayCard: function displayCard() {
     var size, paddingX, paddingY, card_width, index, _index5;
 
-    return regeneratorRuntime.async(function displayCard$(_context5) {
+    return regeneratorRuntime.async(function displayCard$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             console.log("displayCard");
             size = cc.winSize;
@@ -1185,7 +1204,7 @@ var GFGameLayer = cc.Layer.extend({
 
           case 8:
             if (!(index < 5)) {
-              _context5.next = 21;
+              _context6.next = 21;
               break;
             }
 
@@ -1198,18 +1217,18 @@ var GFGameLayer = cc.Layer.extend({
               y: size.height - this.header_height - this.banner_height / 2 + paddingY / 8 + card_width / this.resultCards[index].getContentSize().width * this.resultCards[index].getContentSize().height / 2
             });
             this.cardBackSprite[index].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[index].getContentSize().width));
-            _context5.next = 14;
+            _context6.next = 14;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 14:
             this.addChild(this.resultCards[index]);
             this.resultCards[index].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[index].getContentSize().width), card_width / this.resultCards[index].getContentSize().width));
-            _context5.next = 18;
+            _context6.next = 18;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 18:
             index++;
-            _context5.next = 8;
+            _context6.next = 8;
             break;
 
           case 21:
@@ -1217,7 +1236,7 @@ var GFGameLayer = cc.Layer.extend({
 
           case 22:
             if (!(_index5 < 10)) {
-              _context5.next = 35;
+              _context6.next = 35;
               break;
             }
 
@@ -1233,7 +1252,7 @@ var GFGameLayer = cc.Layer.extend({
 
             this.cardBackSprite[_index5].runAction(new cc.ScaleTo(0.2, 0, card_width / this.cardBackSprite[_index5].getContentSize().width));
 
-            _context5.next = 28;
+            _context6.next = 28;
             return regeneratorRuntime.awrap(this.sleep(200));
 
           case 28:
@@ -1241,17 +1260,17 @@ var GFGameLayer = cc.Layer.extend({
 
             this.resultCards[_index5].runAction(new cc.ScaleTo(0.2, -1 * (card_width / this.resultCards[_index5].getContentSize().width), card_width / this.resultCards[_index5].getContentSize().width));
 
-            _context5.next = 32;
+            _context6.next = 32;
             return regeneratorRuntime.awrap(this.sleep(150));
 
           case 32:
             _index5++;
-            _context5.next = 22;
+            _context6.next = 22;
             break;
 
           case 35:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
     }, null, this);
@@ -1277,12 +1296,12 @@ var GFGameLayer = cc.Layer.extend({
   showWenluPanel: function showWenluPanel(sender, type) {
     var size, paddingX, paddingY, wenluPanel_height, wenluPanel_title, wenluPanelFooter_height, wenluPanelFooter_width, wenluPanelFooter, zhupanluBtn_width, daluBtn_width, count_width, countBank, countBankLabel, countPlayer, countPlayerLabel, countPair, countPairLabel, countPairLabel_val, countBankPair, countBankPairRect, countBankPairLabel, countPlayerPair, countPlayerPairRect, countPlayerPairLabel, zhupanluScrollView_height, zhupanluScrollView_width, indexi, index, zplSprite_width, zplSprite_name, zplSprite, daluScrollView_height, daluScrollView_width, _indexi, _index7, movebyAction;
 
-    return regeneratorRuntime.async(function showWenluPanel$(_context6) {
+    return regeneratorRuntime.async(function showWenluPanel$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context6.t0 = type;
-            _context6.next = _context6.t0 === ccui.Widget.TOUCH_ENDED ? 3 : 110;
+            _context7.t0 = type;
+            _context7.next = _context7.t0 === ccui.Widget.TOUCH_ENDED ? 3 : 110;
             break;
 
           case 3:
@@ -1291,7 +1310,7 @@ var GFGameLayer = cc.Layer.extend({
             paddingY = 20;
 
             if (this.wenluPanel_enabled) {
-              _context6.next = 101;
+              _context7.next = 101;
               break;
             }
 
@@ -1466,26 +1485,26 @@ var GFGameLayer = cc.Layer.extend({
             movebyAction = new cc.MoveBy(0.3, cc.p(size.width, 0));
             this.wenluPanel.runAction(movebyAction);
             this.wenluPanel_enabled = true;
-            return _context6.abrupt("return");
+            return _context7.abrupt("return");
 
           case 101:
             console.log("closeWenluPanel");
             movebyAction = new cc.MoveBy(0.3, cc.p(size.width * -1, 0));
             this.wenluPanel.runAction(movebyAction);
-            _context6.next = 106;
+            _context7.next = 106;
             return regeneratorRuntime.awrap(this.sleep(300));
 
           case 106:
             this.removeChild(this.wenluPanel);
             this.wenluPanel_enabled = false;
-            return _context6.abrupt("return");
+            return _context7.abrupt("return");
 
           case 109:
-            return _context6.abrupt("break", 110);
+            return _context7.abrupt("break", 110);
 
           case 110:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
     }, null, this);
