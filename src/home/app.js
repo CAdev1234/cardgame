@@ -239,6 +239,7 @@ var HomeLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoGoldenFlower")
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new GFGameScene()))
                 break
         }
     },
@@ -248,6 +249,7 @@ var HomeLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 console.log("gotoSangong")
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new SangongGameScene()))
                 break
         }
     },

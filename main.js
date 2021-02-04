@@ -110,7 +110,6 @@ cc.game.onStart = function(){
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
         cc.director.runScene(new cc.TransitionFade(1.0, new HomeScene()))
-        // cc.director.runScene(new cc.TransitionFade(1.0, new BaccaratGameScene()))
     }, this);
 };
 cc.game.run();

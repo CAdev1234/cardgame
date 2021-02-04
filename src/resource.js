@@ -86,6 +86,7 @@ var res = {
     coin_drop_wav: "res/niuniu/sounds/coin-drop.wav"
 };
 
+// baccarat res
 var baccarat_res = {
     banner_png: "res/baccarat/banner.png",
     card_back_png: "res/baccarat/card-back.png",
@@ -110,6 +111,16 @@ var baccarat_res = {
     zhupanlu_btn_nonactive_png: "res/baccarat/zhupanlu-btn-nonactive.png",
 };
 
+// golden flower res
+var gf_res = {
+    zpl_0_png: "res/gf/zpl-0.png",
+    zpl_1_png: "res/gf/zpl-1.png"
+}
+
+// sangong res
+var sangong_res = {
+
+}
 
 
 var g_resources = [];
@@ -122,4 +133,9 @@ for (var i in home_res) {
 for (var i in baccarat_res) {
     g_resources.push(baccarat_res[i])
 }
-
+for (var i in gf_res) {
+    g_resources.push(gf_res[i])
+}
+for (var i in sangong_res) {
+    g_resources.push(sangong_res[i])
+}

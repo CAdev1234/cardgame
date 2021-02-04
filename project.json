@@ -20,6 +20,12 @@
         "src/niuniu/history.js",
         "src/baccarat/app.js",
         "src/baccarat/history.js",
-        "src/baccarat/help.js"
+        "src/baccarat/help.js",
+        "src/goldenFlower/app.js",
+        "src/goldenFlower/help.js",
+        "src/goldenFlower/history.js",
+        "src/sangong/app.js",
+        "src/sangong/help.js",
+        "src/sangong/history.js"
     ]
 }

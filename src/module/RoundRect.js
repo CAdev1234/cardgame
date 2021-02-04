@@ -8,6 +8,7 @@ var RectType = {
 var RoundRect = cc.DrawNode.extend({
     ctor: function (width, height, fillColor, lineWidth = 1, lineColor, borderRadius, type) {
 		this._super();
+		this.clear();
 		function getVertices(origin, destination, fillColor, lineWidth, lineColor, rad, type) {
 			var vertices = [],
 				radius = rad || 8,
