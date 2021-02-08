@@ -33,7 +33,7 @@ var SangongHelpLayer = cc.Layer.extend({
         goGameBtn.setTitleColor(cc.color(0, 0, 0))
         goGameBtn.addTouchEventListener(this.gotoGame, this)
         this.addChild(goGameBtn)
-        var headerTitle = cc.LabelTTF.create("必发牛牛", "Arial")
+        var headerTitle = cc.LabelTTF.create("必发三公", "Arial")
         headerTitle.attr({
             x: size.width / 2,
             y: size.height - header_height / 2 - 5,
@@ -159,7 +159,7 @@ var SangongHelpLayer = cc.Layer.extend({
         thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY))
         this.howPlayScroll.addChild(thirdParaHeading)
 
-        var thirdParaContent = cc.LabelTTF.create("马其他幸运飞艇开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。\n发牌顺序从左到右依次为1到10的牌位，依次为龙-凤-龙-凤-龙-凤的发牌顺序。\n如马其他幸运飞艇第一个开奖号为5，则发第5张牌位上的牌派到龙。第二个开奖号为3，则发第3张牌位上的牌派到凤。第三个开奖号为6，则发第6张牌位上的牌派到龙，依次类推，只到发满2组牌（龙、凤）。")
+        var thirdParaContent = cc.LabelTTF.create("澳洲幸运10开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。\n发牌顺序从左到右依次为1到10的牌位，依次为庄-闲1-闲2的发牌顺序。\n如澳洲幸运10第一个开奖号为5，则发第5张牌位上的牌派到庄。第二个开奖号为3，则发第3张牌位上的牌派到闲1。第三个开奖号为6，则发第6张牌位上的牌派到闲2，依次类推，只到发满3组牌（庄、闲1、闲2）。")
         thirdParaContent.attr({
             fontSize: 13,
             boundingWidth: size.width - paddingX,
@@ -181,7 +181,7 @@ var SangongHelpLayer = cc.Layer.extend({
         fourthParaHeading.setPosition(cc.p(fourthParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY))
         this.howPlayScroll.addChild(fourthParaHeading)
 
-        var fourthParaContent = cc.LabelTTF.create("例随机牌面为（10、K、8、8、6、J、6、1、7、2）澳洲幸运10开奖结果为（5、9、4、8、1、6、10、7、2、3）龙方牌6、8 、10 凤方牌 7、1、J  ，投注凤方为赢。")
+        var fourthParaContent = cc.LabelTTF.create("例随机牌面为（10、K、8、8、6、J、6、1、7、2）澳洲幸运10开奖结果为（5、9、4、8、1、6、10、7、2、3）庄家牌 6、1 、2 闲1牌 7、10、6  ，闲2牌 8、J、K，投注闲1输、闲2赢。")
         fourthParaContent.attr({
             fontSize: 13,
             boundingWidth: size.width - paddingX,
@@ -192,7 +192,7 @@ var SangongHelpLayer = cc.Layer.extend({
         fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY))
         this.howPlayScroll.addChild(fourthParaContent)
 
-        var siteUrl = cc.LabelTTF.create("东京1.5分彩官方网址: http://tokyokeno.jp/")
+        var siteUrl = cc.LabelTTF.create("澳洲幸运10官方网址: \nhttp://www.auluckylottery.com/results/lucky-ball-10")
         siteUrl.attr({
             fontSize: 13,
             textAlign: cc.TEXT_ALIGNMENT_LEFT,

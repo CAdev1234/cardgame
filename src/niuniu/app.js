@@ -265,7 +265,7 @@ var NiuNiuGameLayer = cc.Layer.extend({
         this.wenluBtn.addTouchEventListener(this.showWenluPanel, this)
         this.addChild(this.wenluBtn, this.wenluPanel_zOrder + 1)
 
-        // GamePanel
+        // game panel
         this.panelOne_width = size.width / 2 - 1
         // this.panelOne_height = size.width / 2 + 15
         this.panelOne_height = (size.height - this.header_height - this.bank_height - this.coinWrapSprite_height - this.betAmountBg_height) / 2
@@ -881,9 +881,6 @@ var NiuNiuGameLayer = cc.Layer.extend({
         for (let index = 0; index < 5; index++) {
             var cardNum = Math.floor(Math.random() * 52)
             this.bankResultCards[index] = new cc.Sprite(this.cards[cardNum])
-            // var cardShadow = new RoundRect(cardWidth + 10 + paddingX / 4, (cardWidth + 10 + paddingX / 4) / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height, cc.color(0, 0, 0, 150), 0, null, 10, null)
-            // cardShadow.setPosition(cc.p(cardWidth / 2 + size.width / 2 - cardGroup_width / 2, size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4))
-            // this.addChild(cardShadow)
             this.bankResultCards[index].attr({
                 x: cardWidth / 2 + size.width / 2 - cardGroup_width / 2,
                 y: size.height - cardWidth / this.bankResultCards[index].getContentSize().width * this.bankResultCards[index].getContentSize().height / 2 - this.header_height - this.bank_height / 4,

@@ -122,6 +122,12 @@ var sangong_res = {
 
 }
 
+// erbagang res
+var erbagang_res = {
+    mahjong_png: "res/erbagang/mahjong-sheet.png",
+    mahjong_plist: "res/erbagang/mahjong-sheet.plist"
+}
+
 
 var g_resources = [];
 for (var i in res) {
@@ -138,4 +144,7 @@ for (var i in gf_res) {
 }
 for (var i in sangong_res) {
     g_resources.push(sangong_res[i])
+}
+for (var i in erbagang_res) {
+    g_resources.push(erbagang_res[i])
 }

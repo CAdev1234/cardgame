@@ -556,10 +556,6 @@ var BaccaratGameLayer = cc.Layer.extend({
                 if (!this.enabledCoinDrop) return
                 var touch_x = touch.getLocation().x
                 var touch_y = touch.getLocation().y
-                if (touch_y < (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + paddingY) ||
-                    touch_y > (this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height - paddingY)) {
-                    return
-                }
                 if (this.enabledCoin.findIndex(this.findTrue) !== -1) {
                     if (this.close_state) {
                         var bet_closed_alert = new cc.Sprite(res.bet_closed_alert_png)
@@ -743,7 +739,7 @@ var BaccaratGameLayer = cc.Layer.extend({
 
     generateRandomNumArray: function (min, max, count) {
         var random_number_array = []
-        for (let index = min; index < max; index++) {
+        for (let index = min; index <= max; index++) {
             var random_integer = Math.floor(Math.random() * (max - min + 1)) + min
             if (count == index - min) break
             if (random_number_array.filter(item => item === random_integer).length === 0) {

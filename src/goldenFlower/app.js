@@ -765,7 +765,7 @@ var GFGameLayer = cc.Layer.extend({
 
     generateRandomNumArray: function (min, max, count) {
         var random_number_array = []
-        for (let index = min; index < max; index++) {
+        for (let index = min; index <= max; index++) {
             var random_integer = Math.floor(Math.random() * (max - min + 1)) + min
             if (count == index - min) break
             if (random_number_array.filter(item => item === random_integer).length === 0) {

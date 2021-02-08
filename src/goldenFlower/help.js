@@ -115,7 +115,7 @@ var GFHelpLayer = cc.Layer.extend({
         firstParaHeading.setPosition(cc.p(firstParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - firstParaHeading_height / 2))
         this.howPlayScroll.addChild(firstParaHeading)
 
-        var firstParaContent = cc.LabelTTF.create('必发百家乐是由澳洲幸运10官方开奖结果演变而成的一款公平公正的游戏，平台在当期澳洲幸运10开奖前10秒先随生成10张明牌，后根据当期澳洲幸运10的开奖结果派牌。\n\n开奖前先随机生成明牌，开奖后依据开奖号码派牌，这样的机制使得任何人任何机构都无法干涉牌局结果，杜绝了一切作假行为，真正做到公正透明，只拼运气。 \n\n全天开奖和澳洲幸运10同步，每天上午06:59到凌晨05:59，每5分钟为一局，每天共276局。', "arial", 13)
+        var firstParaContent = cc.LabelTTF.create('必发炸金花由马其他幸运飞艇官方开奖结果演变而成的一款公平公正的游戏，平台在当期马其他幸运飞艇开奖前10秒先随生成10张明牌，后根据当期马其他幸运飞艇的开奖结果派牌。开奖前先随机生成明牌，开奖后依据开奖号码派牌，这样的机制使得任何人任何机构都无法干涉牌局结果，杜绝了一切作假行为，真正做到公正透明，只拼运气。全天开奖和马耳他幸运飞艇同步，北京时间（GMT+8）每天白天从中午13:09 开到次日凌晨04:05，每5分钟开一次奖, 每天开奖180期。', "arial", 13)
         firstParaContent.attr({
             fillStyle: cc.color(0, 0, 0),
             boundingWidth: size.width - paddingX,
@@ -137,7 +137,7 @@ var GFHelpLayer = cc.Layer.extend({
         secondParaHeading.setPosition(cc.p(secondParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - secondParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY))
         this.howPlayScroll.addChild(secondParaHeading)
 
-        var secondParaContent = cc.LabelTTF.create("必发百家乐牌面由每一期澳洲幸运10开奖20秒前随机生成的10张明牌构成。")
+        var secondParaContent = cc.LabelTTF.create("必发炸金花牌面由每一期马其他幸运飞艇开奖20秒前随机生成的10张明牌构成。")
         secondParaContent.attr({
             fillStyle: cc.color(0, 0, 0),
             fontSize: 13,
@@ -159,7 +159,7 @@ var GFHelpLayer = cc.Layer.extend({
         thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY))
         this.howPlayScroll.addChild(thirdParaHeading)
 
-        var thirdParaContent = cc.LabelTTF.create("马其他幸运飞艇开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。\n发牌顺序从左到右依次为1到10的牌位，依次为龙-凤-龙-凤-龙-凤的发牌顺序。\n如马其他幸运飞艇第一个开奖号为5，则发第5张牌位上的牌派到龙。第二个开奖号为3，则发第3张牌位上的牌派到凤。第三个开奖号为6，则发第6张牌位上的牌派到龙，依次类推，只到发满2组牌（龙、凤）。")
+        var thirdParaContent = cc.LabelTTF.create("马其他幸运飞艇开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。发牌顺序从左到右依次为1到10的牌位，依次为龙-凤-龙-凤-龙-凤的发牌顺序。如马其他幸运飞艇第一个开奖号为5，则发第5张牌位上的牌派到龙。第二个开奖号为3，则发第3张牌位上的牌派到凤。第三个开奖号为6，则发第6张牌位上的牌派到龙，依次类推，只到发满2组牌（龙、凤）。")
         thirdParaContent.attr({
             fontSize: 13,
             boundingWidth: size.width - paddingX,
@@ -192,7 +192,7 @@ var GFHelpLayer = cc.Layer.extend({
         fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY))
         this.howPlayScroll.addChild(fourthParaContent)
 
-        var siteUrl = cc.LabelTTF.create("东京1.5分彩官方网址: http://tokyokeno.jp/")
+        var siteUrl = cc.LabelTTF.create("马耳他幸运飞艇官方网址: \nhttps://luckylottoz.com/")
         siteUrl.attr({
             fontSize: 13,
             textAlign: cc.TEXT_ALIGNMENT_LEFT,

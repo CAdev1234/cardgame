@@ -129,16 +129,16 @@ var HomeLayer = cc.Layer.extend({
         baccaratBtn.addTouchEventListener(this.gotoBaccarat, this)
         itemScroll.addChild(baccaratBtn)
 
-        var tigerDragonBtn = new ccui.Button(home_res.tiger_dragon_png, home_res.tiger_dragon_png, home_res.tiger_dragon_png)
-        tigerDragonBtn.attr({
+        var LonghuBtn = new ccui.Button(home_res.tiger_dragon_png, home_res.tiger_dragon_png, home_res.tiger_dragon_png)
+        LonghuBtn.attr({
             pressedActionEnabled: true,
-            scaleX: gameItem_width / tigerDragonBtn.getContentSize().width,
-            scaleY: gameItem_width / tigerDragonBtn.getContentSize().width,
+            scaleX: gameItem_width / LonghuBtn.getContentSize().width,
+            scaleY: gameItem_width / LonghuBtn.getContentSize().width,
             x: size.width - paddingX - gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY
         })
-        tigerDragonBtn.addTouchEventListener(this.gotoTigerDragon, this)
-        itemScroll.addChild(tigerDragonBtn)
+        LonghuBtn.addTouchEventListener(this.gotoLonghu, this)
+        itemScroll.addChild(LonghuBtn)
 
         var twoBarsBtn = new ccui.Button(home_res.two_bars_png, home_res.two_bars_png, home_res.two_bars_png)
         twoBarsBtn.attr({
@@ -148,7 +148,7 @@ var HomeLayer = cc.Layer.extend({
             x: paddingX + gameItem_width / 2,
             y: itemScroll_innerHeight - gameItem_height / 2 - logoSprite_height - paddingY - sloganSprite_height - paddingY - guangboSprite_height - paddingY - niuniuBtn_height - paddingY - gameItem_height - paddingY / 2
         })
-        twoBarsBtn.addTouchEventListener(this.gotoTwoBars, this)
+        twoBarsBtn.addTouchEventListener(this.gotoErbagang, this)
         itemScroll.addChild(twoBarsBtn)
         
         var goldenFlowerBtn = new ccui.Button(home_res.golden_flower_png, home_res.golden_flower_png, home_res.golden_flower_png)
@@ -216,20 +216,22 @@ var HomeLayer = cc.Layer.extend({
         }
     },
     
-    gotoTigerDragon: function (sender, type) {
+    gotoLonghu: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                console.log("gotoTigerDragon")
+                console.log("gotoLonghu")
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new LonghuGameScene()))
                 break
         }
     },
     
-    gotoTwoBars: function (sender, type) {
+    gotoErbagang: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
-                console.log("gotoTwoBars")
+                console.log("gotoErbagang")
                 cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new ErbagangGameScene()))
                 break
         }
     },

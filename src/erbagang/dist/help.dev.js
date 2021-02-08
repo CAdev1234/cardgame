@@ -1,6 +1,6 @@
 "use strict";
 
-var GFHelpLayer = cc.Layer.extend({
+var ErbagangHelpLayer = cc.Layer.extend({
   bgLayer: null,
   navBar: null,
   howPlayNav: null,
@@ -34,7 +34,7 @@ var GFHelpLayer = cc.Layer.extend({
     goGameBtn.setTitleColor(cc.color(0, 0, 0));
     goGameBtn.addTouchEventListener(this.gotoGame, this);
     this.addChild(goGameBtn);
-    var headerTitle = cc.LabelTTF.create("必发牛牛", "Arial");
+    var headerTitle = cc.LabelTTF.create("必发三公", "Arial");
     headerTitle.attr({
       x: size.width / 2,
       y: size.height - header_height / 2 - 5,
@@ -108,7 +108,7 @@ var GFHelpLayer = cc.Layer.extend({
     var firstParaHeading_height = firstParaHeading.getContentSize().height;
     firstParaHeading.setPosition(cc.p(firstParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - firstParaHeading_height / 2));
     this.howPlayScroll.addChild(firstParaHeading);
-    var firstParaContent = cc.LabelTTF.create('必发炸金花由马其他幸运飞艇官方开奖结果演变而成的一款公平公正的游戏，平台在当期马其他幸运飞艇开奖前10秒先随生成10张明牌，后根据当期马其他幸运飞艇的开奖结果派牌。开奖前先随机生成明牌，开奖后依据开奖号码派牌，这样的机制使得任何人任何机构都无法干涉牌局结果，杜绝了一切作假行为，真正做到公正透明，只拼运气。全天开奖和马耳他幸运飞艇同步，北京时间（GMT+8）每天白天从中午13:09 开到次日凌晨04:05，每5分钟开一次奖, 每天开奖180期。', "arial", 13);
+    var firstParaContent = cc.LabelTTF.create('必发二八杠是由马其他幸运飞艇官方开奖结果演变而成的一款公平公正的游戏，平台在当期马其他幸运飞艇开奖前10秒先随生成10张明牌，后根据当期马其他幸运飞艇的开奖结果派牌。\n\n开奖前先随机生成明牌，开奖后依据开奖号码派牌，这样的机制使得任何人任何机构都无法干涉牌局结果，杜绝了一切作假行为，真正做到公正透明，只拼运气。\n\n全天开奖和马耳他幸运飞艇同步，北京时间（GMT+8）每天白天从中午13:09 开到次日凌晨04:05，每5分钟开一次奖, 每天开奖180期。', "arial", 13);
     firstParaContent.attr({
       fillStyle: cc.color(0, 0, 0),
       boundingWidth: size.width - paddingX,
@@ -128,7 +128,7 @@ var GFHelpLayer = cc.Layer.extend({
     var secondParaHeading_height = secondParaHeading.getContentSize().height;
     secondParaHeading.setPosition(cc.p(secondParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - secondParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY));
     this.howPlayScroll.addChild(secondParaHeading);
-    var secondParaContent = cc.LabelTTF.create("必发炸金花牌面由每一期马其他幸运飞艇开奖20秒前随机生成的10张明牌构成。");
+    var secondParaContent = cc.LabelTTF.create("必发二八杠开盘后随机生成10张明牌。");
     secondParaContent.attr({
       fillStyle: cc.color(0, 0, 0),
       fontSize: 13,
@@ -148,7 +148,7 @@ var GFHelpLayer = cc.Layer.extend({
     var thirdParaHeading_height = thirdParaHeading.getContentSize().height;
     thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY));
     this.howPlayScroll.addChild(thirdParaHeading);
-    var thirdParaContent = cc.LabelTTF.create("马其他幸运飞艇开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。发牌顺序从左到右依次为1到10的牌位，依次为龙-凤-龙-凤-龙-凤的发牌顺序。如马其他幸运飞艇第一个开奖号为5，则发第5张牌位上的牌派到龙。第二个开奖号为3，则发第3张牌位上的牌派到凤。第三个开奖号为6，则发第6张牌位上的牌派到龙，依次类推，只到发满2组牌（龙、凤）。");
+    var thirdParaContent = cc.LabelTTF.create("马耳他幸运飞艇开奖号为1到10号不重复的10个数字，所以开奖号和发牌顺序相对应。\n发牌顺序从左到右依次为1到10的牌位，依次为庄-上门-中门-下门的发牌顺序。如马耳他幸运飞艇第一个开奖号为5，则发第5张牌位上的牌派到庄。第二个开奖号为3，则发第3张牌位上的牌派到上门。第三个开奖号为6，则发第6张牌位上的牌派到中门，依次类推，只到发满4组牌（庄、上门、中门、下门）。");
     thirdParaContent.attr({
       fontSize: 13,
       boundingWidth: size.width - paddingX,
@@ -178,7 +178,7 @@ var GFHelpLayer = cc.Layer.extend({
     var fourthParaContent_height = fourthParaContent.getContentSize().height;
     fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY));
     this.howPlayScroll.addChild(fourthParaContent);
-    var siteUrl = cc.LabelTTF.create("马耳他幸运飞艇官方网址: \nhttps://luckylottoz.com/");
+    var siteUrl = cc.LabelTTF.create("马耳他幸运飞艇官方网址:\nhttps://luckylottoz.com/");
     siteUrl.attr({
       fontSize: 13,
       textAlign: cc.TEXT_ALIGNMENT_LEFT,
@@ -257,19 +257,9 @@ var GFHelpLayer = cc.Layer.extend({
   },
   gotoGame: function gotoGame(sender, type) {
     switch (type) {
-      case ccui.Widget.TOUCH_BEGAN:
-        break;
-
-      case ccui.Widget.TOUCH_MOVED:
-        break;
-
       case ccui.Widget.TOUCH_ENDED:
-        var gameScene = new GFGameScene(); // cc.director.popScene()
-
+        var gameScene = new ErbagangGameScene();
         cc.director.pushScene(new cc.TransitionFade(1.0, gameScene));
-        break;
-
-      case ccui.Widget.TOUCH_CANCELED:
         break;
     }
   },
@@ -302,11 +292,11 @@ var GFHelpLayer = cc.Layer.extend({
     }
   }
 });
-var GFHelpScene = cc.Scene.extend({
+var ErbagangHelpScene = cc.Scene.extend({
   onEnter: function onEnter() {
     this._super();
 
-    var helpLayer = new GFHelpLayer();
+    var helpLayer = new ErbagangHelpLayer();
     this.addChild(helpLayer);
   }
 });

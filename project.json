@@ -26,6 +26,12 @@
         "src/goldenFlower/history.js",
         "src/sangong/app.js",
         "src/sangong/help.js",
-        "src/sangong/history.js"
+        "src/sangong/history.js",
+        "src/tigerDragon/app.js",
+        "src/tigerDragon/help.js",
+        "src/tigerDragon/history.js",
+        "src/erbagang/app.js",
+        "src/erbagang/history.js",
+        "src/erbagang/help.js"
     ]
 }
