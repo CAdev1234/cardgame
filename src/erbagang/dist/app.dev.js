@@ -1300,6 +1300,13 @@ var ErbagangGameLayer = cc.Layer.extend({
       }
     }, null, this);
   },
+  showHistory: function showHistory(sender, type) {
+    switch (type) {
+      case ccui.Widget.TOUCH_ENDED:
+        cc.audioEngine.playEffect(home_res.game_item_mp3);
+        cc.director.pushScene(new cc.TransitionFade(1.0, new ErbagangHistoryScene()));
+    }
+  },
   gotoHome: function gotoHome(sender, type) {
     switch (type) {
       case ccui.Widget.TOUCH_ENDED:
@@ -2427,13 +2434,13 @@ var ErbagangGameLayer = cc.Layer.extend({
     this.cancelBtn.setEnabled(false);
     this.confirmBtn.setEnabled(false);
     var countDrawSecond = setInterval(function _callee3() {
-      var randomNum, cloneMahjong_width, fadeInAction;
+      var randomNum;
       return regeneratorRuntime.async(function _callee3$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
               if (!(draw_second == 0)) {
-                _context5.next = 89;
+                _context5.next = 25;
                 break;
               }
 
@@ -2535,171 +2542,22 @@ var ErbagangGameLayer = cc.Layer.extend({
               return regeneratorRuntime.awrap(_this5.sleep(2000));
 
             case 11:
-              // display clone mahjongs
-              cloneMahjong_width = 40;
-              console.log("lucky_num=", _this5.lucky_num);
-              console.log("randomNum=", randomNum);
-              fadeInAction = new cc.FadeIn(0.5);
-              _this5.bank_cloneMahjong[0] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[0] - 1]]);
+              _context5.next = 13;
+              return regeneratorRuntime.awrap(_this5.displayCloneMahjong(randomNum));
 
-              _this5.bank_cloneMahjong[0].attr({
-                scaleX: cloneMahjong_width / _this5.bank_cloneMahjong[0].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.bank_cloneMahjong[0].getContentSize().width
-              });
-
-              _this5.bank_cloneMahjong[0].setOpacity(0);
-
-              _this5.bank_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 21 + _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.bank_cloneMahjong[0]);
-
-              _this5.bank_cloneMahjong[0].runAction(fadeInAction);
-
-              _context5.next = 23;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 23:
-              _this5.player1_cloneMahjong[0] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[1] - 1]]);
-
-              _this5.player1_cloneMahjong[0].attr({
-                scaleX: cloneMahjong_width / _this5.player1_cloneMahjong[0].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player1_cloneMahjong[0].getContentSize().width
-              });
-
-              _this5.player1_cloneMahjong[0].setOpacity(0);
-
-              _this5.player1_cloneMahjong[0].setPosition((size.width / 3 - _this5.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player1_cloneMahjong[0]);
-
-              _this5.player1_cloneMahjong[0].runAction(fadeInAction);
-
-              _context5.next = 31;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 31:
-              _this5.player2_cloneMahjong[0] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[2] - 1]]);
-
-              _this5.player2_cloneMahjong[0].attr({
-                scaleX: cloneMahjong_width / _this5.player2_cloneMahjong[0].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player2_cloneMahjong[0].getContentSize().width
-              });
-
-              _this5.player2_cloneMahjong[0].setOpacity(0);
-
-              _this5.player2_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player2_cloneMahjong[0]);
-
-              _this5.player2_cloneMahjong[0].runAction(fadeInAction);
-
-              _context5.next = 39;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 39:
-              _this5.player3_cloneMahjong[0] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[3] - 1]]);
-
-              _this5.player3_cloneMahjong[0].attr({
-                scaleX: cloneMahjong_width / _this5.player3_cloneMahjong[0].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player3_cloneMahjong[0].getContentSize().width
-              });
-
-              _this5.player3_cloneMahjong[0].setOpacity(0);
-
-              _this5.player3_cloneMahjong[0].setPosition(size.width / 3 * 2 + (size.width / 3 - _this5.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player3_cloneMahjong[0]);
-
-              _this5.player3_cloneMahjong[0].runAction(fadeInAction);
-
-              _context5.next = 47;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 47:
-              _this5.bank_cloneMahjong[1] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[4] - 1]]);
-
-              _this5.bank_cloneMahjong[1].attr({
-                scaleX: cloneMahjong_width / _this5.bank_cloneMahjong[1].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.bank_cloneMahjong[1].getContentSize().width
-              });
-
-              _this5.bank_cloneMahjong[1].setOpacity(0);
-
-              _this5.bank_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 21 + _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.bank_cloneMahjong[1]);
-
-              _this5.bank_cloneMahjong[1].runAction(fadeInAction);
-
-              _context5.next = 55;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 55:
-              _this5.player1_cloneMahjong[1] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[5] - 1]]);
-
-              _this5.player1_cloneMahjong[1].attr({
-                scaleX: cloneMahjong_width / _this5.player1_cloneMahjong[1].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player1_cloneMahjong[1].getContentSize().width
-              });
-
-              _this5.player1_cloneMahjong[1].setOpacity(0);
-
-              _this5.player1_cloneMahjong[1].setPosition((size.width / 3 - _this5.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player1_cloneMahjong[1]);
-
-              _this5.player1_cloneMahjong[1].runAction(fadeInAction);
-
-              _context5.next = 63;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 63:
-              _this5.player2_cloneMahjong[1] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[6] - 1]]);
-
-              _this5.player2_cloneMahjong[1].attr({
-                scaleX: cloneMahjong_width / _this5.player2_cloneMahjong[1].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player2_cloneMahjong[1].getContentSize().width
-              });
-
-              _this5.player2_cloneMahjong[1].setOpacity(0);
-
-              _this5.player2_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player2_cloneMahjong[1]);
-
-              _this5.player2_cloneMahjong[1].runAction(fadeInAction);
-
-              _context5.next = 71;
-              return regeneratorRuntime.awrap(_this5.sleep(1000));
-
-            case 71:
-              _this5.player3_cloneMahjong[1] = new cc.Sprite(_this5.mahjong[randomNum[_this5.lucky_num[7] - 1]]);
-
-              _this5.player3_cloneMahjong[1].attr({
-                scaleX: cloneMahjong_width / _this5.player3_cloneMahjong[1].getContentSize().width,
-                scaleY: cloneMahjong_width / _this5.player3_cloneMahjong[1].getContentSize().width
-              });
-
-              _this5.player3_cloneMahjong[1].setOpacity(0);
-
-              _this5.player3_cloneMahjong[1].setPosition(size.width / 3 * 2 + (size.width / 3 - _this5.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, _this5.coinWrapSprite_height + _this5.betAmountBg_height - _this5.betAmountBg_height_delta + _this5.gamePanel_height / 24 * 9 - _this5.gamePanel_border1 / 2);
-
-              _this5.addChild(_this5.player3_cloneMahjong[1]);
-
-              _this5.player3_cloneMahjong[1].runAction(fadeInAction);
-
-              _context5.next = 79;
+            case 13:
+              _context5.next = 15;
               return regeneratorRuntime.awrap(_this5.sleep(2000));
 
-            case 79:
+            case 15:
               _this5.panelArea[1].setOpacity(50);
 
               _this5.panelArea[3].setOpacity(50);
 
-              _context5.next = 83;
+              _context5.next = 19;
               return regeneratorRuntime.awrap(_this5.sleep(5000));
 
-            case 83:
+            case 19:
               _this5.removeAllMahjong();
 
               _this5.removeDealedCoins();
@@ -2712,17 +2570,138 @@ var ErbagangGameLayer = cc.Layer.extend({
 
               return _context5.abrupt("return");
 
-            case 89:
+            case 25:
               draw_second = draw_second - 1;
               if (draw_second < 10) _this5.infoText.setString("距开奖时间 00:0" + draw_second);else _this5.infoText.setString("距开奖时间 00:" + draw_second);
 
-            case 91:
+            case 27:
             case "end":
               return _context5.stop();
           }
         }
       });
     }, 1000);
+  },
+  displayCloneMahjong: function displayCloneMahjong(randomNum) {
+    var size, paddingX, paddingY, cloneMahjong_width, fadeInAction;
+    return regeneratorRuntime.async(function displayCloneMahjong$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            size = cc.winSize;
+            paddingX = 20;
+            paddingY = 20;
+            cloneMahjong_width = 40;
+            console.log("lucky_num=", this.lucky_num);
+            console.log("randomNum=", randomNum);
+            fadeInAction = new cc.FadeIn(0.5);
+            this.bank_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[0] - 1]]);
+            this.bank_cloneMahjong[0].attr({
+              scaleX: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width,
+              scaleY: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width,
+              opacity: 0
+            });
+            this.bank_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4);
+            this.addChild(this.bank_cloneMahjong[0]);
+            this.bank_cloneMahjong[0].runAction(fadeInAction);
+            _context6.next = 14;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 14:
+            this.player1_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[1] - 1]]);
+            this.player1_cloneMahjong[0].attr({
+              scaleX: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
+              opacity: 0
+            });
+            this.player1_cloneMahjong[0].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player1_cloneMahjong[0]);
+            this.player1_cloneMahjong[0].runAction(fadeInAction);
+            _context6.next = 21;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 21:
+            this.player2_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[2] - 1]]);
+            this.player2_cloneMahjong[0].attr({
+              scaleX: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
+              opacity: 0
+            });
+            this.player2_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player2_cloneMahjong[0]);
+            this.player2_cloneMahjong[0].runAction(fadeInAction);
+            _context6.next = 28;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 28:
+            this.player3_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[3] - 1]]);
+            this.player3_cloneMahjong[0].attr({
+              scaleX: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
+              opacity: 0
+            });
+            this.player3_cloneMahjong[0].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player3_cloneMahjong[0]);
+            this.player3_cloneMahjong[0].runAction(fadeInAction);
+            _context6.next = 35;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 35:
+            this.bank_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[4] - 1]]);
+            this.bank_cloneMahjong[1].attr({
+              scaleX: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
+              scaleY: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
+              opacity: 0
+            });
+            this.bank_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4);
+            this.addChild(this.bank_cloneMahjong[1]);
+            this.bank_cloneMahjong[1].runAction(fadeInAction);
+            _context6.next = 42;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 42:
+            this.player1_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[5] - 1]]);
+            this.player1_cloneMahjong[1].attr({
+              scaleX: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
+              opacity: 0
+            });
+            this.player1_cloneMahjong[1].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player1_cloneMahjong[1]);
+            this.player1_cloneMahjong[1].runAction(fadeInAction);
+            _context6.next = 49;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 49:
+            this.player2_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[6] - 1]]);
+            this.player2_cloneMahjong[1].attr({
+              scaleX: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
+              opacity: 0
+            });
+            this.player2_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player2_cloneMahjong[1]);
+            this.player2_cloneMahjong[1].runAction(fadeInAction);
+            _context6.next = 56;
+            return regeneratorRuntime.awrap(this.sleep(1000));
+
+          case 56:
+            this.player3_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[7] - 1]]);
+            this.player3_cloneMahjong[1].attr({
+              scaleX: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
+              scaleY: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
+              opacity: 0
+            });
+            this.player3_cloneMahjong[1].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
+            this.addChild(this.player3_cloneMahjong[1]);
+            this.player3_cloneMahjong[1].runAction(fadeInAction);
+
+          case 61:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, null, this);
   },
   removeAllMahjong: function removeAllMahjong() {
     for (var index = 0; index < this.resultMahjong.length; index++) {

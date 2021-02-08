@@ -1166,6 +1166,14 @@ var ErbagangGameLayer = cc.Layer.extend({
         }
     },
 
+    showHistory: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                cc.audioEngine.playEffect(home_res.game_item_mp3)
+                cc.director.pushScene(new cc.TransitionFade(1.0, new ErbagangHistoryScene()))
+        }
+    },
+
     gotoHome: function (sender, type) {
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
@@ -2301,103 +2309,12 @@ var ErbagangGameLayer = cc.Layer.extend({
                 this.serial_num_panel.removeAllChildren()
                 this.displaySerialPanel()
                 await this.sleep(2000)
-                // display clone mahjongs
-                var cloneMahjong_width = 40
-                console.log("lucky_num=", this.lucky_num)
-                console.log("randomNum=", randomNum)
-
-                var fadeInAction = new cc.FadeIn(0.5)
-                this.bank_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[0] - 1]])
-                this.bank_cloneMahjong[0].attr({
-                    scaleX: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width
-                })
-                this.bank_cloneMahjong[0].setOpacity(0)
-                this.bank_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 )
-                this.addChild(this.bank_cloneMahjong[0])
-                this.bank_cloneMahjong[0].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player1_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[1] - 1]])
-                this.player1_cloneMahjong[0].attr({
-                    scaleX: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width
-                })
-                this.player1_cloneMahjong[0].setOpacity(0)
-                this.player1_cloneMahjong[0].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player1_cloneMahjong[0])
-                this.player1_cloneMahjong[0].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player2_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[2] - 1]])
-                this.player2_cloneMahjong[0].attr({
-                    scaleX: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width
-                })
-                this.player2_cloneMahjong[0].setOpacity(0)
-                this.player2_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player2_cloneMahjong[0])
-                this.player2_cloneMahjong[0].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player3_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[3] - 1]])
-                this.player3_cloneMahjong[0].attr({
-                    scaleX: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width
-                })
-                this.player3_cloneMahjong[0].setOpacity(0)
-                this.player3_cloneMahjong[0].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player3_cloneMahjong[0])
-                this.player3_cloneMahjong[0].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.bank_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[4] - 1]])
-                this.bank_cloneMahjong[1].attr({
-                    scaleX: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width
-                })
-                this.bank_cloneMahjong[1].setOpacity(0)
-                this.bank_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 )
-                this.addChild(this.bank_cloneMahjong[1])
-                this.bank_cloneMahjong[1].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player1_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[5] - 1]])
-                this.player1_cloneMahjong[1].attr({
-                    scaleX: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width
-                })
-                this.player1_cloneMahjong[1].setOpacity(0)
-                this.player1_cloneMahjong[1].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player1_cloneMahjong[1])
-                this.player1_cloneMahjong[1].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player2_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[6] - 1]])
-                this.player2_cloneMahjong[1].attr({
-                    scaleX: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width
-                })
-                this.player2_cloneMahjong[1].setOpacity(0)
-                this.player2_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player2_cloneMahjong[1])
-                this.player2_cloneMahjong[1].runAction(fadeInAction)
-                await this.sleep(1000)
-
-                this.player3_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[7] - 1]])
-                this.player3_cloneMahjong[1].attr({
-                    scaleX: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
-                    scaleY: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width
-                })
-                this.player3_cloneMahjong[1].setOpacity(0)
-                this.player3_cloneMahjong[1].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
-                this.addChild(this.player3_cloneMahjong[1])
-                this.player3_cloneMahjong[1].runAction(fadeInAction)
-
+                await this.displayCloneMahjong(randomNum)
                 await this.sleep(2000)
                 this.panelArea[1].setOpacity(50)
                 this.panelArea[3].setOpacity(50)
                 await this.sleep(5000)
+                
                 this.removeAllMahjong()
                 this.removeDealedCoins()
                 this.panelArea[1].setOpacity(255)
@@ -2409,6 +2326,103 @@ var ErbagangGameLayer = cc.Layer.extend({
             if (draw_second < 10) this.infoText.setString("距开奖时间 00:0" + draw_second)
             else this.infoText.setString("距开奖时间 00:" + draw_second)
         }, 1000)
+    },
+
+    displayCloneMahjong: async function (randomNum) {
+        var size = cc.winSize
+        var paddingX = 20
+        var paddingY = 20
+        var cloneMahjong_width = 40
+        console.log("lucky_num=", this.lucky_num)
+        console.log("randomNum=", randomNum)
+
+        var fadeInAction = new cc.FadeIn(0.5)
+        this.bank_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[0] - 1]])
+        this.bank_cloneMahjong[0].attr({
+            scaleX: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width,
+            scaleY: cloneMahjong_width / this.bank_cloneMahjong[0].getContentSize().width,
+            opacity: 0
+        })
+        this.bank_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4 )
+        this.addChild(this.bank_cloneMahjong[0])
+        this.bank_cloneMahjong[0].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player1_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[1] - 1]])
+        this.player1_cloneMahjong[0].attr({
+            scaleX: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
+            opacity: 0
+        })
+        this.player1_cloneMahjong[0].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player1_cloneMahjong[0])
+        this.player1_cloneMahjong[0].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player2_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[2] - 1]])
+        this.player2_cloneMahjong[0].attr({
+            scaleX: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
+            opacity: 0
+        })
+        this.player2_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player2_cloneMahjong[0])
+        this.player2_cloneMahjong[0].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player3_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[3] - 1]])
+        this.player3_cloneMahjong[0].attr({
+            scaleX: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
+            opacity: 0
+        })
+        this.player3_cloneMahjong[0].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player3_cloneMahjong[0])
+        this.player3_cloneMahjong[0].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.bank_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[4] - 1]])
+        this.bank_cloneMahjong[1].attr({
+            scaleX: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
+            scaleY: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
+            opacity: 0
+        })
+        this.bank_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4)
+        this.addChild(this.bank_cloneMahjong[1])
+        this.bank_cloneMahjong[1].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player1_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[5] - 1]])
+        this.player1_cloneMahjong[1].attr({
+            scaleX: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
+            opacity: 0
+        })
+        this.player1_cloneMahjong[1].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player1_cloneMahjong[1])
+        this.player1_cloneMahjong[1].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player2_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[6] - 1]])
+        this.player2_cloneMahjong[1].attr({
+            scaleX: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
+            opacity: 0
+        })
+        this.player2_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player2_cloneMahjong[1])
+        this.player2_cloneMahjong[1].runAction(fadeInAction)
+        await this.sleep(1000)
+
+        this.player3_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[7] - 1]])
+        this.player3_cloneMahjong[1].attr({
+            scaleX: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
+            scaleY: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
+            opacity: 0
+        })
+        this.player3_cloneMahjong[1].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2 )
+        this.addChild(this.player3_cloneMahjong[1])
+        this.player3_cloneMahjong[1].runAction(fadeInAction)
     },
 
     removeAllMahjong: function () {
