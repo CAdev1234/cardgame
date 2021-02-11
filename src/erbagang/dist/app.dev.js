@@ -2440,7 +2440,7 @@ var ErbagangGameLayer = cc.Layer.extend({
           switch (_context5.prev = _context5.next) {
             case 0:
               if (!(draw_second == 0)) {
-                _context5.next = 25;
+                _context5.next = 26;
                 break;
               }
 
@@ -2536,28 +2536,30 @@ var ErbagangGameLayer = cc.Layer.extend({
             case 7:
               _this5.serial_num_panel.removeAllChildren();
 
-              _this5.displaySerialPanel();
+              _context5.next = 10;
+              return regeneratorRuntime.awrap(_this5.displaySerialPanel());
 
-              _context5.next = 11;
+            case 10:
+              _context5.next = 12;
               return regeneratorRuntime.awrap(_this5.sleep(2000));
 
-            case 11:
-              _context5.next = 13;
+            case 12:
+              _context5.next = 14;
               return regeneratorRuntime.awrap(_this5.displayCloneMahjong(randomNum));
 
-            case 13:
-              _context5.next = 15;
+            case 14:
+              _context5.next = 16;
               return regeneratorRuntime.awrap(_this5.sleep(2000));
 
-            case 15:
+            case 16:
               _this5.panelArea[1].setOpacity(50);
 
               _this5.panelArea[3].setOpacity(50);
 
-              _context5.next = 19;
+              _context5.next = 20;
               return regeneratorRuntime.awrap(_this5.sleep(5000));
 
-            case 19:
+            case 20:
               _this5.removeAllMahjong();
 
               _this5.removeDealedCoins();
@@ -2570,11 +2572,11 @@ var ErbagangGameLayer = cc.Layer.extend({
 
               return _context5.abrupt("return");
 
-            case 25:
+            case 26:
               draw_second = draw_second - 1;
               if (draw_second < 10) _this5.infoText.setString("距开奖时间 00:0" + draw_second);else _this5.infoText.setString("距开奖时间 00:" + draw_second);
 
-            case 27:
+            case 28:
             case "end":
               return _context5.stop();
           }
@@ -2591,9 +2593,9 @@ var ErbagangGameLayer = cc.Layer.extend({
             size = cc.winSize;
             paddingX = 20;
             paddingY = 20;
-            cloneMahjong_width = 40;
-            console.log("lucky_num=", this.lucky_num);
-            console.log("randomNum=", randomNum);
+            cloneMahjong_width = 40; // console.log("lucky_num=", this.lucky_num)
+            // console.log("randomNum=", randomNum)
+
             fadeInAction = new cc.FadeIn(0.5);
             this.bank_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[0] - 1]]);
             this.bank_cloneMahjong[0].attr({
@@ -2604,10 +2606,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.bank_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4);
             this.addChild(this.bank_cloneMahjong[0]);
             this.bank_cloneMahjong[0].runAction(fadeInAction);
-            _context6.next = 14;
+            _context6.next = 12;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 14:
+          case 12:
             this.player1_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[1] - 1]]);
             this.player1_cloneMahjong[0].attr({
               scaleX: cloneMahjong_width / this.player1_cloneMahjong[0].getContentSize().width,
@@ -2617,10 +2619,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.player1_cloneMahjong[0].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
             this.addChild(this.player1_cloneMahjong[0]);
             this.player1_cloneMahjong[0].runAction(fadeInAction);
-            _context6.next = 21;
+            _context6.next = 19;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 21:
+          case 19:
             this.player2_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[2] - 1]]);
             this.player2_cloneMahjong[0].attr({
               scaleX: cloneMahjong_width / this.player2_cloneMahjong[0].getContentSize().width,
@@ -2630,10 +2632,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.player2_cloneMahjong[0].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
             this.addChild(this.player2_cloneMahjong[0]);
             this.player2_cloneMahjong[0].runAction(fadeInAction);
-            _context6.next = 28;
+            _context6.next = 26;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 28:
+          case 26:
             this.player3_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[3] - 1]]);
             this.player3_cloneMahjong[0].attr({
               scaleX: cloneMahjong_width / this.player3_cloneMahjong[0].getContentSize().width,
@@ -2643,10 +2645,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.player3_cloneMahjong[0].setPosition(size.width / 3 * 2 + (size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
             this.addChild(this.player3_cloneMahjong[0]);
             this.player3_cloneMahjong[0].runAction(fadeInAction);
-            _context6.next = 35;
+            _context6.next = 33;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 35:
+          case 33:
             this.bank_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[4] - 1]]);
             this.bank_cloneMahjong[1].attr({
               scaleX: cloneMahjong_width / this.bank_cloneMahjong[1].getContentSize().width,
@@ -2656,10 +2658,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.bank_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 21 + this.gamePanel_border1 / 2 - paddingY / 4);
             this.addChild(this.bank_cloneMahjong[1]);
             this.bank_cloneMahjong[1].runAction(fadeInAction);
-            _context6.next = 42;
+            _context6.next = 40;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 42:
+          case 40:
             this.player1_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[5] - 1]]);
             this.player1_cloneMahjong[1].attr({
               scaleX: cloneMahjong_width / this.player1_cloneMahjong[1].getContentSize().width,
@@ -2669,10 +2671,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.player1_cloneMahjong[1].setPosition((size.width / 3 - this.gamePanel_border1 / 2) / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
             this.addChild(this.player1_cloneMahjong[1]);
             this.player1_cloneMahjong[1].runAction(fadeInAction);
-            _context6.next = 49;
+            _context6.next = 47;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 49:
+          case 47:
             this.player2_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[6] - 1]]);
             this.player2_cloneMahjong[1].attr({
               scaleX: cloneMahjong_width / this.player2_cloneMahjong[1].getContentSize().width,
@@ -2682,10 +2684,10 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.player2_cloneMahjong[1].setPosition(size.width / 2 - cloneMahjong_width / 2 - paddingX / 4 + (cloneMahjong_width + paddingX / 2) * 1, this.coinWrapSprite_height + this.betAmountBg_height - this.betAmountBg_height_delta + this.gamePanel_height / 24 * 9 - this.gamePanel_border1 / 2);
             this.addChild(this.player2_cloneMahjong[1]);
             this.player2_cloneMahjong[1].runAction(fadeInAction);
-            _context6.next = 56;
+            _context6.next = 54;
             return regeneratorRuntime.awrap(this.sleep(1000));
 
-          case 56:
+          case 54:
             this.player3_cloneMahjong[1] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[7] - 1]]);
             this.player3_cloneMahjong[1].attr({
               scaleX: cloneMahjong_width / this.player3_cloneMahjong[1].getContentSize().width,
@@ -2696,7 +2698,7 @@ var ErbagangGameLayer = cc.Layer.extend({
             this.addChild(this.player3_cloneMahjong[1]);
             this.player3_cloneMahjong[1].runAction(fadeInAction);
 
-          case 61:
+          case 59:
           case "end":
             return _context6.stop();
         }

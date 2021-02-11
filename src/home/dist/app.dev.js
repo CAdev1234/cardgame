@@ -238,6 +238,7 @@ var HomeLayer = cc.Layer.extend({
       case ccui.Widget.TOUCH_ENDED:
         console.log("gotoSicBo");
         cc.audioEngine.playEffect(home_res.game_item_mp3);
+        cc.director.pushScene(new cc.TransitionFade(1.0, new SicboGameScene()));
         break;
     }
   }

@@ -2307,7 +2307,7 @@ var ErbagangGameLayer = cc.Layer.extend({
                 }, 2000);
                 await this.sleep(5000)
                 this.serial_num_panel.removeAllChildren()
-                this.displaySerialPanel()
+                await this.displaySerialPanel()
                 await this.sleep(2000)
                 await this.displayCloneMahjong(randomNum)
                 await this.sleep(2000)
@@ -2333,8 +2333,8 @@ var ErbagangGameLayer = cc.Layer.extend({
         var paddingX = 20
         var paddingY = 20
         var cloneMahjong_width = 40
-        console.log("lucky_num=", this.lucky_num)
-        console.log("randomNum=", randomNum)
+        // console.log("lucky_num=", this.lucky_num)
+        // console.log("randomNum=", randomNum)
 
         var fadeInAction = new cc.FadeIn(0.5)
         this.bank_cloneMahjong[0] = new cc.Sprite(this.mahjong[randomNum[this.lucky_num[0] - 1]])

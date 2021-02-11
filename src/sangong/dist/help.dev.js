@@ -81,7 +81,7 @@ var SangongHelpLayer = cc.Layer.extend({
     this.traditionPlayNav.attr({
       x: (size.width - paddingX) / 4 * 3,
       y: size.height - traditionPlayNav_height / 2 - header_height - paddingY / 2 - banner_height - paddingY / 2 - nav_height / 3,
-      titleText: "传统牛牛规则",
+      titleText: "传统三公规则",
       titleFontSize: traditionPlayNav_height
     });
     this.traditionPlayNav.setTitleColor(cc.color(255, 255, 255));

@@ -1,4 +1,4 @@
-var baccaratHelpLayer = cc.Layer.extend({
+var SicboHelpLayer = cc.Layer.extend({
     bgLayer: null,
     navBar: null,
     howPlayNav: null,
@@ -33,7 +33,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         goGameBtn.setTitleColor(cc.color(0, 0, 0))
         goGameBtn.addTouchEventListener(this.gotoGame, this)
         this.addChild(goGameBtn)
-        var headerTitle = cc.LabelTTF.create("必发百家乐", "Arial")
+        var headerTitle = cc.LabelTTF.create("必发三公", "Arial")
         headerTitle.attr({
             x: size.width / 2,
             y: size.height - header_height / 2 - 5,
@@ -83,7 +83,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         this.traditionPlayNav.attr({
             x: (size.width - paddingX) / 4  * 3,
             y: size.height - traditionPlayNav_height / 2 - header_height - paddingY / 2 - banner_height - paddingY / 2 - nav_height / 3,
-            titleText: "传统百家乐规则",
+            titleText: "传统骰宝杠规则",
             titleFontSize: traditionPlayNav_height
         })
         this.traditionPlayNav.setTitleColor(cc.color(255, 255, 255))
@@ -115,7 +115,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         firstParaHeading.setPosition(cc.p(firstParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - firstParaHeading_height / 2))
         this.howPlayScroll.addChild(firstParaHeading)
 
-        var firstParaContent = cc.LabelTTF.create('必发百家乐是由澳洲幸运10官方开奖结果演变而成的一款公平公正的游戏，平台在当期澳洲幸运10开奖前10秒先随生成10张明牌，后根据当期澳洲幸运10的开奖结果派牌。\n\n开奖前先随机生成明牌，开奖后依据开奖号码派牌，这样的机制使得任何人任何机构都无法干涉牌局结果，杜绝了一切作假行为，真正做到公正透明，只拼运气。 \n\n全天开奖和澳洲幸运10同步，每天上午06:59到凌晨05:59，每5分钟为一局，每天共276局。', "arial", 13)
+        var firstParaContent = cc.LabelTTF.create('必发骰宝由东京1.5分彩官方开奖结果演变而成的一款公平公正的游戏，公正之处为每局所开骰子以彩票结果为依据，任何人任何机构都无法干涉，杜绝一切作假行为。\n\n全天开奖和东京1.5分彩同步， 开奖时间(北京时间)为8:00至7:00（次日），每天960期，90秒一期。', "arial", 13)
         firstParaContent.attr({
             fillStyle: cc.color(0, 0, 0),
             boundingWidth: size.width - paddingX,
@@ -137,7 +137,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         secondParaHeading.setPosition(cc.p(secondParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - secondParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY))
         this.howPlayScroll.addChild(secondParaHeading)
 
-        var secondParaContent = cc.LabelTTF.create("必发百家乐牌面由每一期澳洲幸运10开奖20秒前随机生成的10张明牌构成。")
+        var secondParaContent = cc.LabelTTF.create("骰宝以东京1.5分彩官方开奖结果从左到右的号码尾数为结果。")
         secondParaContent.attr({
             fillStyle: cc.color(0, 0, 0),
             fontSize: 13,
@@ -159,7 +159,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         thirdParaHeading.setPosition(cc.p(thirdParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - thirdParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY))
         this.howPlayScroll.addChild(thirdParaHeading)
 
-        var thirdParaContent = cc.LabelTTF.create("当期澳洲幸运10开奖后根据开奖号码开始发牌，开奖号为1到10不重复的10个数字，所以开奖号和发牌顺序相对应。\n发牌顺序从左到右依次为1到10的牌位。第1/2/3/4/5/6张牌（是否发第5第6张牌根据传统佰家乐规则确定）对应开奖号的第1/2/3/4/5/6位开奖号。 如澳洲幸运10第一个开奖号为5，按照百家乐规则发第5张牌位上的牌派到闲家。")
+        var thirdParaContent = cc.LabelTTF.create("东京1.5分彩开奖后，从左到右的号码尾数为每个骰子的结果，遇到尾数是0或大于6的跳过，直到取足三个骰子的数字。")
         thirdParaContent.attr({
             fontSize: 13,
             boundingWidth: size.width - paddingX,
@@ -181,7 +181,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         fourthParaHeading.setPosition(cc.p(fourthParaHeading.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaHeading_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY))
         this.howPlayScroll.addChild(fourthParaHeading)
 
-        var fourthParaContent = cc.LabelTTF.create("例:随机牌面为（10、K、8、8、6、J、6、1、7、2）澳洲幸运10开奖结果为（5、9、4、8、1、6、10、7、2、3）闲家牌6、8VS庄家牌7、1（投注庄家视为赢）")
+        var fourthParaContent = cc.LabelTTF.create("例东京1.5分彩开奖结果为\n（01,15,28,29,30,31,34,43,44,45,50,53,56,57,61,62,70,75,77,78），骰宝结果则为1，5，1。")
         fourthParaContent.attr({
             fontSize: 13,
             boundingWidth: size.width - paddingX,
@@ -192,7 +192,7 @@ var baccaratHelpLayer = cc.Layer.extend({
         fourthParaContent.setPosition(cc.p(fourthParaContent.getContentSize().width / 2, howPlayScroll_inner_height - fourthParaContent_height / 2 - firstParaHeading_height - paddingY - firstParaContent_height - paddingY - secondParaHeading_height - paddingY - secondParaContent_height - paddingY - thirdParaHeading_height - paddingY - thirdParaContent_height - paddingY - fourthParaHeading_height - paddingY))
         this.howPlayScroll.addChild(fourthParaContent)
 
-        var siteUrl = cc.LabelTTF.create("澳洲幸运10官方网址: \nhttp://www.auluckylottery.com/results/lucky-ball-10+")
+        var siteUrl = cc.LabelTTF.create("东京1.5分彩官方网址:\nhttp://tokyokeno.jp/")
         siteUrl.attr({
             fontSize: 13,
             textAlign: cc.TEXT_ALIGNMENT_LEFT,
@@ -271,8 +271,6 @@ var baccaratHelpLayer = cc.Layer.extend({
         var twoParaContent_3_height = twoParaContent_3.getContentSize().height
         twoParaContent_3.setPosition(cc.p(twoParaContent_3.getContentSize().width / 2, traditionPlayScroll_inner_height - twoParaContent_3_height / 2 - oneParaHeading_height - paddingY - oneParaContent_height - paddingY - twoParaHeading_height - paddingY - twoParaContent_1_height - paddingY - twoParaContent_2_height - paddingY))
         this.traditionPlayScroll.addChild(twoParaContent_3)
-
-
         this.removeChild(this.traditionPlayScroll)
     },
     init: function () {
@@ -282,16 +280,9 @@ var baccaratHelpLayer = cc.Layer.extend({
 
     gotoGame: function (sender, type) {
         switch (type) {
-            case ccui.Widget.TOUCH_BEGAN:
-                break
-            case ccui.Widget.TOUCH_MOVED:
-                break
             case ccui.Widget.TOUCH_ENDED:
-                var gameScene = new BaccaratGameScene()
-                // cc.director.popScene()
+                var gameScene = new SicboGameScene()
                 cc.director.pushScene(new cc.TransitionFade(1.0, gameScene))
-                break
-            case ccui.Widget.TOUCH_CANCELED:
                 break
         }
     },
@@ -326,12 +317,10 @@ var baccaratHelpLayer = cc.Layer.extend({
 })
 
 
-
-
-var BaccaratHelpScene = cc.Scene.extend({
+var SicboHelpScene = cc.Scene.extend({
     onEnter: function () {
         this._super()
-        var helpLayer = new baccaratHelpLayer()
+        var helpLayer = new SicboHelpLayer()
         this.addChild(helpLayer)
     }
 })

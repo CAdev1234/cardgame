@@ -9,7 +9,7 @@
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["cocos2d", "extensions"],
+    "modules" : ["cocos2d", "extensions", "chipmunk"],
 
     "jsList" : [
         "src/resource.js",
@@ -32,6 +32,9 @@
         "src/tigerDragon/history.js",
         "src/erbagang/app.js",
         "src/erbagang/history.js",
-        "src/erbagang/help.js"
+        "src/erbagang/help.js",
+        "src/sicbo/app.js",
+        "src/sicbo/help.js",
+        "src/sicbo/history.js"
     ]
 }

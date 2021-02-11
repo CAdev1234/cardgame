@@ -128,6 +128,13 @@ var erbagang_res = {
     mahjong_plist: "res/erbagang/mahjong-sheet.plist"
 }
 
+// sicbo res
+var sicbo_res = {
+    banner_png: "res/sicbo/banner.png",
+    dice_plist: "res/sicbo/dice-sheet.plist",
+    dice_png: "res/sicbo/dice-sheet.png"
+}
+
 
 var g_resources = [];
 for (var i in res) {
@@ -147,4 +154,7 @@ for (var i in sangong_res) {
 }
 for (var i in erbagang_res) {
     g_resources.push(erbagang_res[i])
+}
+for (var i in sicbo_res) {
+    g_resources.push(sicbo_res[i])
 }
