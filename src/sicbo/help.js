@@ -33,7 +33,7 @@ var SicboHelpLayer = cc.Layer.extend({
         goGameBtn.setTitleColor(cc.color(0, 0, 0))
         goGameBtn.addTouchEventListener(this.gotoGame, this)
         this.addChild(goGameBtn)
-        var headerTitle = cc.LabelTTF.create("必发三公", "Arial")
+        var headerTitle = cc.LabelTTF.create("必发骰宝", "Arial")
         headerTitle.attr({
             x: size.width / 2,
             y: size.height - header_height / 2 - 5,

@@ -60,6 +60,13 @@ var SicboGameLayer = cc.Layer.extend({
     coinDealCheckDlgYesBtn: null,
     coinDealCheckDlgNoBtn: null,
 
+    checkSuccessDlg_overLay: null,
+    checkSuccessDlg: null,
+    checkSuccessDlg_interval: null,
+
+    dealCancelDlg_overLay: null,
+    dealCancelDlg: null,
+
     ctor: function () {
         this._super()
         var size = cc.winSize
@@ -2004,7 +2011,6 @@ var SicboGameLayer = cc.Layer.extend({
         switch (type) {
             case ccui.Widget.TOUCH_ENDED:
                 console.log("showcoindealcheckdlg")
-                return
                 this.disableAllBtn()
                 // coinDealCheckDlg
                 var paddingX = 20
@@ -2012,7 +2018,7 @@ var SicboGameLayer = cc.Layer.extend({
                 this.coinDealCheckDlg_overLay = new cc.LayerColor(cc.color(0, 0, 0, 100), cc.winSize.width, cc.winSize.height)
                 this.addChild(this.coinDealCheckDlg_overLay, this.overLay_zOrder)
                 this.coinDealCheckDlg_zOrder = this.overLay_zOrder + 1
-                var coinDealCheckDlg_height = 680
+                var coinDealCheckDlg_height = 170
                 var coinDealCheckDlg_width = cc.winSize.width - paddingX * 3
                 this.coinDealCheckDlg = new RoundRect(coinDealCheckDlg_width, coinDealCheckDlg_height, cc.color(0, 0, 0), 0, null, 10, null)
                 var coinDealCheckDlg_y = cc.winSize.height / 2 - coinDealCheckDlg_height / 2
@@ -2035,147 +2041,18 @@ var SicboGameLayer = cc.Layer.extend({
                 this.coinDealCheckDlg.addChild(betAmountTokenSprite1, this.coinDealCheckDlg_zOrder)
                 this.coinDealCheckDlg.addChild(betOrderConfirmLabel, this.coinDealCheckDlg_zOrder)
 
-                var hrLine1 = new cc.LayerColor(cc.color(102, 102, 102), coinDealCheckDlg_width - paddingX, 1)
-                hrLine1.setPosition(cc.p(paddingX / 2, coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2))
-                this.coinDealCheckDlg.addChild(hrLine1, this.coinDealCheckDlg_zOrder)
-
-                var field1Label = new cc.LabelTTF("操作", "Arial", 15)
-                var field2Label = new cc.LabelTTF("玩法", "Arial", 15)
-                var field3Label = new cc.LabelTTF("赔率", "Arial", 15)
-                var field4Label = new cc.LabelTTF("金额", "Arial", 15)
-                field1Label.attr({
-                    fillStyle: cc.color(187, 187, 187)
-                })
-                field2Label.attr({
-                    fillStyle: cc.color(187, 187, 187)
-                })
-                field3Label.attr({
-                    fillStyle: cc.color(187, 187, 187)
-                })
-                field4Label.attr({
-                    fillStyle: cc.color(187, 187, 187)
-                })
-                field1Label.setPosition(cc.p(field1Label.getContentSize().width / 2 + paddingX / 2, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
-                field2Label.setPosition(cc.p(field2Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX * 1.8, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
-                field3Label.setPosition(cc.p(field3Label.getContentSize().width / 2 + paddingX / 2 + field1Label.getContentSize().width + paddingX * 1.8 + field2Label.getContentSize().width + paddingX * 1.8, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
-                field4Label.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 + field4Label.getContentSize().width / 2 - 70, coinDealCheckDlg_height - field1Label.getContentSize().height / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4))
-                this.coinDealCheckDlg.addChild(field1Label, this.coinDealCheckDlg_zOrder)
-                this.coinDealCheckDlg.addChild(field2Label, this.coinDealCheckDlg_zOrder)
-                this.coinDealCheckDlg.addChild(field3Label, this.coinDealCheckDlg_zOrder)
-                this.coinDealCheckDlg.addChild(field4Label, this.coinDealCheckDlg_zOrder)
-
-                var hrLine2 = new cc.LayerColor(cc.color(102, 102, 102), coinDealCheckDlg_width - paddingX, 1)
-                hrLine2.setPosition(cc.p(paddingX / 2, coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4))
-                this.coinDealCheckDlg.addChild(hrLine2, this.coinDealCheckDlg_zOrder)
-
-                var coinDealCheckDlg_scroll = new ccui.ScrollView()
-                var coinDealCheckDlg_scroll_height = 550
-                var coinDealCheckDlg_scroll_width = coinDealCheckDlg_width - paddingX
-                coinDealCheckDlg_scroll.attr({
-                    innerHeight: 700,
-                    innerWidth: coinDealCheckDlg_scroll_width
-                })
-                coinDealCheckDlg_scroll.setDirection(ccui.ScrollView.DIR_VERTICAL)
-                coinDealCheckDlg_scroll.setTouchEnabled(true)
-                coinDealCheckDlg_scroll.setBounceEnabled(true)
-                coinDealCheckDlg_scroll.setContentSize(cc.size(coinDealCheckDlg_scroll_width, coinDealCheckDlg_scroll_height))
-                coinDealCheckDlg_scroll.setPosition(cc.p(paddingX / 2, coinDealCheckDlg_height - coinDealCheckDlg_scroll_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4))
-                coinDealCheckDlg_scroll.setBackGroundImage(res.blackjack_jpg) 
-                this.coinDealCheckDlg.addChild(coinDealCheckDlg_scroll, this.coinDealCheckDlg_zOrder)
-
-                var checkRadioSprite_width = 20
-                var dealedPanelNum = 0
-                console.log(coinDealCheckDlg_scroll.getInnerContainerSize())
-                
-                if (this.panel_DealedCoins[0].length !== 0) {
-                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
-                    checkRadioSprite1.attr({
-                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
-                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
-                        x: checkRadioSprite_width / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
-                    })
-                    coinDealCheckDlg_scroll.addChild(checkRadioSprite1)
-                    var field2Val = new cc.LabelTTF("小", "Arial", 16)
-                    field2Val.attr({
-                        fillStyle: cc.color(0, 102, 203),
-                        x: field2Label.getContentSize().width / 2 + field1Label.getContentSize().width + paddingX * 1.8,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - 3
-                    })
-                    coinDealCheckDlg_scroll.addChild(field2Val)
-                    var field3Val = new cc.LabelTTF("1", "Arial", 16)
-                    field3Val.attr({
-                        fillStyle: cc.color(255, 255, 255),
-                        x: field3Label.getContentSize().width / 2 + field1Label.getContentSize().width + paddingX * 1.8 + field2Label.getContentSize().width + paddingX * 1.8,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - 3
-                    })
-                    coinDealCheckDlg_scroll.addChild(field3Val)
-                    var field4RoundRect_width = 120
-                    var field4RoundRect_height = checkRadioSprite_width
-                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
-                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_scroll_width - field4RoundRect_width, coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
-                    coinDealCheckDlg_scroll.addChild(field4RoundRect)
-                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel_DealedCoins[0]), "Arial", 16)
-                    field4Val.attr({
-                        fillStyle: cc.color(255, 255, 255),
-                        x: field4RoundRect_width / 2,
-                        y: field4RoundRect_height / 2 - 3
-                    })
-                    field4RoundRect.addChild(field4Val, this.coinDealCheckDlg_zOrder)
-                    dealedPanelNum = dealedPanelNum + 1
-                }
-
-                if (this.panel_DealedCoins[1].length !== 0) {
-                    var checkRadioSprite1 = new cc.Sprite(res.check_radio_png)
-                    checkRadioSprite1.attr({
-                        scaleX: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
-                        scaleY: checkRadioSprite_width / checkRadioSprite1.getContentSize().width,
-                        x: checkRadioSprite_width / 2 + field1Label.getContentSize().width / 2 - checkRadioSprite_width / 2,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum
-                    })
-                    coinDealCheckDlg_scroll.addChild(checkRadioSprite1)
-                    var field2Val = new cc.LabelTTF("单", "Arial", 16)
-                    field2Val.attr({
-                        fillStyle: cc.color(0, 102, 203),
-                        x: field2Label.getContentSize().width / 2 + field1Label.getContentSize().width + paddingX * 1.8,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - 3
-                    })
-                    coinDealCheckDlg_scroll.addChild(field2Val)
-                    var field3Val = new cc.LabelTTF("1", "Arial", 16)
-                    field3Val.attr({
-                        fillStyle: cc.color(255, 255, 255),
-                        x: field3Label.getContentSize().width / 2 + field1Label.getContentSize().width + paddingX * 1.8 + field2Label.getContentSize().width + paddingX * 1.8,
-                        y: coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width / 2 - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - 3
-                    })
-                    coinDealCheckDlg_scroll.addChild(field3Val)
-                    var field4RoundRect_width = 120
-                    var field4RoundRect_height = checkRadioSprite_width
-                    var field4RoundRect = new RoundRect(field4RoundRect_width, field4RoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
-                    field4RoundRect.setPosition(cc.p(coinDealCheckDlg_scroll_width - field4RoundRect_width, coinDealCheckDlg_scroll.getInnerContainerSize().height - checkRadioSprite_width - paddingY / 4 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum))
-                    coinDealCheckDlg_scroll.addChild(field4RoundRect)
-                    var field4Val = new cc.LabelTTF(this.sumCoins(this.panel_DealedCoins[1]), "Arial", 16)
-                    field4Val.attr({
-                        fillStyle: cc.color(255, 255, 255),
-                        x: field4RoundRect_width / 2,
-                        y: field4RoundRect_height / 2 - 3
-                    })
-                    field4RoundRect.addChild(field4Val, this.coinDealCheckDlg_zOrder)
-                    dealedPanelNum = dealedPanelNum + 1
-                }
-
-                
 
                 var totalfieldLabel = new cc.LabelTTF("总金额:", "Arial", 18)
                 totalfieldLabel.attr({
                     fillStyle: cc.color(255, 255, 255),
                     x: paddingX / 2 + totalfieldLabel.getContentSize().width / 2,
-                    y: coinDealCheckDlg_height - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - paddingY - 3
+                    y: coinDealCheckDlg_height - paddingY * 4
                 })
                 this.coinDealCheckDlg.addChild(totalfieldLabel)
                 var totalfieldRoundRect_width = 120
                 var totalfieldRoundRect_height = 20
                 var totalfieldRoundRect = new RoundRect(totalfieldRoundRect_width, totalfieldRoundRect_height, cc.color(59, 112, 128), 0, null, 10, null)
-                totalfieldRoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - totalfieldRoundRect_width, coinDealCheckDlg_height - checkRadioSprite_width / 2 - paddingY - betOrderConfirmLabel.getContentSize().height - paddingY / 2 - paddingY / 4 - field1Label.getContentSize().height - paddingY / 4 - paddingY / 4 - 3 - (checkRadioSprite_width + paddingY / 2) * dealedPanelNum - paddingY))
+                totalfieldRoundRect.setPosition(cc.p(coinDealCheckDlg_width - paddingX / 2 - totalfieldRoundRect_width, coinDealCheckDlg_height - paddingY * 4 - 7))
                 this.coinDealCheckDlg.addChild(totalfieldRoundRect)
                 var sumDealedCoins = 0
                 for (let index = 0; index < this.panel_DealedCoins.length; index++) {
@@ -2215,6 +2092,175 @@ var SicboGameLayer = cc.Layer.extend({
                 this.coinDealCheckDlg.addChild(this.coinDealCheckDlgYesBtn, this.coinDealCheckDlg_zOrder)
                 this.coinDealCheckDlg.addChild(this.coinDealCheckDlgNoBtn, this.coinDealCheckDlg_zOrder)
 
+                break
+        }
+    },
+
+    showCheckSuccessDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("showCheckSuccessDlg")
+                var paddingX = 20
+                var paddingY = 20
+                var checkSuccessDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
+                this.checkSuccessDlg_overLay = new cc.LayerColor(cc.color(0, 0, 0, 100), cc.winSize.width, cc.winSize.height)
+                this.addChild(this.checkSuccessDlg_overLay, checkSuccessDlg_zOrder)
+                var checkSuccessDlg_height = 120
+                this.checkSuccessDlg = new RoundRect(cc.winSize.width - paddingX * 3, checkSuccessDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
+                this.checkSuccessDlg.setPosition(cc.p(paddingX * 3 / 2, cc.winSize.height / 2 - checkSuccessDlg_height / 2))
+                this.addChild(this.checkSuccessDlg, checkSuccessDlg_zOrder)
+
+                var checkSuccessDlgLabel = new cc.LabelTTF("下注成功", "Arial", 15)
+                checkSuccessDlgLabel.attr({
+                    fillStyle: cc.color(0, 0, 0),
+                    x: this.checkSuccessDlg.getContentSize().width / 2,
+                    y: checkSuccessDlg_height / 2 - checkSuccessDlgLabel.getContentSize().height / 2 + paddingY
+                })
+                this.checkSuccessDlg.addChild(checkSuccessDlgLabel)
+                var dlgYesBtn = new ccui.Button(res.green_rounded_bg_rect_png, res.green_rounded_bg_rect_png, res.green_rounded_bg_rect_png)
+                var dlgYesBtn_width = 100
+                var dlgYesBtn_time = 5
+                dlgYesBtn.attr({
+                    pressedActionEnabled: true,
+                    scaleX: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    scaleY: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    x: this.checkSuccessDlg.getContentSize().width / 2,
+                    y: paddingY / 2 + dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2
+                })
+                dlgYesBtn.setTitleText("确定(" + dlgYesBtn_time + ")")
+                dlgYesBtn.setTitleFontSize(40)
+                dlgYesBtn.setTitleColor(cc.color(0, 0, 0))
+                dlgYesBtn.addTouchEventListener(this.closeCheckSuccessDlg, this)
+                this.checkSuccessDlg.addChild(dlgYesBtn)
+
+                this.checkSuccessDlg_interval = setInterval(() => {
+                    if (dlgYesBtn_time == 0) {
+                        clearInterval(this.checkSuccessDlg_interval)
+                        this.removeChild(this.checkSuccessDlg)
+                        this.removeChild(this.checkSuccessDlg_overLay)
+                        this.removeChild(this.coinDealCheckDlg)
+                        this.removeChild(this.coinDealCheckDlg_overLay)
+                        this.enableAllBtn()
+
+                        for (let index = 0; index < this.panel_ValRoundRect.length; index++) {
+                            if (this.panel_ValRoundRect_Label[index] !== null && this.panel_ValRoundRect_Label[index] !== undefined) {
+                                this.panel_ValRoundRect_Label[index].setColor(cc.color(34, 162, 211))
+                            }
+                        }
+                    }
+                    dlgYesBtn_time = dlgYesBtn_time - 1
+                    dlgYesBtn.setTitleText("确定(" + dlgYesBtn_time + ")")
+                }, 1000);
+
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+        }
+    },
+
+    closeCheckSuccessDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("closeCheckSuccessDlg")
+                clearInterval(this.checkSuccessDlg_interval)
+                this.removeChild(this.checkSuccessDlg)
+                this.removeChild(this.checkSuccessDlg_overLay)
+                this.removeChild(this.coinDealCheckDlg)
+                this.removeChild(this.coinDealCheckDlg_overLay)
+
+                // for (let index = 0; index < this.panel_ValRoundRect.length; index++) {
+                //     if (this.panel_ValRoundRect_Label[index] !== null && this.panel_ValRoundRect_Label[index] !== undefined) {
+                //         this.panel_ValRoundRect_Label[index].setColor(cc.color(34, 162, 211))
+                //     }
+                // }
+
+                setTimeout(() => {
+                    this.enableAllBtn()
+                }, 50);
+
+        }
+    },
+
+    showDealCancelDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("showDealCancelDlg")
+                this.disableAllBtn()
+                var paddingX = 20
+                var paddingY = 20
+                var dealCancelDlg_zOrder = this.coinDealCheckDlg_zOrder + 1
+                var dealCancelDlg_height = 120
+                this.dealCancelDlg_overLay = new cc.LayerColor(cc.color(0, 0, 0, 100), cc.winSize.width, cc.winSize.height)
+                this.addChild(this.dealCancelDlg_overLay, dealCancelDlg_zOrder)
+                this.dealCancelDlg = new RoundRect(cc.winSize.width - paddingX * 3, dealCancelDlg_height, cc.color(255, 255, 255), 0, null, 10, null)
+                this.dealCancelDlg.setPosition(cc.p(paddingX * 3 / 2, cc.winSize.height / 2 - dealCancelDlg_height / 2))
+                this.addChild(this.dealCancelDlg, dealCancelDlg_zOrder)
+
+                var dealCancelDlgLabel = new cc.LabelTTF("你确定取消下注吗？", "Arial", 15)
+                dealCancelDlgLabel.attr({
+                    fillStyle: cc.color(0, 0, 0),
+                    x: this.dealCancelDlg.getContentSize().width / 2,
+                    y: dealCancelDlg_height / 2 - dealCancelDlgLabel.getContentSize().height / 2 + paddingY
+                })
+                this.dealCancelDlg.addChild(dealCancelDlgLabel, dealCancelDlg_zOrder)
+                var dlgYesBtn = new ccui.Button(res.dlg_yes_btn_png, res.dlg_yes_btn_png, res.dlg_yes_btn_png)
+                var dlgYesBtn_width = 70
+                dlgYesBtn.attr({
+                    pressedActionEnabled: true,
+                    scaleX: dlgYesBtn_width / dlgYesBtn.getContentSize().width,
+                    scaleY: dlgYesBtn_width / dlgYesBtn.getContentSize().width
+                })
+                var dlgNoBtn = new ccui.Button(res.dlg_no_btn_png, res.dlg_no_btn_png, res.dlg_no_btn_png)
+                var dlgNoBtn_width = 70
+                dlgNoBtn.attr({
+                    pressedActionEnabled: true,
+                    scaleX: dlgNoBtn_width / dlgNoBtn.getContentSize().width,
+                    scaleY: dlgNoBtn_width / dlgNoBtn.getContentSize().width
+                })
+                dlgYesBtn.setPosition(cc.p(dlgYesBtn_width / 2 + this.dealCancelDlg.getContentSize().width / 2 - dlgYesBtn_width - paddingX / 2,
+                    dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2 + paddingY / 2))
+                dlgNoBtn.setPosition(cc.p(dlgNoBtn_width / 2 + this.dealCancelDlg.getContentSize().width / 2 + paddingX / 2,
+                    dlgYesBtn_width / dlgYesBtn.getContentSize().width * dlgYesBtn.getContentSize().height / 2 + paddingY / 2))
+                dlgYesBtn.addTouchEventListener(this.cancelDealedCoins, this)
+                dlgNoBtn.addTouchEventListener(this.closeCancelDlg, this)
+                this.dealCancelDlg.addChild(dlgYesBtn, this.coinDealCheckDlg_zOrder)
+                this.dealCancelDlg.addChild(dlgNoBtn, this.coinDealCheckDlg_zOrder)
+
+                // disable coinDealCheckDlg
+                this.coinDealCheckDlgYesBtn.setEnabled(false)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(false)
+                this.coinDealCheckDlgNoBtn.setEnabled(false)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(false)
+        }
+    },
+
+    cancelDealedCoins: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("cancelDealedCoins")
+                this.removeChild(this.dealCancelDlg)
+                this.removeChild(this.dealCancelDlg_overLay)
+
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
+
+                this.removeChild(this.coinDealCheckDlg)
+                this.removeChild(this.coinDealCheckDlg_overLay)
+
+                this.enableAllBtn()
+        }
+    },
+    
+    closeCancelDlg: function (sender, type) {
+        switch (type) {
+            case ccui.Widget.TOUCH_ENDED:
+                console.log("closeCancelDlg")
+                this.enabledCoinDrop = true
+                this.removeChild(this.dealCancelDlg)
+                this.removeChild(this.dealCancelDlg_overLay)
+                this.coinDealCheckDlgYesBtn.setEnabled(true)
+                this.coinDealCheckDlgYesBtn.setTouchEnabled(true)
+                this.coinDealCheckDlgNoBtn.setEnabled(true)
+                this.coinDealCheckDlgNoBtn.setTouchEnabled(true)
                 break
         }
     },
